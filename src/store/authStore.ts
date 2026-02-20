@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { User } from 'firebase/auth';
-import { auth } from '@/services/firebase';
+import { auth, initializeFirebase } from '@/services/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { logger } from '@/utils/logger';
 
@@ -30,6 +30,7 @@ export const useAuthStore = create<AuthState>(set => ({
   clearError: () => set({ error: null }),
 
   initialize: () => {
+    initializeFirebase();
     // Listen for auth state changes //
     const unsubscribe = onAuthStateChanged(
       auth,

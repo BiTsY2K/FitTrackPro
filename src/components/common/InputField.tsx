@@ -1,10 +1,11 @@
 import { COLORS, Spacing, Typography } from '@/constants/theme';
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
-import { Pressable } from 'react-native';
+import { Platform, Pressable, TouchableWithoutFeedback } from 'react-native';
 import { StyleSheet, Text, TextInput, TextInputProps, View, ViewStyle } from 'react-native';
 
 interface InputFieldProps extends TextInputProps {
+  inputRef: React.RefObject<TextInput | null>;
   placeholder: string;
   error?: string;
   helperText?: string;
@@ -20,6 +21,7 @@ interface InputFieldProps extends TextInputProps {
 }
 
 const InputField: React.FC<InputFieldProps> = ({
+  inputRef,
   placeholder,
   error,
   helperText,
@@ -41,62 +43,64 @@ const InputField: React.FC<InputFieldProps> = ({
 
   return (
     <View style={[styles.wrapper, style]}>
-      <View style={[styles.container, isFocused && styles.containerFocused]}>
-        {icon && (
-          <Ionicons
-            name={icon}
-            size={24}
-            color={hasError ? COLORS.SEMANTIC.error : COLORS.textMuted}
-            style={styles.icon}
-          />
-        )}
-
-        <TextInput
+      <TouchableWithoutFeedback onPress={() => inputRef.current?.focus()}>
+        <View
           style={[
-            styles.input,
-            icon && styles.inputWithicon,
-            (rightIcon || showPasswordToggle) && styles.inputWithRightIcon,
+            styles.container,
+            isFocused && styles.containerFocused,
+            hasError && { borderColor: COLORS.SEMANTIC.error },
           ]}
-          placeholder={placeholder}
-          placeholderTextColor={COLORS.textMuted}
-          secureTextEntry={secureTextEntry && !isPasswordVisible}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
-          value={value}
-          onChangeText={onChangeText}
-          keyboardType={keyboardType}
-          autoCapitalize="none"
-          autoCorrect={false}
-          autoComplete="off"
-          {...props}
-        />
+        >
+          {icon && <Ionicons name={icon} size={24} color={COLORS.textMuted} style={styles.icon} />}
 
-        {rightIcon && !showPasswordToggle && (
-          <Pressable
-            onPress={onRightIconPress}
-            style={styles.rightIcon}
-            hitSlop={8}
-            accessibilityRole="button"
-          >
-            <Ionicons name={rightIcon} size={24} color={COLORS.textMuted} />
-          </Pressable>
-        )}
+          <TextInput
+            ref={inputRef}
+            {...props}
+            style={[
+              styles.textInput,
+              icon && styles.inputWithicon,
+              (rightIcon || showPasswordToggle) && styles.inputWithRightIcon,
+            ]}
+            placeholder={placeholder}
+            placeholderTextColor={COLORS.textMuted}
+            value={value}
+            onChangeText={onChangeText}
+            secureTextEntry={secureTextEntry && !isPasswordVisible}
+            keyboardType={keyboardType}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
+            autoCapitalize="none"
+            autoCorrect={false}
+            autoComplete="off"
+          />
 
-        {showPasswordToggle && (
-          <Pressable
-            onPress={() => setIsPasswordVisible(!isPasswordVisible)}
-            style={styles.rightIcon}
-            hitSlop={8}
-            accessibilityRole="button"
-          >
-            <Ionicons
-              name={isPasswordVisible ? 'eye-off-outline' : 'eye-outline'}
-              size={24}
-              color={COLORS.textMuted}
-            />
-          </Pressable>
-        )}
-      </View>
+          {rightIcon && !showPasswordToggle && (
+            <Pressable
+              onPress={onRightIconPress}
+              style={styles.rightIcon}
+              hitSlop={8}
+              accessibilityRole="button"
+            >
+              <Ionicons name={rightIcon} size={24} color={COLORS.textMuted} />
+            </Pressable>
+          )}
+
+          {showPasswordToggle && (
+            <Pressable
+              onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+              style={styles.rightIcon}
+              hitSlop={8}
+              accessibilityRole="button"
+            >
+              <Ionicons
+                name={isPasswordVisible ? 'eye-off-outline' : 'eye-outline'}
+                size={24}
+                color={COLORS.textMuted}
+              />
+            </Pressable>
+          )}
+        </View>
+      </TouchableWithoutFeedback>
 
       {(error || helperText) && (
         <Text
@@ -118,26 +122,33 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.04)',
+    alignSelf: 'stretch',
+    backgroundColor: COLORS.glass,
     borderRadius: 14,
     borderWidth: 1,
     borderColor: COLORS.border,
     paddingHorizontal: 16,
-    paddingVertical: 4,
   },
   containerFocused: {
     borderColor: COLORS.accent,
-    shadowColor: COLORS.accent,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 6,
+    ...Platform.select({
+      ios: {
+        shadowColor: COLORS.accent,
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.3,
+        shadowRadius: 10,
+      },
+      android: { backgroundColor: `${COLORS.accent}14` },
+      default: { backgroundColor: `${COLORS.accent}14` },
+    }),
   },
-  input: {
+
+  input: {},
+  textInput: {
     flex: 1,
     color: COLORS.text,
     fontSize: 15,
-    paddingVertical: 14,
+    paddingVertical: 15,
   },
 
   inputWithicon: { marginLeft: Spacing.xs },
@@ -151,8 +162,14 @@ const styles = StyleSheet.create({
     marginTop: Spacing.xs,
     marginLeft: Spacing.xs,
   },
+  errorBorder: {
+    borderColor: COLORS.SEMANTIC.error,
+  },
   errorText: {
     color: COLORS.SEMANTIC.error,
+    fontSize: 12,
+    marginTop: 6,
+    marginLeft: 4,
   },
 });
 

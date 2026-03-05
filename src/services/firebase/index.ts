@@ -4,6 +4,7 @@ import { getAuth, Auth } from 'firebase/auth';
 import { getFirestore, Firestore } from 'firebase/firestore';
 import { getStorage, FirebaseStorage } from 'firebase/storage';
 import Constants from 'expo-constants';
+
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -44,9 +45,7 @@ const initializeFirebase = () => {
     if (getApps().length === 0) {
       app = initializeApp(firebaseConfig);
       console.log('✅ Firebase initialized successfully');
-    } else {
-      app = getApps()[0];
-    }
+    } else { app = getApps()[0]; } // prettier-ignore
 
     // Initialize services //
     auth = getAuth(app);

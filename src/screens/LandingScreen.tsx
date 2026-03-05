@@ -18,7 +18,7 @@ import { RootStackParamList } from '@/navigation/RootNavigation';
 const { width } = Dimensions.get('window');
 
 type Props = {
-  navigation: NativeStackNavigationProp<RootStackParamList, 'Landing'>;
+  navigation: NativeStackNavigationProp<RootStackParamList, 'Auth'>;
 };
 
 const FEATURES = [
@@ -60,21 +60,13 @@ export default function LandingScreen({ navigation }: Props) {
   const ring3Rot = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    // Fade in hero content
+    // Fade in hero content //
     Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 700,
-        useNativeDriver: true,
-      }),
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 700,
-        useNativeDriver: true,
-      }),
+      Animated.timing(fadeAnim, { toValue: 1, duration: 700, useNativeDriver: true }),
+      Animated.timing(slideAnim, { toValue: 0, duration: 700, useNativeDriver: true }),
     ]).start();
 
-    // Pulse glow badge
+    // Pulse glow badge //
     Animated.loop(
       Animated.sequence([
         Animated.timing(pulseAnim, { toValue: 1, duration: 1400, useNativeDriver: true }),
@@ -82,15 +74,9 @@ export default function LandingScreen({ navigation }: Props) {
       ]),
     ).start();
 
-    // Spinning rings
+    // Spinning rings //
     const spinRing = (anim: Animated.Value, duration: number) =>
-      Animated.loop(
-        Animated.timing(anim, {
-          toValue: 1,
-          duration,
-          useNativeDriver: true,
-        }),
-      ).start();
+      Animated.loop(Animated.timing(anim, { toValue: 1, duration, useNativeDriver: true })).start();
 
     spinRing(ring1Rot, 20000);
     spinRing(ring2Rot, 28000);
@@ -152,11 +138,11 @@ export default function LandingScreen({ navigation }: Props) {
 
             <GlowButton
               label="Start Free — No Credit Card"
-              onPress={() => navigation.navigate('SignUp')}
+              onPress={() => navigation.navigate('Auth', { screen: 'SignUp' })}
               style={styles.ctaBtn}
             />
 
-            <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
+            <TouchableOpacity onPress={() => navigation.navigate('Auth', { screen: 'SignIn' })}>
               <Text style={styles.signInLink}>
                 Already a member?{'  '}
                 <Text style={styles.signInLinkAccent}>Sign In →</Text>

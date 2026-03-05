@@ -2,7 +2,6 @@
  * Design System
  * Minimal, trust-focused aesthetic for fitness tracking
  */
-
 export const COLORS = {
   bg: '#0A0A0F',
   bgCard: '#12121A',
@@ -17,13 +16,17 @@ export const COLORS = {
   textMuted: '#8888AA',
   border: 'rgba(255,255,255,0.08)',
   glass: 'rgba(255,255,255,0.04)',
+  error: '#FF4C6A',
 
   SEMANTIC: {
     success: '#00E676',
     warning: '#FFB020',
-    error: '#FF4D6D',
+
+    error: '#FF4C6A',
+    errorGlow: 'rgba(255,76,106,0.12)',
+
     info: '#4DA3FF',
-  },
+  } as const,
 } as const;
 
 export const Colors = {

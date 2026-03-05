@@ -65,13 +65,13 @@ class AuthenticationService {
   /** Sign Up with Email/Password */
   async signUp(email: string, password: string, displayName: string): Promise<User> {
     try {
-      // Rate limiting
+      // Rate limiting //
       const rateLimitKey = `signup:${email}`;
       if (!rateLimiter.check(rateLimitKey, 3, 60 * 60 * 1000)) {
         throw new Error(AUTH_ERRORS.RATE_LIMIT_EXCEEDED);
       }
 
-      // Validate inputs
+      // Validate inputs //
       const cleanEmail = sanitizeInput(email).toLowerCase();
       const cleanName = sanitizeInput(displayName);
 
@@ -79,23 +79,19 @@ class AuthenticationService {
         throw new Error('Invalid email address');
       }
 
-      // Validate password strength
+      // Validate password strength //
       const passwordValidation = validatePasswordStrength(password);
       if (!passwordValidation.isValid) {
         throw new Error(passwordValidation.errors[0] || AUTH_ERRORS.WEAK_PASSWORD);
       }
 
-      // Create user
       const userCredential = await createUserWithEmailAndPassword(auth, cleanEmail, password);
-      const user = userCredential.user;
+      const user = userCredential.user; // Create user
 
-      // Update profile
-      await updateProfile(user, { displayName: cleanName });
+      await updateProfile(user, { displayName: cleanName }); // Update profile
+      await sendEmailVerification(user); // Send email verification
 
-      // Send email verification
-      await sendEmailVerification(user);
-
-      // Create user document in Firestore
+      // Create user document in Firestore //
       await this.createUserDocument(user.uid, {
         email: cleanEmail,
         displayName: cleanName,
@@ -103,14 +99,14 @@ class AuthenticationService {
         emailVerified: false,
       });
 
-      // Store auth state securely
+      // Store auth state securely //
       await this.storeAuthState(user);
 
-      // Analytics
+      // Analytics //
       logEvent(AnalyticsEvent.SIGN_UP, { method: 'email' });
       setAnalyticsUserId(user.uid);
 
-      // Sentry context
+      // Sentry context //
       Sentry.setUser({ id: user.uid });
 
       logger.info('User signed up successfully', { uid: user.uid });
@@ -137,36 +133,28 @@ class AuthenticationService {
         throw new Error(AUTH_ERRORS.ACCOUNT_LOCKED);
       }
 
-      // Validate email
+      // Validate email //
       const cleanEmail = sanitizeInput(email).toLowerCase();
-      if (!validateEmail(cleanEmail)) {
-        throw new Error('Invalid email address');
-      }
+      if (!validateEmail(cleanEmail)) throw new Error('Invalid email address');
 
-      // Sign in
+      // Sign in //
       const userCredential = await signInWithEmailAndPassword(auth, cleanEmail, password);
       const user = userCredential.user;
 
-      // Check email verification
+      // Check email verification. Allow sign-in but show warning //
       if (!user.emailVerified) {
-        // Allow sign-in but show warning
         logger.warn('User signed in without verified email', { uid: user.uid });
       }
 
-      // Update last login
-      await this.updateLastLogin(user.uid);
+      await this.updateLastLogin(user.uid); // Update last login
+      await this.storeAuthState(user); // Store auth state
+      rateLimiter.reset(rateLimitKey); // Reset rate limiter on success
 
-      // Store auth state
-      await this.storeAuthState(user);
-
-      // Reset rate limiter on success
-      rateLimiter.reset(rateLimitKey);
-
-      // Analytics
+      // Analytics //
       logEvent(AnalyticsEvent.LOGIN, { method: 'email' });
       setAnalyticsUserId(user.uid);
 
-      // Sentry context
+      // Sentry context //
       Sentry.setUser({ id: user.uid });
 
       logger.info('User signed in successfully', { uid: user.uid });
@@ -185,7 +173,7 @@ class AuthenticationService {
       const userCredential = await signInWithCredential(auth, credential);
       const user = userCredential.user;
 
-      // Check if new user
+      // Check if new user //
       const userDoc = await getDoc(doc(db, 'users', user.uid));
       if (!userDoc.exists()) {
         // Create user document for new user
@@ -201,10 +189,10 @@ class AuthenticationService {
         await this.updateLastLogin(user.uid);
       }
 
-      // Store auth state
+      // Store auth state //
       await this.storeAuthState(user);
 
-      // Analytics
+      // Analytics //
       logEvent(AnalyticsEvent.LOGIN, { method: 'google' });
       setAnalyticsUserId(user.uid);
 

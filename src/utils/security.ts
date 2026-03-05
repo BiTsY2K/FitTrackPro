@@ -11,17 +11,17 @@ export const validatePasswordStrength = (
 ): {
   isValid: boolean;
   errors: string[];
-  strength: 'weak' | 'medium' | 'strong';
+  strength: 'fair' | 'weak' | 'medium' | 'strong';
 } => {
   const errors: string[] = [];
 
   // Check length
   if (password.length < PASSWORD_CONFIG.MIN_LENGTH) {
-    errors.push(`Must be at least ${PASSWORD_CONFIG.MIN_LENGTH} characters`);
+    errors.push(`Password must be at least ${PASSWORD_CONFIG.MIN_LENGTH} characters`);
   }
 
   if (password.length > PASSWORD_CONFIG.MAX_LENGTH) {
-    errors.push(`Must be less than ${PASSWORD_CONFIG.MAX_LENGTH} characters`);
+    errors.push(`Password must be less than ${PASSWORD_CONFIG.MAX_LENGTH} characters`);
   }
 
   // Check against common passwords
@@ -35,40 +35,28 @@ export const validatePasswordStrength = (
       password,
     );
   if (hasSequential) {
-    errors.push('Avoid sequential characters');
+    errors.push('Avoid sequential characters (eg. abc, xyz, 012 ...');
   }
 
   // Check for repeated characters (aaa, 111)
   const hasRepeated = /(.)\1{2,}/.test(password);
-  if (hasRepeated) {
-    errors.push('Avoid repeated characters');
-  }
+  if (hasRepeated) errors.push('Avoid repeated characters (eg. aaa, xxx, 111 ...');
 
   // Calculate strength
-  let strength: 'weak' | 'medium' | 'strong' = 'weak';
-  if (password.length >= 16 && errors.length === 0) {
-    strength = 'strong';
-  } else if (password.length >= 12 && errors.length === 0) {
-    strength = 'medium';
-  }
+  let strength: 'fair' | 'weak' | 'medium' | 'strong' = 'fair';
+  if (password.length >= 16 && errors.length === 0) strength = 'strong';
+  else if (password.length >= 12 && errors.length === 0) strength = 'medium';
+  else if (password.length >= 8 && errors.length === 0) strength = 'weak';
 
-  return {
-    isValid: errors.length === 0,
-    errors,
-    strength,
-  };
+  return { isValid: errors.length === 0, errors, strength };
 };
 
-/**
- * Email Validator
- */
+/** Email Validator */
 export const validateEmail = (email: string): boolean => {
   return VALIDATION_PATTERNS.EMAIL.test(email.trim().toLowerCase());
 };
 
-/**
- * Sanitize User Input (prevent XSS)
- */
+/** Sanitize User Input (prevent XSS) */
 export const sanitizeInput = (input: string): string => {
   return input
     .trim()
@@ -76,9 +64,7 @@ export const sanitizeInput = (input: string): string => {
     .slice(0, 255); // Limit length
 };
 
-/**
- * Generate Secure Random Token
- */
+/** Generate Secure Random Token */
 export const generateSecureToken = async (): Promise<string> => {
   const randomBytes = await Crypto.getRandomBytesAsync(32);
   return Array.from(randomBytes)
@@ -86,10 +72,7 @@ export const generateSecureToken = async (): Promise<string> => {
     .join('');
 };
 
-/**
- * Secure Storage Wrapper
- * Never store sensitive data in AsyncStorage
- */
+/** Secure Storage Wrapper (Never store sensitive data in AsyncStorage) */
 export const SecureStorage = {
   async set(key: string, value: string): Promise<void> {
     try {
@@ -126,10 +109,7 @@ export const SecureStorage = {
   },
 };
 
-/**
- * Timing-Safe String Comparison
- * Prevents timing attacks
- */
+/** Timing-Safe String Comparison (Prevents timing attacks) */
 export const timingSafeEqual = (a: string, b: string): boolean => {
   if (a.length !== b.length) return false;
 
@@ -141,10 +121,7 @@ export const timingSafeEqual = (a: string, b: string): boolean => {
   return result === 0;
 };
 
-/**
- * Hash Sensitive Data (one-way)
- * Use for comparing values without storing them
- */
+/** Hash Sensitive Data (one-way) (Use for comparing values without storing them) */
 export const hashData = async (data: string): Promise<string> => {
   return await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, data);
 };

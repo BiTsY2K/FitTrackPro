@@ -2,6 +2,8 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User } from 'firebase/auth';
 import { authService } from '@/services/auth/AuthService';
 import { useAuthStore } from '@/store/authStore';
+import { sessionManager } from '@/services/auth/SessionManager';
+import { useGoogleAuth } from '@/services/auth/GoogleAuthService';
 
 interface AuthContextValue {
   user: User | null;
@@ -22,18 +24,14 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const {
-    user,
-    loading,
-    error,
-    isAuthenticated,
-    setUser,
-    setLoading,
-    setError,
-    clearError,
-    initialize,
-  } = useAuthStore();
+  const { user, loading, error, isAuthenticated, 
+    setUser, setLoading, setError, clearError, initialize } = useAuthStore(); // prettier-ignore
   const [initialized, setInitialized] = useState(false);
+
+  useEffect(() => {
+    if (user) sessionManager.start();
+    else sessionManager.stop();
+  }, [user]);
 
   useEffect(() => {
     // Initialize auth state listener
@@ -75,6 +73,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setLoading(true);
       clearError();
+      const response = useGoogleAuth();
+      console.log(
+        'Google Sign-In implementation (requires expo-auth-session). Response: ',
+        response,
+      );
       // Google Sign-In implementation (requires expo-auth-session)
       // See Day 2 for full implementation
       throw new Error('Not implemented yet');
@@ -120,19 +123,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const value: AuthContextValue = {
-    user,
-    loading,
-    error,
-    isAuthenticated,
-    signUp,
-    signIn,
-    signInWithGoogle,
-    signInWithApple,
-    signOut,
-    resetPassword,
-    clearError,
-  };
+  /* prettier-ignore */
+  const value: AuthContextValue = { user, loading, error, isAuthenticated, 
+    signUp, signIn, signInWithGoogle, signInWithApple, signOut, resetPassword, clearError, };
 
   // Don't render children until auth is initialized
   if (!initialized) {

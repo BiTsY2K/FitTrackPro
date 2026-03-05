@@ -4,35 +4,36 @@ export type ActivityLevel = 'sedentary' | 'lightly_active' | 'moderately_active'
 export type DietType = 'standard' | 'vegetarian' | 'vegan' | 'keto' | 'paleo' | 'other';
 
 export interface UserProfile {
-    uid: string;
-    email: string;
-    displayName?: string;
-    photoURL?: string;
+  uid: string;
+  email: string;
+  displayName?: string;
+  photoURL?: string;
+  emailVerified: boolean;
 
-    // Onboarding Data
-    gender: Gender;
-    birthDate: Date;
-    heightCm: number;
-    currentWeightKg: number;
-    targetWeightKg?: number;
-    goal: Goal;
-    activityLevel: ActivityLevel;
-    workoutFrequencyPerWeek: number;
-    dietType: DietType;
-    allergies?: string[];
+  // Onboarding Data
+  gender: Gender;
+  birthDate: Date;
+  heightCm: number;
+  currentWeightKg: number;
+  targetWeightKg?: number;
+  goal: Goal;
+  activityLevel: ActivityLevel;
+  workoutFrequencyPerWeek: number;
+  dietType: DietType;
+  allergies?: string[];
 
-    // Calculated Targets
-    bmr: number;
-    tdee: number;
-    dailyCalorieTarget: number;
-    dailyProteinGrams: number;
-    dailyFatGrams: number;
-    dailyCarbsGrams: number;
-    dailyWaterMl: number;
+  // Calculated Targets
+  bmr: number;
+  tdee: number;
+  dailyCalorieTarget: number;
+  dailyProteinGrams: number;
+  dailyFatGrams: number;
+  dailyCarbsGrams: number;
+  dailyWaterMl: number;
 
-    // Metadata
-    createdAt: Date;
-    updatedAt: Date;
-    isPremium: boolean;
-    premiumExpiresAt?: Date;
+  // Metadata
+  createdAt: Date;
+  updatedAt: Date;
+  isPremium: boolean;
+  premiumExpiresAt?: Date;
 }

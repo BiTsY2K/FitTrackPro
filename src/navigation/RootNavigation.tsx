@@ -1,24 +1,61 @@
+import { NavigationContainer, NavigationContainerRef, NavigatorScreenParams } from '@react-navigation/native';
 import React, { useRef } from 'react';
+import AuthNavigator, { AuthStackParamList } from './AuthNavigation';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { NavigationContainer, NavigationContainerRef } from '@react-navigation/native';
+import { useAuth } from '@/contexts/AuthContext';
 import { logScreenView } from '@/services/analytics';
-import SignInScreen from '@/screens/auth/SignInScreen';
 import LandingScreen from '@/screens/LandingScreen';
-import SignUpScreen from '@/screens/auth/SignUpScreen';
+import { doc, getDoc } from '@firebase/firestore';
+import { db } from '@/services/firebase';
+import { MainNavigator } from './MainNavigation';
+import OnboardingNavigator from './OnboardingNavigation';
 
-// ---- Define Param List ----
+// ---- Define Param List ---- //
 export type RootStackParamList = {
   Landing: undefined;
-  Profile: undefined;
-  SignIn: undefined;
-  SignUp: undefined;
+  Auth: NavigatorScreenParams<AuthStackParamList>;
+  Onboarding: undefined;
+  Main: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-export default function RootNavigation() {
+export default function RootNavigator() {
+  const { isAuthenticated, user, loading } = useAuth();
+  const [hasCompletedOnboarding, setHasCompletedOnboarding] = React.useState(false);
+  const [checkingOnboarding, setCheckingOnboarding] = React.useState(true);
+
   const routeNameRef = useRef<string | undefined>(undefined);
   const navigationRef = useRef<NavigationContainerRef<ReactNavigation.RootParamList>>(null);
+
+  // const checkOnboardingStatus = async () => {
+  //   if (!user) {
+  //     setCheckingOnboarding(false);
+  //     return;
+  //   }
+
+  //   try {
+  //     const docRef = doc(db, 'users', user.uid);
+  //     const docSnap = await getDoc(docRef);
+
+  //     if (docSnap.exists()) {
+  //       const data = docSnap.data();
+  //       setHasCompletedOnboarding(!!data.onboardingCompletedAt);
+  //     }
+  //   } catch (error) {
+  //     console.error('Failed to check onboarding status:', error);
+  //   } finally {
+  //     setCheckingOnboarding(false);
+  //   }
+  // };
+
+  // React.useEffect(() => {
+  //   checkOnboardingStatus();
+  // }, [user]);
+
+  // if (loading || checkingOnboarding) {
+  //   return null; // Or splash screen
+  // }
 
   return (
     <NavigationContainer
@@ -39,12 +76,20 @@ export default function RootNavigation() {
     >
       {/* Your screens */}
       <Stack.Navigator
-        initialRouteName="Landing"
+        // initialRouteName="Landing"
         screenOptions={{ headerShown: false, animation: 'fade' }}
       >
-        <Stack.Screen name="Landing" component={LandingScreen} />
-        <Stack.Screen name="SignIn" component={SignInScreen} />
-        <Stack.Screen name="SignUp" component={SignUpScreen} />
+        {!isAuthenticated ? (
+          <>
+            <Stack.Screen name="Landing" component={LandingScreen} />
+            <Stack.Screen name="Auth" component={AuthNavigator} />
+          </>
+        ) : (
+          <>
+            <Stack.Screen name="Onboarding" component={OnboardingNavigator} />
+            <Stack.Screen name="Main" component={MainNavigator} />
+          </>
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -5,8 +5,8 @@
 
 // Password Requirements (NIST 800-63B compliant) //
 export const PASSWORD_CONFIG = {
-  MIN_LENGTH: 12, // NIST recommends 8, we go higher
-  MAX_LENGTH: 128,
+  MIN_LENGTH: 4, // NIST recommends 8
+  MAX_LENGTH: 64,
   REQUIRE_UPPERCASE: false, // NIST says don't force complexity
   REQUIRE_LOWERCASE: false,
   REQUIRE_NUMBER: false,
@@ -55,15 +55,6 @@ export const AUTH_ERRORS = {
 
 // Common passwords (top 100 - in production, use Have I Been Pwned API)
 export const COMMON_PASSWORDS = new Set([
-  'password',
-  '123456',
-  '123456789',
-  'qwerty',
-  'abc123',
-  'password123',
-  'iloveyou',
-  'welcome',
-  'admin',
-  'letmein',
+  'password', '123456', '123456789', 'qwerty', 'abc123', 'password123', 'iloveyou', 'welcome', 'admin', 'letmein',
   // ... add top 100-1000 common passwords
-]);
+]); // prettier-ignore

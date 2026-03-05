@@ -1,25 +1,20 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
-  View,
-  Text,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  SafeAreaView,
-  Animated,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '@/navigation/RootNavigation';
-import InputField from '@/components/common/InputField';
-import GlowButton from '@/components/common/GlowButton';
+  View, Text, ScrollView, StyleSheet, TouchableOpacity, Animated, 
+  KeyboardAvoidingView, Platform, TextInput
+} from 'react-native'; // prettier-ignore
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
+import { AuthStackParamList } from '@/navigation/AuthNavigation';
 import { COLORS } from '@/constants/theme';
 import { Divider, SocialButton } from '@/components/common/SharedComponents';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useAuth } from '@/contexts/AuthContext';
+import { validateEmail, validatePasswordStrength } from '@/utils/security';
+import InputField from '@/components/common/InputField';
+import GlowButton from '@/components/common/GlowButton';
 
-type Props = {
-  navigation: NativeStackNavigationProp<RootStackParamList, 'SignUp'>;
-};
+type SignUpScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'SignUp'>;
 
 const GOALS = [
   { id: 'lose', label: '🔥 Lose Weight' },
@@ -28,12 +23,21 @@ const GOALS = [
   { id: 'flex', label: '🧘 Flexibility' },
 ];
 
-export default function SignUpScreen({ navigation }: Props) {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirm, setConfirm] = useState('');
+export default function SignUpScreen({ navigation }: { navigation: SignUpScreenNavigationProp }) {
+  const { signUp, loading, clearError } = useAuth();
+
+  const nameRef = useRef<TextInput | null>(null);
+  const emailRef = useRef<TextInput | null>(null);
+  const passwordRef = useRef<TextInput | null>(null);
+  const confirmPasswordRef = useRef<TextInput | null>(null);
+
+  const [name, setName] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [emailError, setEmailError] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [goal, setGoal] = useState<string | null>(null);
+  const [isFormValid, setIsFormValid] = useState<boolean>(false);
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
@@ -45,26 +49,74 @@ export default function SignUpScreen({ navigation }: Props) {
     ]).start();
   }, []);
 
+  const validateForm = (n: string, e: string, p: string, cp: string) => {
+    if (e && !validateEmail(e)) {
+      setEmailError('Please enter a valid email address');
+    } else { setEmailError('') } // prettier-ignore
+
+    const passwordValidation = validatePasswordStrength(p);
+    const isValid = n.length >= 2 && validateEmail(e) && passwordValidation.isValid && p === cp;
+    setIsFormValid(isValid);
+  };
+
+  const handleSignUp = async () => {
+    validateForm(name, email, password, confirmPassword);
+    if (!isFormValid) return;
+
+    try {
+      // await signUp(email, password, name);
+      navigation.navigate('EmailVerification', { email: email }); // Show email verification screen
+    } catch (error) {
+      // Error displayed via context
+    }
+  };
+
+  // Password strength //
+  const getStrength = (p: string) => {
+    if (!p) return null;
+    let score = 0;
+    if (p.length >= 8) score++;
+    if (/[A-Z]/.test(p)) score++;
+    if (/[0-9]/.test(p)) score++;
+    if (/[^A-Za-z0-9]/.test(p)) score++;
+    return score;
+  };
+
+  const strength = getStrength(password) || 0;
+  const strengthLabels = ['', 'Weak', 'Fair', 'Good', 'Strong'];
+  const strengthColors = ['', COLORS.SEMANTIC.error, '#FF9500', '#FFD700', COLORS.accent];
+
   return (
     <SafeAreaView style={styles.safe}>
-      <KeyboardAvoidingView
-        style={styles.keyboardAvoidingView}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      >
+      <KeyboardAvoidingView style={styles.keyboardAvoidingView} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView
           style={styles.scroll}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.content}
           keyboardShouldPersistTaps="handled"
         >
-          {/* Glow blobs */}
+          {/* Ambient Glow blobs */}
           <View style={styles.glowBlobTR} />
           <View style={styles.glowBlobBL} />
 
-          {/* Back */}
-          <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
-            <Text style={styles.backText}>← Back</Text>
-          </TouchableOpacity>
+          {/* Header row */}
+          <View style={styles.headerRow}>
+            {/* Back button */}
+            <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+              <View style={styles.backCircle}>
+                <Text style={styles.backArrow}>←</Text>
+                <Text style={styles.backText}>Back</Text>
+              </View>
+            </TouchableOpacity>
+
+            {/* Logo mark */}
+            <View style={styles.logoRow}>
+              <LinearGradient colors={[COLORS.accent, COLORS.purple]} style={styles.logoBadge}>
+                <Text style={styles.logoIcon}>⚡</Text>
+              </LinearGradient>
+              <Text style={styles.logoText}>FitTrack PRO</Text>
+            </View>
+          </View>
 
           <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
             {/* Header */}
@@ -80,47 +132,97 @@ export default function SignUpScreen({ navigation }: Props) {
               {[0, 1, 2].map(i => (
                 <View
                   key={i}
-                  style={[
-                    styles.progressBar,
-                    { flex: i === 0 ? 2 : 1 },
-                    i === 0 ? styles.progressBarActive : styles.progressBarInactive,
-                  ]}
+                  style={[styles.progressBar, { flex: i === 0 ? 2 : 1 }, i === 0 ? styles.progressBarActive : styles.progressBarInactive]}
                 />
               ))}
             </View>
 
             {/* Form */}
             <InputField
+              inputRef={nameRef}
               id="name"
               icon="person-outline"
               placeholder="Full name"
               value={name}
               onChangeText={setName}
+              textContentType="name"
+              editable={!loading}
             />
             <InputField
+              inputRef={emailRef}
               id="email"
               icon="mail-outline"
               placeholder="Email address"
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
+              textContentType="emailAddress"
+              error={emailError}
+              editable={!loading}
             />
             <InputField
-              id="pswd"
+              inputRef={passwordRef}
+              id="password"
               icon="lock-closed-outline"
               placeholder="Password"
               value={password}
               onChangeText={setPassword}
               secureTextEntry
+              textContentType="password"
+              editable={!loading}
             />
+
             <InputField
-              id="cnfrmpswd"
+              inputRef={confirmPasswordRef}
+              id="confirmPassword"
               icon="lock-closed-outline"
               placeholder="Confirm password"
-              value={confirm}
-              onChangeText={setConfirm}
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
               secureTextEntry
+              textContentType="password"
+              editable={!loading}
             />
+
+            {password.length > 0 && (
+              <View>
+                {/* Strength meter */}
+                {strength > 0 && (
+                  <View style={styles.strengthRow}>
+                    {[1, 2, 3, 4].map(i => (
+                      <View
+                        key={i}
+                        style={[
+                          styles.strengthBar,
+                          {
+                            backgroundColor: i <= strength ? strengthColors[strength] : COLORS.border,
+                          },
+                        ]}
+                      />
+                    ))}
+                    <Text style={[styles.strengthLabel, { color: strengthColors[strength] }]}>{strengthLabels[strength]}</Text>
+                  </View>
+                )}
+
+                {/* Password rules */}
+                <View style={styles.rulesCard}>
+                  {[
+                    { rule: 'At least 8 characters', met: password.length >= 8 },
+                    { rule: 'One uppercase letter', met: /[A-Z]/.test(password) },
+                    { rule: 'One number', met: /[0-9]/.test(password) },
+                    {
+                      rule: 'Passwords match',
+                      met: confirmPassword && password === confirmPassword,
+                    },
+                  ].map((r, i) => (
+                    <View key={i} style={styles.ruleRow}>
+                      <Text style={[styles.ruleDot, r.met && styles.ruleDotMet]}>{r.met ? '✓' : '○'}</Text>
+                      <Text style={[styles.ruleText, r.met && styles.ruleTextMet]}>{r.rule}</Text>
+                    </View>
+                  ))}
+                </View>
+              </View>
+            )}
 
             {/* Goal Selector */}
             <Text style={styles.goalLabel}>PRIMARY FITNESS GOAL</Text>
@@ -134,15 +236,13 @@ export default function SignUpScreen({ navigation }: Props) {
                     style={[styles.goalCard, isSelected && styles.goalCardActive]}
                     activeOpacity={0.75}
                   >
-                    <Text style={[styles.goalText, isSelected && styles.goalTextActive]}>
-                      {g.label}
-                    </Text>
+                    <Text style={[styles.goalText, isSelected && styles.goalTextActive]}>{g.label}</Text>
                   </TouchableOpacity>
                 );
               })}
             </View>
 
-            <GlowButton label="Create My Account 🚀" onPress={() => {}} style={styles.submitBtn} />
+            <GlowButton label="Create My Account" onPress={handleSignUp} style={styles.submitBtn} loading={loading} />
 
             <Text style={styles.legal}>
               By signing up you agree to our <Text style={styles.legalLink}>Terms</Text> &{' '}
@@ -177,9 +277,11 @@ const styles = StyleSheet.create({
   keyboardAvoidingView: { flex: 1 },
   scroll: { flex: 1 },
   content: {
-    padding: 28,
-    paddingBottom: 48,
+    padding: 24,
+    paddingBottom: 52,
+    flexGrow: 1,
   },
+
   glowBlobTR: {
     position: 'absolute',
     top: -80,
@@ -198,15 +300,44 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     backgroundColor: 'rgba(124,58,237,0.06)',
   },
+
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 48,
+    marginTop: -14,
+  },
   backBtn: {
-    marginTop: 24,
-    marginBottom: 24,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
   },
-  backText: {
-    color: COLORS.textMuted,
-    fontSize: 14,
-    fontWeight: '600',
+  backCircle: {
+    width: 36,
+    height: 36,
+    borderRadius: 12,
+    backgroundColor: COLORS.glass,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
+  backArrow: { color: COLORS.text, fontSize: 16 },
+  backText: { color: COLORS.textMuted, fontSize: 14, fontWeight: '600' },
+
+  logoRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 28 },
+  logoBadge: {
+    width: 30,
+    height: 30,
+    borderRadius: 9,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  logoIcon: { fontSize: 14 },
+  logoText: { color: COLORS.text, fontWeight: '800', fontSize: 14 },
+
   freeBadge: {
     alignSelf: 'flex-start',
     backgroundColor: 'rgba(0,255,135,0.1)',
@@ -277,11 +408,16 @@ const styles = StyleSheet.create({
   },
   goalCardActive: {
     borderColor: COLORS.accent,
-    backgroundColor: 'rgba(0,255,135,0.1)',
-    shadowColor: COLORS.accent,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
+    ...Platform.select({
+      ios: {
+        shadowColor: COLORS.accent,
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.3,
+        shadowRadius: 10,
+      },
+      android: { backgroundColor: `${COLORS.accent}14` },
+      default: { backgroundColor: `${COLORS.accent}14` },
+    }),
     elevation: 6,
   },
   goalText: {
@@ -325,4 +461,39 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontSize: 14,
   },
+
+  strengthRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginTop: -6,
+    marginBottom: 14,
+  },
+  strengthBar: {
+    flex: 1,
+    height: 4,
+    borderRadius: 4,
+  },
+  strengthLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    width: 44,
+    textAlign: 'right',
+  },
+
+  // Password rules (step 3)
+  rulesCard: {
+    backgroundColor: COLORS.bgCard,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    padding: 16,
+    marginBottom: 24,
+    gap: 10,
+  },
+  ruleRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  ruleDot: { color: COLORS.textMuted, fontSize: 13, fontWeight: '700', width: 16 },
+  ruleDotMet: { color: COLORS.accent },
+  ruleText: { color: COLORS.textMuted, fontSize: 13 },
+  ruleTextMet: { color: COLORS.text },
 });

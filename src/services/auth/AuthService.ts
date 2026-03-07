@@ -1,25 +1,10 @@
 import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-  sendEmailVerification,
-  sendPasswordResetEmail,
-  updatePassword,
-  updateProfile,
-  User,
-  AuthError,
-  GoogleAuthProvider,
-  signInWithCredential,
-  OAuthProvider,
-} from 'firebase/auth';
+  createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendEmailVerification, sendPasswordResetEmail, 
+  updatePassword, updateProfile, User, AuthError, GoogleAuthProvider, signInWithCredential, OAuthProvider,
+} from 'firebase/auth'; // prettier-ignore
 import { doc, setDoc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '@/services/firebase';
-import {
-  validatePasswordStrength,
-  validateEmail,
-  sanitizeInput,
-  SecureStorage,
-} from '@/utils/security';
+import { validatePasswordStrength, validateEmail, sanitizeInput, SecureStorage } from '@/utils/security';
 import { AUTH_ERRORS, RATE_LIMIT_CONFIG } from '@/constants/security';
 import { logger } from '@/utils/logger';
 import { logEvent, AnalyticsEvent, setAnalyticsUserId } from '@/services/analytics';
@@ -123,13 +108,7 @@ class AuthenticationService {
     try {
       // Rate limiting (prevent brute force)
       const rateLimitKey = `login:${email}`;
-      if (
-        !rateLimiter.check(
-          rateLimitKey,
-          RATE_LIMIT_CONFIG.MAX_LOGIN_ATTEMPTS,
-          RATE_LIMIT_CONFIG.LOGIN_LOCKOUT_DURATION,
-        )
-      ) {
+      if (!rateLimiter.check(rateLimitKey, RATE_LIMIT_CONFIG.MAX_LOGIN_ATTEMPTS, RATE_LIMIT_CONFIG.LOGIN_LOCKOUT_DURATION)) {
         throw new Error(AUTH_ERRORS.ACCOUNT_LOCKED);
       }
 
@@ -268,13 +247,7 @@ class AuthenticationService {
     try {
       // Rate limiting
       const rateLimitKey = `reset:${email}`;
-      if (
-        !rateLimiter.check(
-          rateLimitKey,
-          RATE_LIMIT_CONFIG.MAX_PASSWORD_RESET_REQUESTS,
-          RATE_LIMIT_CONFIG.PASSWORD_RESET_COOLDOWN,
-        )
-      ) {
+      if (!rateLimiter.check(rateLimitKey, RATE_LIMIT_CONFIG.MAX_PASSWORD_RESET_REQUESTS, RATE_LIMIT_CONFIG.PASSWORD_RESET_COOLDOWN)) {
         throw new Error(AUTH_ERRORS.RATE_LIMIT_EXCEEDED);
       }
 
@@ -329,23 +302,12 @@ class AuthenticationService {
   async resendEmailVerification(): Promise<void> {
     try {
       const user = auth.currentUser;
-      if (!user) {
-        throw new Error('No authenticated user');
-      }
-
-      if (user.emailVerified) {
-        throw new Error('Email already verified');
-      }
+      if (!user) throw new Error('No authenticated user');
+      if (user.emailVerified) throw new Error('Email already verified');
 
       // Rate limiting
       const rateLimitKey = `verify:${user.uid}`;
-      if (
-        !rateLimiter.check(
-          rateLimitKey,
-          RATE_LIMIT_CONFIG.MAX_EMAIL_VERIFICATIONS,
-          RATE_LIMIT_CONFIG.EMAIL_VERIFICATION_COOLDOWN,
-        )
-      ) {
+      if (!rateLimiter.check(rateLimitKey, RATE_LIMIT_CONFIG.MAX_EMAIL_VERIFICATIONS, RATE_LIMIT_CONFIG.EMAIL_VERIFICATION_COOLDOWN)) {
         throw new Error('Please wait before requesting another verification email');
       }
 

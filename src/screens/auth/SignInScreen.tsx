@@ -1,8 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import {
-  View, Text, ScrollView, StyleSheet, TouchableOpacity, Animated, 
-  KeyboardAvoidingView, Platform, TextInput
-} from 'react-native'; // prettier-ignore
+import { View, Text, StyleSheet, TouchableOpacity, Animated, TextInput } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { AuthStackParamList } from '@/navigation/AuthNavigation';
@@ -17,7 +15,7 @@ import GlowButton from '@/components/common/GlowButton';
 type SignInScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'SignIn'>;
 
 export default function SignInScreen({ navigation }: { navigation: SignInScreenNavigationProp }) {
-  const { signIn, loading, error, clearError } = useAuth();
+  const { signIn, signInWithGoogle, loading, error, clearError } = useAuth();
 
   const emailRef = useRef<TextInput | null>(null);
   const passwordRef = useRef<TextInput | null>(null);
@@ -39,7 +37,7 @@ export default function SignInScreen({ navigation }: { navigation: SignInScreenN
     ]).start();
   }, []);
 
-  // Real-time email validation
+  // Real-time email validation //
   const handleEmailChange = (text: string) => {
     setEmail(text);
     clearError();
@@ -60,12 +58,11 @@ export default function SignInScreen({ navigation }: { navigation: SignInScreenN
   };
 
   const handleUserSignIn = async () => {
-    console.log('User Sign In Credentials: Email: ', email, 'Password: ', password);
     if (!isFormValid) return;
 
     try {
-      await signIn(email, password); // Navigation handled by AuthContext
-      navigation.navigate('EmailVerification', { email: email }); // Show email verification screen
+      // Navigation handled by AuthContext //
+      await signIn(email, password);
     } catch (error) {
       // Error displayed via context
     }
@@ -73,106 +70,122 @@ export default function SignInScreen({ navigation }: { navigation: SignInScreenN
 
   return (
     <SafeAreaView style={styles.safe}>
-      <KeyboardAvoidingView style={styles.keyboardAvoidingView} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-        <ScrollView
-          style={styles.scroll}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.content}
-          keyboardShouldPersistTaps="handled"
-        >
-          {/* Glow blob */}
-          <View style={styles.glowBlobBL} />
-          <View style={styles.glowBlobTR} />
+      <KeyboardAwareScrollView
+        style={styles.scroll}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.content}
+        keyboardShouldPersistTaps="handled"
+        enableOnAndroid={true}
+        enableAutomaticScroll={true}
+        extraScrollHeight={20}
+        extraHeight={20}
+      >
+        {/* Glow blob */}
+        <View style={styles.glowBlobBL} />
+        <View style={styles.glowBlobTR} />
 
-          {/* Header row */}
-          <View style={styles.headerRow}>
-            {/* Back button */}
-            <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
-              <View style={styles.backCircle}>
-                <Text style={styles.backArrow}>←</Text>
-                <Text style={styles.backText}>Back</Text>
-              </View>
+        {/* Header row */}
+        <View style={styles.headerRow}>
+          {/* Back button */}
+          <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+            <View style={styles.backCircle}>
+              <Text style={styles.backArrow}>←</Text>
+              <Text style={styles.backText}>Back</Text>
+            </View>
+          </TouchableOpacity>
+
+          {/* Logo mark */}
+          <View style={styles.logoRow}>
+            <LinearGradient colors={[COLORS.accent, COLORS.purple]} style={styles.logoBadge}>
+              <Text style={styles.logoIcon}>⚡</Text>
+            </LinearGradient>
+            <Text style={styles.logoText}>FitTrack PRO</Text>
+          </View>
+        </View>
+
+        <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
+          {/* Header */}
+          <View style={styles.iconBadge}>
+            <LinearGradient colors={[COLORS.accent, COLORS.purple]} style={styles.iconGradient}>
+              <Text style={styles.iconEmoji}>⚡</Text>
+            </LinearGradient>
+          </View>
+
+          <Text style={styles.title}>Welcome Back</Text>
+          <Text style={styles.subtitle}>Ready to crush today's workout?</Text>
+
+          {/* Form */}
+          <View style={styles.form}>
+            <InputField
+              inputRef={emailRef}
+              icon="mail-outline"
+              placeholder="Email address"
+              keyboardType="email-address"
+              value={email}
+              onChangeText={handleEmailChange}
+              autoFocus
+              error={emailError}
+              onSubmitEditing={() => passwordRef.current?.focus()}
+            />
+
+            <InputField
+              inputRef={passwordRef}
+              icon="lock-closed-outline"
+              placeholder="Password"
+              value={password}
+              onChangeText={handlePasswordChange}
+              secureTextEntry
+              onSubmitEditing={() => handleUserSignIn()}
+            />
+
+            <TouchableOpacity style={styles.forgotRow} onPress={() => navigation.navigate('ForgotPassword')}>
+              <Text style={styles.forgotText}>Forgot Password?</Text>
             </TouchableOpacity>
 
-            {/* Logo mark */}
-            <View style={styles.logoRow}>
-              <LinearGradient colors={[COLORS.accent, COLORS.purple]} style={styles.logoBadge}>
-                <Text style={styles.logoIcon}>⚡</Text>
-              </LinearGradient>
-              <Text style={styles.logoText}>FitTrack PRO</Text>
+            {/* Sign In CTA */}
+            <GlowButton
+              label="Sign In"
+              onPress={handleUserSignIn}
+              style={styles.submitBtn}
+              disabled={loading}
+              loading={loading}
+              loadingLabel="Signing"
+            />
+
+            {/* Biometric toggle */}
+            <TouchableOpacity
+              onPress={() => setBiometricActive(!biometricActive)}
+              style={[styles.biometricBtn, biometricActive && styles.biometricBtnActive]}
+            >
+              <Text style={styles.biometricIcon}>👆</Text>
+              <Text style={[styles.biometricLabel, biometricActive && styles.biometricLabelActive]}>
+                {biometricActive ? 'Touch ID Active' : 'Use Touch ID / Face ID'}
+              </Text>
+            </TouchableOpacity>
+
+            <Divider label="or continue with" />
+
+            <View style={styles.socialRow}>
+              <SocialButton
+                icon="logo-google"
+                label="Google"
+                onPress={() => {
+                  signInWithGoogle();
+                }}
+              />
+              <SocialButton icon="logo-apple" label="Apple" onPress={() => {}} />
             </View>
           </View>
 
-          <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
-            {/* Header */}
-            <View style={styles.iconBadge}>
-              <LinearGradient colors={[COLORS.accent, COLORS.purple]} style={styles.iconGradient}>
-                <Text style={styles.iconEmoji}>⚡</Text>
-              </LinearGradient>
-            </View>
-
-            <Text style={styles.title}>Welcome Back</Text>
-            <Text style={styles.subtitle}>Ready to crush today's workout?</Text>
-
-            {/* Form */}
-            <View style={styles.form}>
-              <InputField
-                inputRef={emailRef}
-                icon="mail-outline"
-                placeholder="Email address"
-                keyboardType="email-address"
-                value={email}
-                onChangeText={handleEmailChange}
-                autoFocus
-                error={emailError}
-                onSubmitEditing={() => passwordRef.current?.focus()}
-              />
-
-              <InputField
-                inputRef={passwordRef}
-                icon="lock-closed-outline"
-                placeholder="Password"
-                value={password}
-                onChangeText={handlePasswordChange}
-                secureTextEntry
-                onSubmitEditing={() => handleUserSignIn()}
-              />
-
-              <TouchableOpacity style={styles.forgotRow} onPress={() => navigation.navigate('ForgotPassword')}>
-                <Text style={styles.forgotText}>Forgot Password?</Text>
-              </TouchableOpacity>
-
-              <GlowButton label="Sign In" onPress={handleUserSignIn} style={styles.submitBtn} />
-
-              {/* Biometric toggle */}
-              <TouchableOpacity
-                onPress={() => setBiometricActive(!biometricActive)}
-                style={[styles.biometricBtn, biometricActive && styles.biometricBtnActive]}
-              >
-                <Text style={styles.biometricIcon}>👆</Text>
-                <Text style={[styles.biometricLabel, biometricActive && styles.biometricLabelActive]}>
-                  {biometricActive ? 'Touch ID Active' : 'Use Touch ID / Face ID'}
-                </Text>
-              </TouchableOpacity>
-
-              <Divider label="or continue with" />
-
-              <View style={styles.socialRow}>
-                <SocialButton icon="logo-google" label="Google" onPress={() => {}} />
-                <SocialButton icon="logo-apple" label="Apple" onPress={() => {}} />
-              </View>
-            </View>
-
-            {/* Footer */}
-            <View style={styles.footer}>
-              <Text style={styles.footerText}>New here? </Text>
-              <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
-                <Text style={styles.footerLink}>Create Account →</Text>
-              </TouchableOpacity>
-            </View>
-          </Animated.View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+          {/* Footer */}
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>New here? </Text>
+            <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+              <Text style={styles.footerLink}>Create Account →</Text>
+            </TouchableOpacity>
+          </View>
+        </Animated.View>
+      </KeyboardAwareScrollView>
     </SafeAreaView>
   );
 }

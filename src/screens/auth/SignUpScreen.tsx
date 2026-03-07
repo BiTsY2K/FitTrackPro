@@ -64,8 +64,8 @@ export default function SignUpScreen({ navigation }: { navigation: SignUpScreenN
     if (!isFormValid) return;
 
     try {
-      // await signUp(email, password, name);
-      navigation.navigate('EmailVerification', { email: email }); // Show email verification screen
+      await signUp(email, password, name);
+      // navigation.navigate('EmailVerification', { email: email }); // Show email verification screen
     } catch (error) {
       // Error displayed via context
     }
@@ -242,7 +242,7 @@ export default function SignUpScreen({ navigation }: { navigation: SignUpScreenN
               })}
             </View>
 
-            <GlowButton label="Create My Account" onPress={handleSignUp} style={styles.submitBtn} loading={loading} />
+            <GlowButton label="Create My Account" onPress={handleSignUp} style={styles.submitBtn} loading={loading} disabled={loading} />
 
             <Text style={styles.legal}>
               By signing up you agree to our <Text style={styles.legalLink}>Terms</Text> &{' '}

@@ -1,21 +1,25 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated, TextInput } from 'react-native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
-import { AuthStackParamList } from '@/navigation/AuthNavigation';
-import { COLORS } from '@/constants/theme';
-import { Divider, SocialButton } from '@/components/common/SharedComponents';
+import { useHeaderHeight } from '@react-navigation/elements';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useAuth } from '@/contexts/AuthContext';
-import { validateEmail } from '@/utils/security';
-import InputField from '@/components/common/InputField';
+import { LinearGradient } from 'expo-linear-gradient';
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
 import GlowButton from '@/components/common/GlowButton';
+import InputField from '@/components/common/InputField';
+import { Divider, SocialButton } from '@/components/common/SharedComponents';
+import { COLORS } from '@/constants/theme';
+import { useAuth } from '@/contexts/AuthContext';
+import { globalStyles } from '@/globalStyles';
+import { AuthStackParamList } from '@/navigation/AuthNavigation';
+import { colors, rounded, spacing, typography } from '@/themes';
+import { validateEmail } from '@/utils/security';
 
 type SignInScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'SignIn'>;
 
 export default function SignInScreen({ navigation }: { navigation: SignInScreenNavigationProp }) {
-  const { signIn, signInWithGoogle, loading, error, clearError } = useAuth();
+  const headerHeight = useHeaderHeight();
+  const { signIn, signInWithGoogle, loading, clearError } = useAuth();
 
   const emailRef = useRef<TextInput | null>(null);
   const passwordRef = useRef<TextInput | null>(null);
@@ -59,72 +63,70 @@ export default function SignInScreen({ navigation }: { navigation: SignInScreenN
 
   const handleUserSignIn = async () => {
     if (!isFormValid) return;
-
     try {
-      // Navigation handled by AuthContext //
-      await signIn(email, password);
-    } catch (error) {
-      // Error displayed via context
-    }
+      await signIn(email, password); // Navigation handled by AuthContext
+    } catch (error) { console.error('Handle_User_SignIn. Error: ', error) } // prettier-ignore
   };
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <View style={[globalStyles.safe, { paddingTop: headerHeight }]}>
+      {/* ── Ambient glow blob ── */}
+      <View style={globalStyles.glowAmbientBlobBL} />
+      <View style={globalStyles.glowAmbientBlobTR} />
+
       <KeyboardAwareScrollView
-        style={styles.scroll}
+        style={globalStyles.scroll}
+        contentContainerStyle={globalStyles.content}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
         enableOnAndroid={true}
         enableAutomaticScroll={true}
         extraScrollHeight={20}
         extraHeight={20}
       >
-        {/* Glow blob */}
-        <View style={styles.glowBlobBL} />
-        <View style={styles.glowBlobTR} />
-
-        {/* Header row */}
-        <View style={styles.headerRow}>
-          {/* Back button */}
-          <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
-            <View style={styles.backCircle}>
-              <Text style={styles.backArrow}>←</Text>
-              <Text style={styles.backText}>Back</Text>
-            </View>
-          </TouchableOpacity>
-
-          {/* Logo mark */}
-          <View style={styles.logoRow}>
-            <LinearGradient colors={[COLORS.accent, COLORS.purple]} style={styles.logoBadge}>
-              <Text style={styles.logoIcon}>⚡</Text>
-            </LinearGradient>
-            <Text style={styles.logoText}>FitTrack PRO</Text>
-          </View>
-        </View>
-
         <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
-          {/* Header */}
-          <View style={styles.iconBadge}>
-            <LinearGradient colors={[COLORS.accent, COLORS.purple]} style={styles.iconGradient}>
-              <Text style={styles.iconEmoji}>⚡</Text>
-            </LinearGradient>
+          {/* ── Header ── */}
+          <View style={globalStyles.header}>
+            <View style={styles.iconBadge}>
+              <LinearGradient colors={[COLORS.accent, COLORS.purple]} style={styles.iconGradient}>
+                <Text style={styles.iconEmoji}>⚡</Text>
+              </LinearGradient>
+            </View>
+
+            {/* Heading */}
+            <Text style={globalStyles.title}>Welcome Back</Text>
+            <Text style={globalStyles.subtitle}>
+              Ready to crush today's workout?{'\n'}Let’s pick up where you left off and hit your goals today.
+            </Text>
+
+            {/* Progress bar */}
+            <View style={styles.progressRow}>
+              {[0, 1, 2].map(i => (
+                <View
+                  key={i}
+                  style={[
+                    styles.progressBar,
+                    i === 0 ? styles.progressBar_flex_x2 : styles.progressBar_flex_x1,
+                    i === 0 ? styles.progressBarActive : styles.progressBarInactive,
+                  ]}
+                />
+              ))}
+            </View>
           </View>
 
-          <Text style={styles.title}>Welcome Back</Text>
-          <Text style={styles.subtitle}>Ready to crush today's workout?</Text>
-
-          {/* Form */}
+          {/* ── Form ── */}
           <View style={styles.form}>
             <InputField
               inputRef={emailRef}
               icon="mail-outline"
               placeholder="Email address"
-              keyboardType="email-address"
               value={email}
               onChangeText={handleEmailChange}
               autoFocus
               error={emailError}
+              keyboardType="email-address"
+              textContentType="emailAddress"
+              editable={!loading}
               onSubmitEditing={() => passwordRef.current?.focus()}
             />
 
@@ -135,6 +137,7 @@ export default function SignInScreen({ navigation }: { navigation: SignInScreenN
               value={password}
               onChangeText={handlePasswordChange}
               secureTextEntry
+              editable={!loading}
               onSubmitEditing={() => handleUserSignIn()}
             />
 
@@ -149,7 +152,7 @@ export default function SignInScreen({ navigation }: { navigation: SignInScreenN
               style={styles.submitBtn}
               disabled={loading}
               loading={loading}
-              loadingLabel="Signing"
+              loadingLabel="Signing..."
             />
 
             {/* Biometric toggle */}
@@ -177,171 +180,66 @@ export default function SignInScreen({ navigation }: { navigation: SignInScreenN
             </View>
           </View>
 
-          {/* Footer */}
+          {/* ── Footer ── */}
           <View style={styles.footer}>
-            <Text style={styles.footerText}>New here? </Text>
+            <Text style={styles.footerText}>New here?{'  '}</Text>
             <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
               <Text style={styles.footerLink}>Create Account →</Text>
             </TouchableOpacity>
           </View>
         </Animated.View>
       </KeyboardAwareScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-    backgroundColor: COLORS.bg,
-  },
-  keyboardAvoidingView: { flex: 1 },
-  scroll: { flex: 1 },
-  content: {
-    padding: 24,
-    paddingBottom: 52,
-    flexGrow: 1,
-  },
-
-  glowBlobBL: {
-    position: 'absolute',
-    bottom: -60,
-    left: -60,
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    backgroundColor: 'rgba(124,58,237,0.06)',
-  },
-  glowBlobTR: {
-    position: 'absolute',
-    top: -80,
-    right: -80,
-    width: 240,
-    height: 240,
-    borderRadius: 120,
-    backgroundColor: 'rgba(124,58,237,0.06)',
-  },
-
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 48,
-    marginTop: -14,
-  },
-  backBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
-  backCircle: {
-    width: 36,
-    height: 36,
-    borderRadius: 12,
-    backgroundColor: COLORS.glass,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  backArrow: { color: COLORS.text, fontSize: 16 },
-  backText: { color: COLORS.textMuted, fontSize: 14, fontWeight: '600' },
-
-  logoRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 28 },
-  logoBadge: {
-    width: 30,
-    height: 30,
-    borderRadius: 9,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  logoIcon: { fontSize: 14 },
-  logoText: { color: COLORS.text, fontWeight: '800', fontSize: 14 },
-
-  // Icon badge //
-  iconBadge: { marginBottom: 24 },
   iconGradient: {
     width: 64,
     height: 64,
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: COLORS.accent,
+    shadowColor: colors.accent.green,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.4,
     shadowRadius: 16,
     elevation: 10,
   },
-  iconEmoji: { fontSize: 30 },
+  iconBadge: { marginBottom: 24 },
+  iconEmoji: { fontSize: typography.size['3xl'] },
 
-  title: {
-    color: COLORS.text,
-    fontSize: 32,
-    fontWeight: '900',
-    letterSpacing: -0.5,
-    marginBottom: 8,
-  },
-  subtitle: {
-    color: COLORS.textMuted,
-    fontSize: 15,
-    marginBottom: 36,
-  },
+  progressBar_flex_x1: { flex: 1 },
+  progressBar_flex_x2: { flex: 2 },
+  progressRow: { flexDirection: 'row', gap: spacing.xs, marginTop: spacing.md },
+  progressBar: { height: spacing.xs, borderRadius: rounded.xs },
+  progressBarActive: { backgroundColor: colors.accent.green },
+  progressBarInactive: { backgroundColor: colors.border.DEFAULT },
+
   form: {},
-  forgotRow: {
-    alignSelf: 'flex-end',
-    marginBottom: 24,
-    marginTop: -8,
-  },
-  forgotText: {
-    color: COLORS.accent,
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  submitBtn: {
-    marginBottom: 14,
-  },
+  forgotRow: { alignSelf: 'flex-end', marginBottom: spacing[6], marginTop: -spacing[2] },
+  forgotText: { color: colors.accent.green, fontSize: typography.size.sm, fontWeight: typography.weight.semibold },
+  submitBtn: { marginBottom: spacing[3] + 2 },
+
   biometricBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 10,
-    paddingVertical: 14,
-    borderRadius: 14,
+    gap: spacing.sm,
+    paddingVertical: spacing[3] + 2,
     borderWidth: 1,
-    borderColor: COLORS.border,
-    backgroundColor: 'rgba(255,255,255,0.03)',
+    borderRadius: rounded.lg + 2,
+    borderColor: colors.border.DEFAULT,
+    backgroundColor: colors.surface.glass,
   },
-  biometricBtnActive: {
-    borderColor: COLORS.accent,
-    backgroundColor: 'rgba(0,255,135,0.08)',
-  },
-  biometricIcon: { fontSize: 22 },
-  biometricLabel: {
-    color: COLORS.textMuted,
-    fontWeight: '600',
-    fontSize: 14,
-  },
-  biometricLabelActive: {
-    color: COLORS.accent,
-  },
-  socialRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 12,
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 36,
-  },
-  footerText: {
-    color: COLORS.textMuted,
-    fontSize: 14,
-  },
-  footerLink: {
-    color: COLORS.accent,
-    fontWeight: '700',
-    fontSize: 14,
-  },
+  biometricBtnActive: { borderColor: colors.accent.green, backgroundColor: 'rgba(0,255,135,0.08)' },
+  biometricIcon: { fontSize: typography.size.lg },
+  biometricLabel: { color: colors.content.tertiary, fontWeight: typography.weight.semibold, fontSize: typography.size.sm },
+  biometricLabelActive: { color: colors.accent.green },
+
+  socialRow: { flexDirection: 'row', justifyContent: 'center', gap: spacing[3] },
+
+  footer: { flexDirection: 'row', justifyContent: 'center', marginVertical: spacing[8] },
+  footerText: { color: colors.content.tertiary, fontSize: typography.size.sm },
+  footerLink: { color: colors.accent.green, fontWeight: typography.weight.bold, fontSize: typography.size.sm },
 });

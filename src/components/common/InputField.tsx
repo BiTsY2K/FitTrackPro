@@ -1,8 +1,9 @@
-import { COLORS, Spacing, Typography } from '@/constants/theme';
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { Platform, Pressable, TouchableWithoutFeedback } from 'react-native';
 import { StyleSheet, Text, TextInput, TextInputProps, View, ViewStyle } from 'react-native';
+
+import { COLORS, Spacing, Typography } from '@/constants/theme';
 
 interface InputFieldProps extends TextInputProps {
   inputRef: React.RefObject<TextInput | null>;

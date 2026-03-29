@@ -1,30 +1,29 @@
-import React, { useState, useRef, useEffect } from 'react';
-import {
-  View, Text, ScrollView, StyleSheet, TouchableOpacity, Animated, 
-  KeyboardAvoidingView, Platform, TextInput
-} from 'react-native'; // prettier-ignore
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
-import { AuthStackParamList } from '@/navigation/AuthNavigation';
-import { COLORS } from '@/constants/theme';
-import { Divider, SocialButton } from '@/components/common/SharedComponents';
+import { useHeaderHeight } from '@react-navigation/elements';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useAuth } from '@/contexts/AuthContext';
-import { validateEmail, validatePasswordStrength } from '@/utils/security';
-import InputField from '@/components/common/InputField';
+import { LinearGradient } from 'expo-linear-gradient';
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
 import GlowButton from '@/components/common/GlowButton';
+import InputField from '@/components/common/InputField';
+import { SectionLabel } from '@/components/common/SectionLabel';
+import { Divider, SocialButton } from '@/components/common/SharedComponents';
+import { COLORS } from '@/constants/theme';
+import { useAuth } from '@/contexts/AuthContext';
+import { globalStyles } from '@/globalStyles';
+import { AuthStackParamList } from '@/navigation/AuthNavigation';
+import { GOAL_OPTIONS } from '@/screens/onboarding/GoalSelectionScreen';
+import { colors, rounded, spacing, typography } from '@/themes';
+import { GoalType } from '@/types/onboarding.types';
+import { validateEmail, validatePasswordStrength } from '@/utils/security';
 
 type SignUpScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'SignUp'>;
 
-const GOALS = [
-  { id: 'lose', label: '🔥 Lose Weight' },
-  { id: 'build', label: '💪 Build Muscle' },
-  { id: 'endure', label: '🏃 Endurance' },
-  { id: 'flex', label: '🧘 Flexibility' },
-];
-
 export default function SignUpScreen({ navigation }: { navigation: SignUpScreenNavigationProp }) {
-  const { signUp, loading, clearError } = useAuth();
+  const headerHeight = useHeaderHeight();
+
+  const { signUp, loading } = useAuth();
 
   const nameRef = useRef<TextInput | null>(null);
   const emailRef = useRef<TextInput | null>(null);
@@ -36,7 +35,7 @@ export default function SignUpScreen({ navigation }: { navigation: SignUpScreenN
   const [emailError, setEmailError] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
-  const [goal, setGoal] = useState<string | null>(null);
+  const [goal, setGoal] = useState<GoalType | null>('gain_muscle');
   const [isFormValid, setIsFormValid] = useState<boolean>(false);
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -64,11 +63,9 @@ export default function SignUpScreen({ navigation }: { navigation: SignUpScreenN
     if (!isFormValid) return;
 
     try {
-      await signUp(email, password, name);
+      await signUp(email, password, name); // Navigation handled by AuthContext
       // navigation.navigate('EmailVerification', { email: email }); // Show email verification screen
-    } catch (error) {
-      // Error displayed via context
-    }
+    } catch (error) { console.error('Handle_User_SignUp. Error: ', error) } // prettier-ignore
   };
 
   // Password strength //
@@ -84,60 +81,59 @@ export default function SignUpScreen({ navigation }: { navigation: SignUpScreenN
 
   const strength = getStrength(password) || 0;
   const strengthLabels = ['', 'Weak', 'Fair', 'Good', 'Strong'];
-  const strengthColors = ['', COLORS.SEMANTIC.error, '#FF9500', '#FFD700', COLORS.accent];
+  const strengthColors = ['', colors.feedback.error, '#FF9500', '#FFD700', colors.accent.green];
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <KeyboardAvoidingView style={styles.keyboardAvoidingView} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-        <ScrollView
-          style={styles.scroll}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.content}
-          keyboardShouldPersistTaps="handled"
-        >
-          {/* Ambient Glow blobs */}
-          <View style={styles.glowBlobTR} />
-          <View style={styles.glowBlobBL} />
+    <View style={[globalStyles.safe, { paddingTop: headerHeight }]}>
+      {/* ── Ambient glow blob ── */}
+      <View style={globalStyles.glowAmbientBlobBL} />
+      <View style={globalStyles.glowAmbientBlobTR} />
 
-          {/* Header row */}
-          <View style={styles.headerRow}>
-            {/* Back button */}
-            <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
-              <View style={styles.backCircle}>
-                <Text style={styles.backArrow}>←</Text>
-                <Text style={styles.backText}>Back</Text>
-              </View>
-            </TouchableOpacity>
-
-            {/* Logo mark */}
-            <View style={styles.logoRow}>
-              <LinearGradient colors={[COLORS.accent, COLORS.purple]} style={styles.logoBadge}>
-                <Text style={styles.logoIcon}>⚡</Text>
+      <KeyboardAwareScrollView
+        style={globalStyles.scroll}
+        contentContainerStyle={globalStyles.content}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        enableOnAndroid={true}
+        enableAutomaticScroll={true}
+        extraScrollHeight={20}
+        extraHeight={20}
+      >
+        <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
+          {/* ── Header ── */}
+          <View style={globalStyles.header}>
+            <View style={styles.iconBadge}>
+              <LinearGradient colors={[COLORS.accent, COLORS.purple]} style={styles.iconGradient}>
+                <Text style={styles.iconEmoji}>⚡</Text>
               </LinearGradient>
-              <Text style={styles.logoText}>FitTrack PRO</Text>
-            </View>
-          </View>
-
-          <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
-            {/* Header */}
-            <View style={styles.freeBadge}>
-              <Text style={styles.freeBadgeText}>✦ FREE FOREVER PLAN INCLUDED</Text>
             </View>
 
-            <Text style={styles.title}>Create Account</Text>
-            <Text style={styles.subtitle}>Join 500K+ athletes already tracking their gains</Text>
+            {/* <View style={styles.freeBadge}>
+            <Text style={styles.freeBadgeText}>✦ FREE FOREVER PLAN INCLUDED</Text>
+          </View> */}
+
+            <Text style={globalStyles.title}>Create Account</Text>
+            <Text style={globalStyles.subtitle}>
+              Set your goals. Track your progress. Become your best.{'\n'}Join 500K+ athletes already tracking their gains
+            </Text>
 
             {/* Progress bar */}
             <View style={styles.progressRow}>
               {[0, 1, 2].map(i => (
                 <View
                   key={i}
-                  style={[styles.progressBar, { flex: i === 0 ? 2 : 1 }, i === 0 ? styles.progressBarActive : styles.progressBarInactive]}
+                  style={[
+                    styles.progressBar,
+                    i === 0 ? styles.progressBar_flex_x2 : styles.progressBar_flex_x1,
+                    i === 0 ? styles.progressBarActive : styles.progressBarInactive,
+                  ]}
                 />
               ))}
             </View>
+          </View>
 
-            {/* Form */}
+          {/* ── Form ── */}
+          <View style={styles.form}>
             <InputField
               inputRef={nameRef}
               id="name"
@@ -145,8 +141,12 @@ export default function SignUpScreen({ navigation }: { navigation: SignUpScreenN
               placeholder="Full name"
               value={name}
               onChangeText={setName}
+              autoFocus
+              error={''}
+              keyboardType="default"
               textContentType="name"
               editable={!loading}
+              onSubmitEditing={() => passwordRef.current?.focus()}
             />
             <InputField
               inputRef={emailRef}
@@ -225,9 +225,9 @@ export default function SignUpScreen({ navigation }: { navigation: SignUpScreenN
             )}
 
             {/* Goal Selector */}
-            <Text style={styles.goalLabel}>PRIMARY FITNESS GOAL</Text>
+            <SectionLabel>PRIMARY FITNESS GOAL</SectionLabel>
             <View style={styles.goalGrid}>
-              {GOALS.map(g => {
+              {GOAL_OPTIONS.map(g => {
                 const isSelected = goal === g.id;
                 return (
                   <TouchableOpacity
@@ -236,174 +236,81 @@ export default function SignUpScreen({ navigation }: { navigation: SignUpScreenN
                     style={[styles.goalCard, isSelected && styles.goalCardActive]}
                     activeOpacity={0.75}
                   >
-                    <Text style={[styles.goalText, isSelected && styles.goalTextActive]}>{g.label}</Text>
+                    <Text style={[styles.goalText, isSelected && styles.goalTextActive]}>{`${g.iconEmoji}  ${g.title}`}</Text>
                   </TouchableOpacity>
                 );
               })}
             </View>
 
-            <GlowButton label="Create My Account" onPress={handleSignUp} style={styles.submitBtn} loading={loading} disabled={loading} />
+            <GlowButton
+              label="Create My Account"
+              onPress={handleSignUp}
+              style={styles.submitBtn}
+              loading={loading}
+              disabled={loading}
+              loadingLabel="Creating..."
+            />
+          </View>
 
-            <Text style={styles.legal}>
-              By signing up you agree to our <Text style={styles.legalLink}>Terms</Text> &{' '}
-              <Text style={styles.legalLink}>Privacy Policy</Text>
-            </Text>
+          <Text style={styles.legal}>
+            By signing up you agree to our <Text style={styles.legalLink}>Terms</Text> &{' '}
+            <Text style={styles.legalLink}>Privacy Policy</Text>
+          </Text>
 
-            <Divider label="or sign up with" />
+          <Divider label="or sign up with" />
 
-            <View style={styles.socialRow}>
-              <SocialButton icon={'logo-google'} label="Google" onPress={() => {}} />
-              <SocialButton icon={'logo-apple'} label="Apple" onPress={() => {}} />
-            </View>
+          <View style={styles.socialRow}>
+            <SocialButton icon={'logo-google'} label="Google" onPress={() => {}} />
+            <SocialButton icon={'logo-apple'} label="Apple" onPress={() => {}} />
+          </View>
 
-            <View style={styles.footer}>
-              <Text style={styles.footerText}>Already have an account? </Text>
-              <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
-                <Text style={styles.footerLink}>Sign In →</Text>
-              </TouchableOpacity>
-            </View>
-          </Animated.View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+          {/* ── Footer ── */}
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>Already have an account?{'  '}</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
+              <Text style={styles.footerLink}>Sign In →</Text>
+            </TouchableOpacity>
+          </View>
+        </Animated.View>
+      </KeyboardAwareScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-    backgroundColor: COLORS.bg,
-  },
-  keyboardAvoidingView: { flex: 1 },
-  scroll: { flex: 1 },
-  content: {
-    padding: 24,
-    paddingBottom: 52,
-    flexGrow: 1,
-  },
-
-  glowBlobTR: {
-    position: 'absolute',
-    top: -80,
-    right: -80,
-    width: 240,
-    height: 240,
-    borderRadius: 120,
-    backgroundColor: 'rgba(0,255,135,0.05)',
-  },
-  glowBlobBL: {
-    position: 'absolute',
-    bottom: -60,
-    left: -60,
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    backgroundColor: 'rgba(124,58,237,0.06)',
-  },
-
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 48,
-    marginTop: -14,
-  },
-  backBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
-  backCircle: {
-    width: 36,
-    height: 36,
-    borderRadius: 12,
-    backgroundColor: COLORS.glass,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  backArrow: { color: COLORS.text, fontSize: 16 },
-  backText: { color: COLORS.textMuted, fontSize: 14, fontWeight: '600' },
-
-  logoRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 28 },
-  logoBadge: {
-    width: 30,
-    height: 30,
-    borderRadius: 9,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  logoIcon: { fontSize: 14 },
-  logoText: { color: COLORS.text, fontWeight: '800', fontSize: 14 },
-
-  freeBadge: {
-    alignSelf: 'flex-start',
-    backgroundColor: 'rgba(0,255,135,0.1)',
-    borderWidth: 1,
-    borderColor: 'rgba(0,255,135,0.2)',
+  iconGradient: {
+    width: 64,
+    height: 64,
     borderRadius: 20,
-    paddingHorizontal: 14,
-    paddingVertical: 5,
-    marginBottom: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: colors.accent.green,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.4,
+    shadowRadius: 16,
+    elevation: 10,
   },
-  freeBadgeText: {
-    color: COLORS.accent,
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 1,
-  },
-  title: {
-    color: COLORS.text,
-    fontSize: 30,
-    fontWeight: '900',
-    letterSpacing: -0.5,
-    marginBottom: 8,
-  },
-  subtitle: {
-    color: COLORS.textMuted,
-    fontSize: 14,
-    lineHeight: 20,
-    marginBottom: 28,
-  },
-  progressRow: {
-    flexDirection: 'row',
-    gap: 6,
-    marginBottom: 28,
-  },
-  progressBar: {
-    height: 4,
-    borderRadius: 4,
-  },
-  progressBarActive: {
-    backgroundColor: COLORS.accent,
-  },
-  progressBarInactive: {
-    backgroundColor: COLORS.border,
-  },
-  goalLabel: {
-    color: COLORS.textMuted,
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 1.5,
-    marginBottom: 12,
-    marginTop: 4,
-  },
-  goalGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10,
-    marginBottom: 24,
-  },
+  iconBadge: { marginBottom: 24 },
+  iconEmoji: { fontSize: typography.size['3xl'] },
+
+  progressBar_flex_x1: { flex: 1 },
+  progressBar_flex_x2: { flex: 2 },
+  progressRow: { flexDirection: 'row', gap: spacing.xs, marginTop: spacing.md },
+  progressBar: { height: spacing.xs, borderRadius: rounded.xs },
+  progressBarActive: { backgroundColor: colors.accent.green },
+  progressBarInactive: { backgroundColor: colors.border.DEFAULT },
+
+  form: {},
+  goalGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: spacing[3], marginBottom: spacing[6] },
   goalCard: {
-    width: '47%',
-    paddingVertical: 13,
-    paddingHorizontal: 14,
-    borderRadius: 14,
+    width: `${50 - 1.5}%`,
+    overflow: 'hidden',
+    paddingVertical: spacing[3],
+    paddingHorizontal: spacing[4] - 2,
     borderWidth: 1,
-    borderColor: COLORS.border,
-    backgroundColor: 'rgba(255,255,255,0.03)',
+    borderRadius: rounded.lg,
+    borderColor: colors.border.DEFAULT,
+    backgroundColor: colors.surface.glass,
     alignItems: 'center',
   },
   goalCardActive: {
@@ -420,47 +327,17 @@ const styles = StyleSheet.create({
     }),
     elevation: 6,
   },
-  goalText: {
-    color: COLORS.textMuted,
-    fontSize: 13,
-    fontWeight: '600',
-  },
-  goalTextActive: {
-    color: COLORS.accent,
-  },
-  submitBtn: {
-    marginBottom: 16,
-  },
-  legal: {
-    color: COLORS.textMuted,
-    fontSize: 12,
-    textAlign: 'center',
-    lineHeight: 18,
-    marginBottom: 4,
-  },
-  legalLink: {
-    color: COLORS.accent,
-    fontWeight: '600',
-  },
-  socialRow: {
-    flexDirection: 'row',
-    marginBottom: 24,
-    justifyContent: 'center',
-    gap: 12,
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  footerText: {
-    color: COLORS.textMuted,
-    fontSize: 14,
-  },
-  footerLink: {
-    color: COLORS.accent,
-    fontWeight: '700',
-    fontSize: 14,
-  },
+  goalText: { color: colors.content.tertiary, fontSize: typography.size.xs + 1, fontWeight: typography.weight.semibold },
+  goalTextActive: { color: colors.accent.green },
+  submitBtn: { marginBottom: spacing[3] + 2 },
+
+  legal: { textAlign: 'center', color: colors.content.tertiary, fontSize: typography.size.xs, lineHeight: 18 },
+  legalLink: { color: colors.accent.green, fontWeight: typography.weight.semibold },
+  socialRow: { flexDirection: 'row', justifyContent: 'center', gap: spacing[3] },
+
+  footer: { flexDirection: 'row', justifyContent: 'center', marginVertical: spacing[8] },
+  footerText: { color: colors.content.tertiary, fontSize: typography.size.sm },
+  footerLink: { color: colors.accent.green, fontWeight: typography.weight.bold, fontSize: typography.size.sm },
 
   strengthRow: {
     flexDirection: 'row',

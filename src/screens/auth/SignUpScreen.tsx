@@ -281,7 +281,7 @@ const styles = StyleSheet.create({
   iconGradient: {
     width: 64,
     height: 64,
-    borderRadius: 20,
+    borderRadius: rounded['2xl'] - 2,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: colors.accent.green,
@@ -290,7 +290,7 @@ const styles = StyleSheet.create({
     shadowRadius: 16,
     elevation: 10,
   },
-  iconBadge: { marginBottom: 24 },
+  iconBadge: { marginBottom: spacing[6] },
   iconEmoji: { fontSize: typography.size['3xl'] },
 
   progressBar_flex_x1: { flex: 1 },

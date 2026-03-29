@@ -45,7 +45,7 @@ export function GlowButton({
       >
         {isPrimary && !disabled && !loading ? (
           <LinearGradient
-            colors={[COLORS.accent, COLORS.accentDim]}
+            colors={[colors.accent.green, COLORS.accentDim]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={[styles.inner, styles.innerDisabled]}
@@ -70,11 +70,12 @@ const styles = StyleSheet.create({
   base: { borderRadius: rounded.xl, overflow: 'hidden' },
 
   primary: {
+    backgroundColor: colors.accent.green,
     shadowColor: colors.accent.green,
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.4,
     shadowRadius: 20,
-    elevation: 12,
+    elevation: 120,
   },
   ghost: { borderWidth: 1, borderColor: colors.border.DEFAULT, backgroundColor: colors.surface.glass },
   disabled: { shadowOpacity: 0, elevation: 0 },

@@ -8,7 +8,6 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import GlowButton from '@/components/common/GlowButton';
 import InputField from '@/components/common/InputField';
 import { Divider, SocialButton } from '@/components/common/SharedComponents';
-import { COLORS } from '@/constants/theme';
 import { useAuth } from '@/contexts/AuthContext';
 import { globalStyles } from '@/globalStyles';
 import { AuthStackParamList } from '@/navigation/AuthNavigation';
@@ -88,7 +87,7 @@ export default function SignInScreen({ navigation }: { navigation: SignInScreenN
           {/* ── Header ── */}
           <View style={globalStyles.header}>
             <View style={styles.iconBadge}>
-              <LinearGradient colors={[COLORS.accent, COLORS.purple]} style={styles.iconGradient}>
+              <LinearGradient colors={[colors.accent.green, colors.accent.purple]} style={styles.iconGradient}>
                 <Text style={styles.iconEmoji}>⚡</Text>
               </LinearGradient>
             </View>
@@ -141,7 +140,7 @@ export default function SignInScreen({ navigation }: { navigation: SignInScreenN
               onSubmitEditing={() => handleUserSignIn()}
             />
 
-            <TouchableOpacity style={styles.forgotRow} onPress={() => navigation.navigate('ForgotPassword')}>
+            <TouchableOpacity style={styles.forgotRow} onPress={() => navigation.navigate('ForgotPassword', { email: email })}>
               <Text style={styles.forgotText}>Forgot Password?</Text>
             </TouchableOpacity>
 
@@ -197,7 +196,7 @@ const styles = StyleSheet.create({
   iconGradient: {
     width: 64,
     height: 64,
-    borderRadius: 20,
+    borderRadius: rounded['2xl'] - 2,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: colors.accent.green,
@@ -206,7 +205,7 @@ const styles = StyleSheet.create({
     shadowRadius: 16,
     elevation: 10,
   },
-  iconBadge: { marginBottom: 24 },
+  iconBadge: { marginBottom: spacing[6] },
   iconEmoji: { fontSize: typography.size['3xl'] },
 
   progressBar_flex_x1: { flex: 1 },

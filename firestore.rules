@@ -1,0 +1,90 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+  
+  	// Helper Functions //
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+    
+    function isValidEmail(email) {
+      return email.matches('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$');
+    }
+    
+    // User Profiles //
+    match /users/{userId} {
+      allow read	: if isAuthenticated() && isOwner(userId);
+      allow create: if isAuthenticated() && isOwner(userId)
+                      && request.resource.data.email is string
+                    		&& isValidEmail(request.resource.data.email);
+      allow update: if isAuthenticated() && isOwner(userId);
+      allow delete: if isAuthenticated() && isOwner(userId);
+    }
+    
+    
+    
+    // Meals - only authenticated users can read/write their own data
+    match /meals/{mealId} {
+      allow read, 
+      			write : if isAuthenticated() && request.auth.uid == resource.data.userId;
+      allow create: if isAuthenticated() && request.auth.uid == request.resource.data.userId;
+    }
+    
+    // Workouts - only authenticated users can read/write their own data
+    match /workouts/{workoutId} {
+      allow read, 
+      			write: if isAuthenticated() && request.auth.uid == resource.data.userId;
+      allow create: if isAuthenticated() && request.auth.uid == request.resource.data.userId;
+    }
+    
+    
+    
+    // Food Logs //
+    match /food_logs/{logId} {
+      allow read	: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid
+                    	&& request.resource.data.consumedAt is timestamp;
+      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+    
+     // Exercise Logs //
+    match /exercise_logs/{logId} {
+      allow read	: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+    
+    // Water Logs //
+    match /water_logs/{logId} {
+      allow read	: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+    
+    // Food Database (public read, admin write) //
+    match /foods/{foodId} {
+      allow read	: if true; // Public database
+      allow create: if isAuthenticated(); // Users can add custom foods
+      allow update: if false; // Only admins (via Cloud Functions)
+      allow delete: if false; // Only admins
+    }
+    
+    // Test collection - allow all access for development //
+    match /test/{document=**} {
+      allow read, write: if true;
+    }
+    
+    // Default: Deny everything else //
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

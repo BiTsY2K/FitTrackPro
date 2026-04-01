@@ -1,12 +1,32 @@
 export default {
   expo: {
-    name: 'FitTrack Pro',
-    slug: 'fittrack-pro',
-    version: '1.0.0',
+    name: 'FitTrack Pro', // The name of your app as it appears both within Expo Go and on your home screen as a standalone app.
+    description: '', // A short description of what your app is and why it is great.
+    slug: 'fittrack-pro', // A URL-friendly name for your project that is unique across your account.
+    version: '1.0.0', // Your app version
     scheme: 'com.bitsdev.fittrackpro',
-    orientation: 'portrait',
-    icon: './assets/icon.png',
-    userInterfaceStyle: 'light',
+    owner: 'bitsdev_expo', // The name of the Expo account that owns the project. Defaults to the username of the current user.
+    // sdkVersion: '54.0.33', // The Expo sdkVersion to run the project on. Version specified in your package.json.
+    platforms: ['ios', 'android', 'web'], // Platforms that your project explicitly supports. Defaults to ["ios", "android"]
+
+    /**
+     * Locks your app to a specific orientation with portrait or landscape. Defaults to no lock.
+     */ orientation: 'portrait', // Valid values: default, portrait, landscape
+
+    /**
+     * Local path or remote URL to an image to use for your app's icon.
+     */ icon: './assets/icon.png', // Recommended to use a 1024x1024 png file.
+
+    /**
+     * Configuration to force the app to always use the user-interface appearance, such as "dark mode",
+     * or make it automatically adapt to the system preferences. Requires expo-system-ui.
+     */ userInterfaceStyle: 'light', // If not provided, defaults to light.
+
+    /**
+     * The background color for your app, behind any of your React views. Requires expo-system-ui.
+     * 6 character long hex color string, for example, '#000000'.
+     */ backgroundColor: '#ffffff', // Default is white: '#ffffff'.
+
     newArchEnabled: true,
     splash: {
       image: './assets/splash-icon.png',
@@ -32,7 +52,12 @@ export default {
       statusBarTranslucent: true,
       package: 'com.bitsdev.fittrack',
     },
-    owner: 'bitsdev_expo',
+
+    /**
+     * Any extra fields you want to pass to your experience.
+     * Values are accessible via Constants.expoConfig.extra
+     */
+
     extra: {
       firebaseApiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
       firebaseAuthDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -50,6 +75,7 @@ export default {
     },
     web: {
       favicon: './assets/favicon.png',
+      bundler: 'metro',
     },
     plugins: [
       'expo-secure-store',

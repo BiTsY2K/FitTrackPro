@@ -1,54 +1,30 @@
-import React, { useEffect, useRef } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  Animated,
-  Dimensions,
-  SafeAreaView,
-} from 'react-native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { LinearGradient } from 'expo-linear-gradient';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { COLORS } from '@/constants/theme';
+import React, { useEffect, useRef } from 'react';
+import { Animated, Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { BrandLogo } from '@/components/common/BrandLogo';
 import GlowButton from '@/components/common/GlowButton';
+import { SectionLabel } from '@/components/common/SectionLabel';
+import { globalStyles } from '@/globalStyles';
 import { RootStackParamList } from '@/navigation/RootNavigation';
+import { colors, rounded, spacing, typography } from '@/themes';
 
 const { width } = Dimensions.get('window');
 
-type Props = {
-  navigation: NativeStackNavigationProp<RootStackParamList, 'Auth'>;
-};
-
 const FEATURES = [
-  {
-    icon: '⚡',
-    title: 'Smart Workouts',
-    desc: 'AI-powered plans tailored to you',
-    accent: COLORS.accent,
-  },
-  {
-    icon: '📊',
-    title: 'Live Analytics',
-    desc: 'Real-time body & performance data',
-    accent: COLORS.blue,
-  },
-  {
-    icon: '🔥',
-    title: 'Streak System',
-    desc: 'Stay consistent, earn rewards',
-    accent: COLORS.orange,
-  },
-  {
-    icon: '🧬',
-    title: 'Recovery Intel',
-    desc: 'Sleep, HRV & readiness scores',
-    accent: COLORS.purple,
-  },
+  { icon: '⚡', title: 'Smart Workouts', desc: 'AI-powered plans tailored to you', accent: colors.accent.green },
+  { icon: '📊', title: 'Live Analytics', desc: 'Real-time body & performance data', accent: colors.accent.blue },
+  { icon: '🔥', title: 'Streak System', desc: 'Stay consistent, earn rewards', accent: colors.accent.orange },
+  { icon: '🧬', title: 'Recovery Intel', desc: 'Sleep, HRV & readiness scores', accent: colors.accent.purple },
 ];
 
 const AVATARS = ['👨‍💪', '👩‍🏋️', '🧗', '🏃'];
+
+// ── Landing Sreen: Main Screen ─────────────────────────────────────────────────────────────────────────────
+type Props = NativeStackScreenProps<RootStackParamList, 'Landing'>;
 
 export default function LandingScreen({ navigation }: Props) {
   const pulseAnim = useRef(new Animated.Value(0.85)).current;
@@ -88,286 +64,180 @@ export default function LandingScreen({ navigation }: Props) {
   const spin3 = ring3Rot.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] });
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false} bounces={false}>
-        {/* ── Hero Section ── */}
-        <LinearGradient colors={['#0D1A14', '#0A0A0F']} style={styles.hero}>
-          {/* Decorative Rings */}
-          <Animated.View style={[styles.ring, styles.ring1, { transform: [{ rotate: spin1 }] }]} />
-          <Animated.View style={[styles.ring, styles.ring2, { transform: [{ rotate: spin2 }] }]} />
-          <Animated.View style={[styles.ring, styles.ring3, { transform: [{ rotate: spin3 }] }]} />
+    <SafeAreaView style={[globalStyles.safe, styles.alignItemsCenter]}>
+      <LinearGradient colors={[colors.surface.base, colors.surface.page]}>
+        {/* ── Decorative Rings ── */}
+        <Animated.View style={[styles.ring, styles.ring1, { transform: [{ rotate: spin1 }] }]} />
+        <Animated.View style={[styles.ring, styles.ring2, { transform: [{ rotate: spin2 }] }]} />
+        <Animated.View style={[styles.ring, styles.ring3, { transform: [{ rotate: spin3 }] }]} />
 
-          {/* Glow blob */}
-          <View style={styles.glowBlob} />
+        {/* ── Glow blob ── */}
+        <View style={[globalStyles.glowAmbientBlobTR, styles.glowBlob]} />
 
-          {/* Logo */}
-          <View style={styles.logoRow}>
-            <LinearGradient colors={[COLORS.accent, COLORS.purple]} style={styles.logoBadge}>
-              <Text style={styles.logoIcon}>⚡</Text>
-            </LinearGradient>
-            <Text style={styles.logoText}>FitTrack PRO</Text>
-          </View>
-
-          {/* Rating badge */}
-          <View style={styles.ratingBadge}>
-            <Text style={styles.ratingScore}>4.9★</Text>
-            <Text style={styles.ratingSub}>500K+ Users</Text>
-          </View>
-
-          {/* Hero Content */}
-          <Animated.View
-            style={[
-              styles.heroContent,
-              { opacity: fadeAnim, transform: [{ translateY: slideAnim }] },
-            ]}
-          >
-            <Animated.View style={[styles.heroBadge, { opacity: pulseAnim }]}>
-              <Text style={styles.heroBadgeText}>#1 FITNESS APP 2025</Text>
-            </Animated.View>
-
-            <Text style={styles.heroTitle}>
-              TRAIN{'\n'}
-              <Text style={styles.heroTitleAccent}>SMARTER.</Text>
-              {'\n'}GET RESULTS.
-            </Text>
-
-            <Text style={styles.heroSubtitle}>
-              Your intelligent training companion. Science-backed workouts, real-time analytics,
-              unstoppable progress.
-            </Text>
-
-            <GlowButton
-              label="Start Free — No Credit Card"
-              onPress={() => navigation.navigate('Auth', { screen: 'SignUp' })}
-              style={styles.ctaBtn}
+        <KeyboardAwareScrollView
+          style={globalStyles.scroll}
+          contentContainerStyle={globalStyles.content}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          enableOnAndroid={true}
+          enableAutomaticScroll={true}
+          extraScrollHeight={20}
+          extraHeight={20}
+        >
+          {/* ── Hero Section ── */}
+          <View style={[styles.hero]}>
+            {/* Brand Logo */}
+            <BrandLogo
+              containerStyle={styles.logoRow}
+              badgeStyle={styles.logoBadge}
+              iconStyle={styles.logoIcon}
+              textStyle={styles.logoText}
             />
 
-            <TouchableOpacity onPress={() => navigation.navigate('Auth', { screen: 'SignIn' })}>
-              <Text style={styles.signInLink}>
-                Already a member?{'  '}
-                <Text style={styles.signInLinkAccent}>Sign In →</Text>
-              </Text>
-            </TouchableOpacity>
-          </Animated.View>
-        </LinearGradient>
-
-        {/* ── Features ── */}
-        <View style={styles.featuresSection}>
-          <Text style={styles.sectionLabel}>WHY FITTRACK PRO</Text>
-
-          <View style={styles.featuresGrid}>
-            {FEATURES.map((f, i) => (
-              <View key={i} style={styles.featureCard}>
-                <View style={[styles.featureTopBar, { backgroundColor: f.accent }]} />
-                <Text style={styles.featureIcon}>{f.icon}</Text>
-                <Text style={styles.featureTitle}>{f.title}</Text>
-                <Text style={styles.featureDesc}>{f.desc}</Text>
+            {/* Rating badge */}
+            <View style={styles.ratingBadge}>
+              <View style={styles.ratingTitle}>
+                <Text style={styles.ratingScore}>4.9</Text>
+                <Text style={styles.ratingStar}>★</Text>
               </View>
-            ))}
+              <Text style={styles.ratingSubTitle}>500K+ Users</Text>
+            </View>
+
+            {/* Hero Content */}
+            <Animated.View style={[styles.heroContent, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+              <Animated.View style={[styles.heroBadge, { opacity: pulseAnim }]}>
+                <Text style={styles.heroBadgeText}>#1 FITNESS APP 2025</Text>
+              </Animated.View>
+
+              <View style={styles.heroTitleContainer}>
+                <Text style={styles.heroTitle}>TRAIN</Text>
+                <Text style={[styles.heroTitle, styles.heroTitleAccent]}>SMARTER.</Text>
+                <Text style={styles.heroTitle}>GET RESULTS.</Text>
+              </View>
+
+              <Text style={styles.heroSubtitle}>
+                Your intelligent training companion.{'\n'}Science-backed workouts, real-time analytics, unstoppable progress.
+              </Text>
+
+              <GlowButton
+                label="Start Free — No Credit Card"
+                onPress={() => navigation.navigate('Auth', { screen: 'SignUp' })}
+                style={styles.ctaBtn}
+              />
+
+              {/* Sign In */}
+              <View style={styles.signInLinkContainer}>
+                <Text style={styles.signInLinkContainerText}>Already a member?{'  '}</Text>
+                <TouchableOpacity onPress={() => navigation.navigate('Auth', { screen: 'SignIn' })}>
+                  <Text style={styles.signInLinkAccent}>Sign In →</Text>
+                </TouchableOpacity>
+              </View>
+            </Animated.View>
           </View>
 
-          {/* Social Proof */}
-          <View style={styles.socialProof}>
-            <View style={styles.avatarRow}>
-              {AVATARS.map((a, i) => (
-                <View
-                  key={i}
-                  style={[
-                    styles.avatar,
-                    {
-                      marginLeft: i > 0 ? -10 : 0,
-                      backgroundColor: `hsl(${i * 60 + 140}, 50%, 30%)`,
-                    },
-                  ]}
-                >
-                  <Text style={styles.avatarEmoji}>{a}</Text>
+          {/* ── Features ── */}
+          <View style={styles.featuresSection}>
+            <SectionLabel>WHY FITTRACK PRO</SectionLabel>
+
+            <View style={styles.featuresGrid}>
+              {FEATURES.map((f, i) => (
+                <View key={i} style={styles.featureCard}>
+                  <View style={[styles.featureTopBar, { backgroundColor: f.accent }]} />
+                  <Text style={styles.featureIcon}>{f.icon}</Text>
+                  <Text style={styles.featureTitle}>{f.title}</Text>
+                  <Text style={styles.featureDesc}>{f.desc}</Text>
                 </View>
               ))}
             </View>
-            <View>
-              <Text style={styles.socialTitle}>Join 500,000+ athletes</Text>
-              <Text style={styles.socialSub}>transforming their bodies daily</Text>
+
+            {/* Social Proof */}
+            <View style={styles.socialProof}>
+              <View style={styles.avatarRow}>
+                {AVATARS.map((a, i) =>
+                  /* prettier-ignore */
+                  <View key={i} style={[styles.avatar, i > 0 && styles.avatarLeftMargin, 
+                    { backgroundColor: `hsl(${i * 60 + 140}, 50%, 30%)` }]}> 
+                      <Text style={styles.avatarEmoji}>{a}</Text>
+                  </View>,
+                )}
+              </View>
+              <View>
+                <Text style={styles.socialTitle}>Join 500,000+ athletes</Text>
+                <Text style={styles.socialSub}>transforming their bodies daily</Text>
+              </View>
             </View>
           </View>
-        </View>
-      </ScrollView>
+        </KeyboardAwareScrollView>
+      </LinearGradient>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-    backgroundColor: COLORS.bg,
-  },
-  scroll: {
-    flex: 1,
-  },
-  hero: {
-    minHeight: 520,
-    paddingTop: 16,
-    paddingHorizontal: 28,
-    paddingBottom: 36,
-    overflow: 'hidden',
-    position: 'relative',
-    justifyContent: 'flex-end',
-  },
-  glowBlob: {
-    position: 'absolute',
-    top: -60,
-    left: -60,
-    width: 280,
-    height: 280,
-    borderRadius: 140,
-    backgroundColor: 'rgba(0,255,135,0.07)',
-    // Note: for true radial gradient blobs, use react-native-linear-gradient or Skia
-  },
-  ring: {
-    position: 'absolute',
-    borderRadius: 999,
-    borderWidth: 1,
-  },
-  ring1: {
-    width: 280,
-    height: 280,
-    borderColor: 'rgba(0,255,135,0.07)',
-    top: '5%',
-    right: -84,
-  },
-  ring2: {
-    width: 220,
-    height: 220,
-    borderColor: 'rgba(0,255,135,0.1)',
-    top: '10%',
-    right: -66,
-  },
-  ring3: {
-    width: 160,
-    height: 160,
-    borderColor: 'rgba(0,255,135,0.14)',
-    top: '16%',
-    right: -48,
-  },
-  logoRow: {
-    position: 'absolute',
-    top: 48,
-    left: 28,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
-  logoBadge: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  logoIcon: { fontSize: 20 },
-  logoText: {
-    color: COLORS.text,
-    fontWeight: '800',
-    fontSize: 16,
-    letterSpacing: 0.5,
-  },
+  alignItemsCenter: { alignItems: 'center' },
+  hero: { minHeight: 520 },
+  glowBlob: { top: -60, left: -60, width: 280, height: 280, borderRadius: rounded.full },
+
+  ring: { position: 'absolute', borderColor: colors.border.brand, borderRadius: 999, borderWidth: 1 },
+  ring1: { width: 280, height: 280, opacity: 0.3, top: '5%', right: -84 },
+  ring2: { width: 220, height: 220, opacity: 0.4, top: '10%', right: -66 },
+  ring3: { width: 160, height: 160, opacity: 0.5, top: '15%', right: -48 },
+
+  logoRow: { position: 'absolute', top: spacing[7], left: 0 },
+  logoBadge: { width: 34, height: 34, borderRadius: rounded.md + 2 },
+  logoIcon: { fontSize: typography.size.lg },
+  logoText: { fontSize: typography.size['2xl'] },
+
   ratingBadge: {
     position: 'absolute',
-    top: 80,
-    right: 28,
-    backgroundColor: 'rgba(255,255,255,0.04)',
-    borderRadius: 16,
+    top: spacing['3xl'],
+    right: 0,
     borderWidth: 1,
-    borderColor: COLORS.border,
-    padding: 14,
+    borderRadius: rounded.xl,
+    borderColor: colors.border.DEFAULT,
+    backgroundColor: colors.surface.glass,
+    padding: spacing[4] - 2,
     alignItems: 'center',
   },
-  ratingScore: {
-    color: COLORS.accent,
-    fontSize: 22,
-    fontWeight: '800',
-  },
-  ratingSub: {
-    color: COLORS.textMuted,
-    fontSize: 11,
-    marginTop: 2,
-  },
-  heroContent: {
-    marginTop: 180,
-  },
+
+  ratingTitle: { flexDirection: 'row', alignItems: 'baseline', gap: spacing['0.5'] },
+  ratingScore: { color: colors.accent.green, fontSize: typography.size.xl, fontWeight: typography.weight.bold },
+  ratingStar: { color: colors.accent.green, fontSize: typography.size.sm },
+  ratingSubTitle: { color: colors.content.tertiary, fontSize: typography.size.xs, marginTop: spacing['0.5'] },
+
+  heroContent: { marginTop: 160 },
   heroBadge: {
     alignSelf: 'flex-start',
-    backgroundColor: 'rgba(0,255,135,0.12)',
     borderWidth: 1,
+    borderRadius: rounded['2xl'] - 4,
     borderColor: 'rgba(0,255,135,0.25)',
-    borderRadius: 20,
-    paddingHorizontal: 14,
-    paddingVertical: 5,
-    marginBottom: 18,
+    backgroundColor: 'rgba(0,255,135,0.12)',
+    paddingHorizontal: spacing[4] - 2,
+    paddingVertical: spacing[1],
+    marginBottom: spacing.md + 2,
   },
-  heroBadgeText: {
-    color: COLORS.accent,
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 1.5,
-  },
-  heroTitle: {
-    color: COLORS.text,
-    fontSize: 44,
-    fontWeight: '900',
-    lineHeight: 48,
-    letterSpacing: -1,
-    marginBottom: 16,
-  },
-  heroTitleAccent: {
-    color: COLORS.accent,
-  },
-  heroSubtitle: {
-    color: COLORS.textMuted,
-    fontSize: 15,
-    lineHeight: 24,
-    marginBottom: 28,
-    maxWidth: 300,
-  },
-  ctaBtn: {
-    marginBottom: 16,
-  },
-  signInLink: {
-    color: COLORS.textMuted,
-    fontSize: 14,
-    textAlign: 'center',
-    marginTop: 4,
-  },
-  signInLinkAccent: {
-    color: COLORS.accent,
-    fontWeight: '700',
-  },
+  heroBadgeText: { color: colors.accent.green, fontSize: typography.size.xs, fontWeight: typography.weight.bold, letterSpacing: 1.5 },
+  heroTitleContainer: { marginBottom: spacing[4] },
+  heroTitle: { color: colors.content.primary, fontSize: typography.size['5xl'], fontWeight: '900', lineHeight: 46, letterSpacing: -1 },
+  heroTitleAccent: { color: colors.accent.green },
+  heroSubtitle: { color: colors.content.tertiary, fontSize: typography.size.md - 1, lineHeight: 24, marginBottom: spacing[7] },
+
+  ctaBtn: { marginBottom: spacing.md },
+  signInLinkContainer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
+  signInLinkContainerText: { color: colors.content.tertiary },
+  signInLinkAccent: { color: colors.accent.green, fontWeight: typography.weight.bold, fontSize: typography.size.sm },
 
   // Features
-  featuresSection: {
-    padding: 28,
-    paddingTop: 32,
-    backgroundColor: COLORS.bg,
-  },
-  sectionLabel: {
-    color: COLORS.textMuted,
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 2,
-    marginBottom: 18,
-  },
-  featuresGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 14,
-    marginBottom: 20,
-  },
+  featuresSection: { paddingTop: spacing[8], backgroundColor: 'transparent' },
+  featuresGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[3] + 2, marginBottom: spacing[5] },
   featureCard: {
-    width: (width - 56 - 14) / 2,
-    backgroundColor: COLORS.bgCard,
-    borderRadius: 20,
     borderWidth: 1,
-    borderColor: COLORS.border,
-    padding: 18,
+    borderRadius: rounded['2xl'] - 4,
+    borderColor: colors.border.DEFAULT,
+    backgroundColor: colors.surface.raised,
+    // Formula: (width - PADDING - GAP * (COLUMNS - 1)) / COLUMNS
+    width: (width - 2 * globalStyles.content.paddingHorizontal - (spacing[3] + 2) * (2 - 1)) / 2,
+    padding: spacing.md + 2,
     overflow: 'hidden',
   },
   featureTopBar: {
@@ -376,55 +246,37 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 2,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
     opacity: 0.9,
+    borderTopLeftRadius: rounded['2xl'] - 4,
+    borderTopRightRadius: rounded['2xl'] - 4,
   },
-  featureIcon: { fontSize: 28, marginBottom: 10 },
+  featureIcon: { fontSize: typography.size['3xl'] - 2, marginBottom: spacing[3] - 2 },
   featureTitle: {
-    color: COLORS.text,
-    fontWeight: '700',
-    fontSize: 14,
-    marginBottom: 4,
+    color: colors.content.primary,
+    fontWeight: typography.weight.bold,
+    fontSize: typography.size.sm,
+    marginBottom: spacing[1],
   },
-  featureDesc: {
-    color: COLORS.textMuted,
-    fontSize: 12,
-    lineHeight: 18,
-  },
+  featureDesc: { color: colors.content.tertiary, fontSize: typography.size.xs, lineHeight: 18 },
+
   socialProof: {
-    backgroundColor: COLORS.bgCard,
-    borderRadius: 20,
     borderWidth: 1,
-    borderColor: COLORS.border,
-    padding: 18,
+    borderRadius: rounded['2xl'] - 4,
+    borderColor: colors.border.DEFAULT,
+    backgroundColor: colors.surface.raised,
+    padding: spacing.md + 2,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 16,
-    marginBottom: 10,
+    gap: spacing.md,
+    marginBottom: spacing[3] - 2,
   },
-  avatarRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  avatar: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    borderWidth: 2,
-    borderColor: COLORS.bg,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarEmoji: { fontSize: 16 },
-  socialTitle: {
-    color: COLORS.text,
-    fontWeight: '700',
-    fontSize: 14,
-  },
-  socialSub: {
-    color: COLORS.textMuted,
-    fontSize: 12,
-    marginTop: 2,
-  },
+
+  avatarRow: { flexDirection: 'row', alignItems: 'center' },
+  avatar: { width: 36, height: 36, borderWidth: rounded.xs - 2, borderRadius: rounded.full, 
+    borderColor: colors.surface.raised, alignItems: 'center', justifyContent: 'center' }, // prettier-ignore
+  avatarLeftMargin: { marginLeft: -(spacing[3] - 2) },
+  avatarEmoji: { fontSize: typography.size.md },
+
+  socialTitle: { color: colors.content.primary, fontWeight: typography.weight.bold, fontSize: typography.size.sm },
+  socialSub: { color: colors.content.tertiary, fontSize: typography.size.xs, marginTop: spacing['0.5'] },
 });

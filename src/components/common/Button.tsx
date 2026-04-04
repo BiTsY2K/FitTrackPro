@@ -205,8 +205,4 @@ const styles = StyleSheet.create({
   loader: { marginRight: spacing[1] },
 });
 
-// ═══════════════════════════════════════════════════════════════
-// Export
-// ═══════════════════════════════════════════════════════════════
-
 export default Button;

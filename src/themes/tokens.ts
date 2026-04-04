@@ -12,7 +12,7 @@ const colors = {
     raised: color.ink[800], // elevated card
     overlay: color.ink[700], // modal, sheet
 
-    glass: hexToRgba(color.white, 0.03), // frosted glass
+    glass: hexToRgba(color.white, 0.06), // frosted glass
     lightGlass: hexToRgba(color.white, 0.12), // light frosted glass
     darkGlass: hexToRgba(color.black, 0.25), // dark frosted glass
     disabled: color.gray[900],
@@ -58,12 +58,32 @@ const colors = {
 
   // Accent palette — for charts, tags, avatars, badges //
   accent: {
-    purple  : color.purple[500],  purpleDimmed : color.purple[700],  purpleVivid: color.purple[300], 
-    blue    : color.blue[500],    blueDimmed   : color.blue[700],    blueVivid: color.blue[300], 
-    orange  : color.orange[500],  orangeDimmed : color.teal[700],    orangeVivid: color.teal[300], 
-    pink    : color.pink[500],    pinkDimmed   : color.pink[700],    pinkVivid: color.pink[300], 
-    teal    : color.teal[500],    tealDimmed   : color.teal[700],    tealVivid: color.teal[300], 
-    green   : color.green[500],   greenDimmed  : color.green[700],   greenVivid: color.green[300]
+    gray: color.gray[500],      grayDimmed: color.gray[700],      grayVivid: color.gray[300],
+    red: color.red[500],        redDimmed: color.gray[700],       redVivid: color.red[300],
+    
+    blue: color.blue[500],      blueDimmed: color.blue[700],      blueVivid: color.blue[300],
+    pink: color.pink[500],      pinkDimmed: color.pink[700],      pinkVivid: color.pink[300],
+    teal: color.teal[500],      tealDimmed: color.teal[700],      tealVivid: color.teal[300],
+    green: color.green[500],    greenDimmed: color.green[700],    greenVivid: color.green[300],  
+    
+    orange: color.orange[500],  orangeDimmed: color.orange[700],  orangeVivid: color.orange[300],
+    yellow: color.yellow[500],  yellowDimmed: color.yellow[700],  yellowVivid: color.yellow[300],
+    purple: color.purple[500],  purpleDimmed: color.purple[700],  purpleVivid: color.purple[300],
+  }, // prettier-ignore
+
+  // Glow palette — for shadows, focus states, and ambient highlights //
+  accentGlow: {
+    gray: hexToRgba(color.gray[500], 0.2),  graySoft: hexToRgba(color.gray[500], 0.12),   grayStrong: hexToRgba(color.gray[300], 0.4),
+    red: hexToRgba(color.red[500], 0.2),    redSoft: hexToRgba(color.red[500], 0.12),     redStrong: hexToRgba(color.red[300], 0.4),
+   
+    blue: hexToRgba(color.blue[500], 0.2),    blueSoft: hexToRgba(color.blue[500], 0.12),     blueStrong: hexToRgba(color.blue[300], 0.4),
+    pink: hexToRgba(color.pink[500], 0.2),    pinkSoft: hexToRgba(color.pink[500], 0.12),     pinkStrong: hexToRgba(color.pink[300], 0.4),
+    teal: hexToRgba(color.teal[500], 0.2),    tealSoft: hexToRgba(color.teal[500], 0.12),     tealStrong: hexToRgba(color.teal[300], 0.4),
+    green: hexToRgba(color.green[500], 0.2),  greenSoft: hexToRgba(color.green[500], 0.12),   greenStrong: hexToRgba(color.green[700], 0.4),
+   
+    orange: hexToRgba(color.orange[500], 0.2),    orangeSoft: hexToRgba(color.orange[500], 0.12),   orangeStrong: hexToRgba(color.orange[300], 0.4),
+    yellow: hexToRgba(color.yellow[500], 0.2),    yellowSoft: hexToRgba(color.yellow[500], 0.12),   yellowStrong: hexToRgba(color.yellow[300], 0.4),
+    purple: hexToRgba(color.purple[500], 0.2),    purpleSoft: hexToRgba(color.purple[500], 0.12),   purpleStrong: hexToRgba(color.purple[300], 0.4),
   }, // prettier-ignore
 
   // Third-party auth //

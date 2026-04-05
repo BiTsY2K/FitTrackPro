@@ -1,6 +1,7 @@
-import { primitives } from './primitives';
+import { primitives } from '@/themes/primitives';
+import { hexToRgba } from '@/utils/utility_functions';
 
-const { color, space, radius, fontSize, fontWeight, lineHeight, duration, easing } = primitives;
+const { color, space, radius, fontSize, fontWeight, lineHeight, letterSpacing, duration, easing } = primitives;
 
 // ─── Color Tokens ─────────────────────────────────────────────
 const colors = {
@@ -10,7 +11,11 @@ const colors = {
     base: color.ink[900], // default card/panel
     raised: color.ink[800], // elevated card
     overlay: color.ink[700], // modal, sheet
-    glass: color.ink[600], // frosted glass effect
+
+    glass: hexToRgba(color.white, 0.06), // frosted glass
+    lightGlass: hexToRgba(color.white, 0.12), // light frosted glass
+    darkGlass: hexToRgba(color.black, 0.25), // dark frosted glass
+    disabled: color.gray[900],
   },
 
   // Brand
@@ -34,75 +39,78 @@ const colors = {
 
   // Borders
   border: {
-    DEFAULT: color.ink[500],
-    subtle: color.ink[600],
-    strong: color.ink[400],
-    brand: 'rgba(0,255,135,0.30)',
+    brand: color.green[500],
+    default: color.gray[800],
+    subtle: hexToRgba(color.white, 0.1),
+
+    strong: color.gray[800],
+    focus: color.blue[500],
+    error: color.red[500],
   },
 
   // Feedback states
   feedback: {
-    success: color.green[500],
-    successSubtle: 'rgba(0,230,118,0.10)',
-    warning: color.orange[500],
-    warningSubtle: 'rgba(245,158,11,0.10)',
-    error: color.red[500],
-    errorSubtle: 'rgba(255,76,106,0.10)',
-    info: color.blue[400],
-    infoSubtle: 'rgba(77,163,255,0.10)',
-  },
+    success: color.green[500],  successSubtle: 'rgba(0,230,118,0.10)',
+    warning: color.orange[500], warningSubtle: 'rgba(245,158,11,0.10)',
+    error: color.red[500],      errorSubtle: 'rgba(255,76,106,0.10)',
+    info: color.blue[400],      infoSubtle: 'rgba(77,163,255,0.10)',
+  }, // prettier-ignore
 
-  // Accent palette — for charts, tags, avatars, badges
+  // Accent palette — for charts, tags, avatars, badges //
   accent: {
-    purple: color.purple[500],
-    blue: color.blue[500],
-    orange: color.orange[500],
-    pink: color.pink[500],
-    teal: color.teal[500],
-    green: color.green[500],
-  },
+    gray: color.gray[500],      grayDimmed: color.gray[700],      grayVivid: color.gray[300],
+    red: color.red[500],        redDimmed: color.gray[700],       redVivid: color.red[300],
+    
+    blue: color.blue[500],      blueDimmed: color.blue[700],      blueVivid: color.blue[300],
+    pink: color.pink[500],      pinkDimmed: color.pink[700],      pinkVivid: color.pink[300],
+    teal: color.teal[500],      tealDimmed: color.teal[700],      tealVivid: color.teal[300],
+    green: color.green[500],    greenDimmed: color.green[700],    greenVivid: color.green[300],  
+    
+    orange: color.orange[500],  orangeDimmed: color.orange[700],  orangeVivid: color.orange[300],
+    yellow: color.yellow[500],  yellowDimmed: color.yellow[700],  yellowVivid: color.yellow[300],
+    purple: color.purple[500],  purpleDimmed: color.purple[700],  purpleVivid: color.purple[300],
+  }, // prettier-ignore
 
-  // Third-party auth
-  auth: {
-    google: '#4285F4',
-    apple: color.neutral[1000],
-  },
+  // Glow palette — for shadows, focus states, and ambient highlights //
+  accentGlow: {
+    gray: hexToRgba(color.gray[500], 0.2),  graySoft: hexToRgba(color.gray[500], 0.12),   grayStrong: hexToRgba(color.gray[300], 0.4),
+    red: hexToRgba(color.red[500], 0.2),    redSoft: hexToRgba(color.red[500], 0.12),     redStrong: hexToRgba(color.red[300], 0.4),
+   
+    blue: hexToRgba(color.blue[500], 0.2),    blueSoft: hexToRgba(color.blue[500], 0.12),     blueStrong: hexToRgba(color.blue[300], 0.4),
+    pink: hexToRgba(color.pink[500], 0.2),    pinkSoft: hexToRgba(color.pink[500], 0.12),     pinkStrong: hexToRgba(color.pink[300], 0.4),
+    teal: hexToRgba(color.teal[500], 0.2),    tealSoft: hexToRgba(color.teal[500], 0.12),     tealStrong: hexToRgba(color.teal[300], 0.4),
+    green: hexToRgba(color.green[500], 0.2),  greenSoft: hexToRgba(color.green[500], 0.12),   greenStrong: hexToRgba(color.green[700], 0.4),
+   
+    orange: hexToRgba(color.orange[500], 0.2),    orangeSoft: hexToRgba(color.orange[500], 0.12),   orangeStrong: hexToRgba(color.orange[300], 0.4),
+    yellow: hexToRgba(color.yellow[500], 0.2),    yellowSoft: hexToRgba(color.yellow[500], 0.12),   yellowStrong: hexToRgba(color.yellow[300], 0.4),
+    purple: hexToRgba(color.purple[500], 0.2),    purpleSoft: hexToRgba(color.purple[500], 0.12),   purpleStrong: hexToRgba(color.purple[300], 0.4),
+  }, // prettier-ignore
+
+  // Third-party auth //
+  auth: { google: '#4285F4', apple: color.neutral[1000] },
 } as const;
 
 // ─── Typography Tokens ────────────────────────────────────────
 const typography = {
-  family: {
-    sans: 'System',
-    mono: 'System',
-  },
+  family: { sans: 'System', mono: 'System' },
   size: fontSize,
   weight: fontWeight,
-  lineHeight,
+  height: lineHeight,
+  tighten: letterSpacing,
 } as const;
 
 // ─── Spacing Tokens ───────────────────────────────────────────
 // Named aliases on top of the numeric scale.
 // Use numeric scale for granular control, aliases for common slots.
-
 const spacing = {
   ...space,
-  // Named aliases — map to numeric scale
-  px: 1,
-  none: space[0],
-  xs: space[1], // 4
-  sm: space[2], // 8
-  md: space[4], // 16
-  lg: space[6], // 24
-  xl: space[8], // 32
-  '2xl': space[12], // 48
-  '3xl': space[16], // 64
-} as const;
-
-// ───  ─────────────────────────────────────
+  px: 1, none: space[0], xs1: space[1], xs: space[2], sm: space[3], md: space[4], lg: space[6], xl: space[8], xl2: space[12], xl3: space[16],
+  xl4: space[20], xl5: space[24], xl6: space[28], xl7: space[32], xl8: space[36], xl9: space[40], xl10: space[44], xl11: space[48], 
+  xl12: space[52], xl13: space[56], xl14: space[60], xl15: space[64], xl16: space[72], xl17: space[80], xl18: space[96],
+} as const; // prettier-ignore
 
 // ─── Shadow Tokens ────────────────────────────────────────────
 // React Native compatible. Tailwind uses box-shadow CSS separately.
-
 const shadow = {
   none: {
     shadowColor: color.neutral[1000],

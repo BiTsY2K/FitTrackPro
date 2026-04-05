@@ -6,7 +6,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BrandLogo } from '@/components/common/BrandLogo';
-import GlowButton from '@/components/common/GlowButton';
+import Button from '@/components/common/Button';
 import { SectionLabel } from '@/components/common/SectionLabel';
 import { globalStyles } from '@/globalStyles';
 import { RootStackParamList } from '@/navigation/RootNavigation';
@@ -119,7 +119,7 @@ export default function LandingScreen({ navigation }: Props) {
                 Your intelligent training companion.{'\n'}Science-backed workouts, real-time analytics, unstoppable progress.
               </Text>
 
-              <GlowButton
+              <Button
                 label="Start Free — No Credit Card"
                 onPress={() => navigation.navigate('Auth', { screen: 'SignUp' })}
                 style={styles.ctaBtn}
@@ -173,84 +173,81 @@ export default function LandingScreen({ navigation }: Props) {
   );
 }
 
+// ── Styles ─────────────────────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
   alignItemsCenter: { alignItems: 'center' },
   hero: { minHeight: 520 },
   glowBlob: { top: -60, left: -60, width: 280, height: 280, borderRadius: rounded.full },
 
-  ring: { position: 'absolute', borderColor: colors.border.brand, borderRadius: 999, borderWidth: 1 },
-  ring1: { width: 280, height: 280, opacity: 0.3, top: '5%', right: -84 },
-  ring2: { width: 220, height: 220, opacity: 0.4, top: '10%', right: -66 },
-  ring3: { width: 160, height: 160, opacity: 0.5, top: '15%', right: -48 },
+  ring: { position: 'absolute', borderColor: colors.border.brand, borderRadius: rounded.full, borderWidth: 1 },
+  ring1: { width: 260, height: 260, opacity: 0.3, top: '5%', right: -84 },
+  ring2: { width: 200, height: 200, opacity: 0.4, top: '10%', right: -66 },
+  ring3: { width: 140, height: 140, opacity: 0.5, top: '15%', right: -48 },
 
   logoRow: { position: 'absolute', top: spacing[7], left: 0 },
   logoBadge: { width: 34, height: 34, borderRadius: rounded.md + 2 },
   logoIcon: { fontSize: typography.size.lg },
-  logoText: { fontSize: typography.size['2xl'] },
+  logoText: { fontSize: typography.size.xl2 },
 
   ratingBadge: {
     position: 'absolute',
-    top: spacing['3xl'],
+    top: spacing.xl4,
     right: 0,
     borderWidth: 1,
     borderRadius: rounded.xl,
-    borderColor: colors.border.DEFAULT,
+    borderColor: colors.border.subtle,
     backgroundColor: colors.surface.glass,
-    padding: spacing[4] - 2,
+    padding: spacing[3],
     alignItems: 'center',
   },
 
-  ratingTitle: { flexDirection: 'row', alignItems: 'baseline', gap: spacing['0.5'] },
+  ratingTitle: { flexDirection: 'row', alignItems: 'center', gap: spacing.px },
   ratingScore: { color: colors.accent.green, fontSize: typography.size.xl, fontWeight: typography.weight.bold },
-  ratingStar: { color: colors.accent.green, fontSize: typography.size.sm },
+  ratingStar: { color: colors.accent.green, fontSize: typography.size.sm, lineHeight: 14 },
   ratingSubTitle: { color: colors.content.tertiary, fontSize: typography.size.xs, marginTop: spacing['0.5'] },
 
   heroContent: { marginTop: 160 },
   heroBadge: {
     alignSelf: 'flex-start',
     borderWidth: 1,
-    borderRadius: rounded['2xl'] - 4,
+    borderRadius: rounded.full,
     borderColor: 'rgba(0,255,135,0.25)',
     backgroundColor: 'rgba(0,255,135,0.12)',
-    paddingHorizontal: spacing[4] - 2,
+    paddingHorizontal: spacing.md,
     paddingVertical: spacing[1],
-    marginBottom: spacing.md + 2,
+    marginBottom: spacing.sm,
   },
   heroBadgeText: { color: colors.accent.green, fontSize: typography.size.xs, fontWeight: typography.weight.bold, letterSpacing: 1.5 },
   heroTitleContainer: { marginBottom: spacing[4] },
-  heroTitle: { color: colors.content.primary, fontSize: typography.size['5xl'], fontWeight: '900', lineHeight: 46, letterSpacing: -1 },
+  heroTitle: {
+    color: colors.content.primary,
+    fontSize: typography.size.xl5,
+    fontWeight: typography.weight.black,
+    lineHeight: typography.height.xl5,
+    letterSpacing: -1,
+  },
   heroTitleAccent: { color: colors.accent.green },
-  heroSubtitle: { color: colors.content.tertiary, fontSize: typography.size.md - 1, lineHeight: 24, marginBottom: spacing[7] },
+  heroSubtitle: { color: colors.content.tertiary, fontSize: typography.size.md, lineHeight: 22, marginBottom: spacing[7] },
 
   ctaBtn: { marginBottom: spacing.md },
   signInLinkContainer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
   signInLinkContainerText: { color: colors.content.tertiary },
   signInLinkAccent: { color: colors.accent.green, fontWeight: typography.weight.bold, fontSize: typography.size.sm },
 
-  // Features
   featuresSection: { paddingTop: spacing[8], backgroundColor: 'transparent' },
-  featuresGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[3] + 2, marginBottom: spacing[5] },
+  featuresGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[3.5], marginBottom: spacing[5] },
   featureCard: {
     borderWidth: 1,
-    borderRadius: rounded['2xl'] - 4,
-    borderColor: colors.border.DEFAULT,
+    borderRadius: rounded.xl2 - 4,
+    borderColor: colors.border.default,
     backgroundColor: colors.surface.raised,
     // Formula: (width - PADDING - GAP * (COLUMNS - 1)) / COLUMNS
-    width: (width - 2 * globalStyles.content.paddingHorizontal - (spacing[3] + 2) * (2 - 1)) / 2,
+    width: (width - 2 * globalStyles.content.paddingHorizontal - spacing[3.5] * (2 - 1)) / 2,
     padding: spacing.md + 2,
     overflow: 'hidden',
   },
-  featureTopBar: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 2,
-    opacity: 0.9,
-    borderTopLeftRadius: rounded['2xl'] - 4,
-    borderTopRightRadius: rounded['2xl'] - 4,
-  },
-  featureIcon: { fontSize: typography.size['3xl'] - 2, marginBottom: spacing[3] - 2 },
+  featureTopBar: { position: 'absolute', top: 0, left: 0, right: 0, height: spacing[0.5], opacity: 0.9 },
+  featureIcon: { fontSize: typography.size.xl3 - 2, marginBottom: spacing[3] },
   featureTitle: {
     color: colors.content.primary,
     fontWeight: typography.weight.bold,
@@ -261,8 +258,8 @@ const styles = StyleSheet.create({
 
   socialProof: {
     borderWidth: 1,
-    borderRadius: rounded['2xl'] - 4,
-    borderColor: colors.border.DEFAULT,
+    borderRadius: rounded.xl2 - 4,
+    borderColor: colors.border.default,
     backgroundColor: colors.surface.raised,
     padding: spacing.md + 2,
     flexDirection: 'row',
@@ -272,9 +269,9 @@ const styles = StyleSheet.create({
   },
 
   avatarRow: { flexDirection: 'row', alignItems: 'center' },
-  avatar: { width: 36, height: 36, borderWidth: rounded.xs - 2, borderRadius: rounded.full, 
+  avatar: { width: 36, height: 36, borderWidth: spacing['0.5'], borderRadius: rounded.full, 
     borderColor: colors.surface.raised, alignItems: 'center', justifyContent: 'center' }, // prettier-ignore
-  avatarLeftMargin: { marginLeft: -(spacing[3] - 2) },
+  avatarLeftMargin: { marginLeft: -spacing[3] },
   avatarEmoji: { fontSize: typography.size.md },
 
   socialTitle: { color: colors.content.primary, fontWeight: typography.weight.bold, fontSize: typography.size.sm },

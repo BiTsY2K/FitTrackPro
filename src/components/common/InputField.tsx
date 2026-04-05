@@ -1,17 +1,17 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import { Platform, Pressable, TouchableWithoutFeedback } from 'react-native';
 import { StyleSheet, Text, TextInput, TextInputProps, View, ViewStyle } from 'react-native';
 
-import { COLORS, Spacing, Typography } from '@/constants/theme';
+import { colors, rounded, spacing, typography } from '@/themes';
 
 interface InputFieldProps extends TextInputProps {
   inputRef: React.RefObject<TextInput | null>;
   placeholder: string;
   error?: string;
   helperText?: string;
-  icon?: keyof typeof Ionicons.glyphMap;
-  rightIcon?: keyof typeof Ionicons.glyphMap;
+  leftIcon?: ReactNode;
+  rightIcon?: ReactNode;
   onRightIconPress?: () => void;
   secureTextEntry?: boolean;
 
@@ -26,7 +26,7 @@ const InputField: React.FC<InputFieldProps> = ({
   placeholder,
   error,
   helperText,
-  icon,
+  leftIcon,
   rightIcon,
   onRightIconPress,
   secureTextEntry,
@@ -45,25 +45,15 @@ const InputField: React.FC<InputFieldProps> = ({
   return (
     <View style={[styles.wrapper, style]}>
       <TouchableWithoutFeedback onPress={() => inputRef.current?.focus()}>
-        <View
-          style={[
-            styles.container,
-            isFocused && styles.containerFocused,
-            hasError && { borderColor: COLORS.SEMANTIC.error },
-          ]}
-        >
-          {icon && <Ionicons name={icon} size={24} color={COLORS.textMuted} style={styles.icon} />}
+        <View style={[styles.container, isFocused && styles.containerFocused, hasError && { borderColor: colors.feedback.error }]}>
+          {!!leftIcon && <View style={styles.leftIcon}>{leftIcon}</View>}
 
           <TextInput
             ref={inputRef}
             {...props}
-            style={[
-              styles.textInput,
-              icon && styles.inputWithicon,
-              (rightIcon || showPasswordToggle) && styles.inputWithRightIcon,
-            ]}
+            style={[styles.textInput, !!leftIcon && styles.inputWithicon, (!!rightIcon || showPasswordToggle) && styles.inputWithRightIcon]}
             placeholder={placeholder}
-            placeholderTextColor={COLORS.textMuted}
+            placeholderTextColor={colors.content.tertiary}
             value={value}
             onChangeText={onChangeText}
             secureTextEntry={secureTextEntry && !isPasswordVisible}
@@ -76,13 +66,8 @@ const InputField: React.FC<InputFieldProps> = ({
           />
 
           {rightIcon && !showPasswordToggle && (
-            <Pressable
-              onPress={onRightIconPress}
-              style={styles.rightIcon}
-              hitSlop={8}
-              accessibilityRole="button"
-            >
-              <Ionicons name={rightIcon} size={24} color={COLORS.textMuted} />
+            <Pressable onPress={onRightIconPress} style={styles.rightIcon} hitSlop={8} accessibilityRole="button">
+              <View style={styles.rightIcon}>{rightIcon}</View>
             </Pressable>
           )}
 
@@ -93,11 +78,7 @@ const InputField: React.FC<InputFieldProps> = ({
               hitSlop={8}
               accessibilityRole="button"
             >
-              <Ionicons
-                name={isPasswordVisible ? 'eye-off-outline' : 'eye-outline'}
-                size={24}
-                color={COLORS.textMuted}
-              />
+              <Ionicons name={isPasswordVisible ? 'eye-outline' : 'eye-off-outline'} size={24} color={colors.content.tertiary} />
             </Pressable>
           )}
         </View>
@@ -117,61 +98,51 @@ const InputField: React.FC<InputFieldProps> = ({
 };
 
 const styles = StyleSheet.create({
-  wrapper: {
-    marginBottom: 14,
-  },
+  wrapper: { marginBottom: spacing['3.5'] },
   container: {
     flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'stretch',
-    backgroundColor: COLORS.glass,
-    borderRadius: 14,
     borderWidth: 1,
-    borderColor: COLORS.border,
-    paddingHorizontal: 16,
+    borderRadius: rounded.xl,
+    borderColor: colors.border.default,
+    backgroundColor: colors.surface.glass,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs1,
+    minHeight: 56,
   },
   containerFocused: {
-    borderColor: COLORS.accent,
+    borderColor: colors.accent.green,
+    backgroundColor: colors.accentGlow.greenSoft,
     ...Platform.select({
       ios: {
-        shadowColor: COLORS.accent,
+        shadowColor: colors.accent.green,
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 0.3,
         shadowRadius: 10,
       },
-      android: { backgroundColor: `${COLORS.accent}14` },
-      default: { backgroundColor: `${COLORS.accent}14` },
     }),
   },
 
-  input: {},
   textInput: {
     flex: 1,
-    color: COLORS.text,
-    fontSize: 15,
-    paddingVertical: 15,
+    color: colors.content.primary,
+    fontSize: typography.size.md,
+    paddingVertical: spacing.sm,
   },
 
-  inputWithicon: { marginLeft: Spacing.xs },
-  inputWithRightIcon: { marginRight: Spacing.xs },
-  icon: { marginRight: Spacing.xs },
-  rightIcon: { marginLeft: Spacing.xs },
+  inputWithicon: { marginLeft: spacing.xs },
+  inputWithRightIcon: { marginRight: spacing.xs },
+  leftIcon: { marginRight: spacing.xs },
+  rightIcon: { marginLeft: spacing.xs },
 
   helperText: {
-    fontSize: Typography.fontSize.xs,
-    color: COLORS.textMuted,
-    marginTop: Spacing.xs,
-    marginLeft: Spacing.xs,
+    fontSize: typography.size.xs,
+    color: colors.content.tertiary,
+    marginTop: spacing.xs,
+    marginLeft: spacing.xs,
   },
-  errorBorder: {
-    borderColor: COLORS.SEMANTIC.error,
-  },
-  errorText: {
-    color: COLORS.SEMANTIC.error,
-    fontSize: 12,
-    marginTop: 6,
-    marginLeft: 4,
-  },
+  errorText: { color: colors.feedback.error, fontSize: typography.size.xs, marginTop: 6, marginLeft: 4 },
 });
 
 export default InputField;

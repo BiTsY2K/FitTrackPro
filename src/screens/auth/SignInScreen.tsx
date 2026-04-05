@@ -1,3 +1,4 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -5,7 +6,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Animated, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-import GlowButton from '@/components/common/GlowButton';
+import Button from '@/components/common/Button';
 import InputField from '@/components/common/InputField';
 import { Divider, SocialButton } from '@/components/common/SharedComponents';
 import { useAuth } from '@/contexts/AuthContext';
@@ -14,6 +15,7 @@ import { AuthStackParamList } from '@/navigation/AuthNavigation';
 import { colors, rounded, spacing, typography } from '@/themes';
 import { validateEmail } from '@/utils/security';
 
+// ── SignIn Sreen: Main Screen ─────────────────────────────────────────────────────────────────────────────
 type SignInScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'SignIn'>;
 
 export default function SignInScreen({ navigation }: { navigation: SignInScreenNavigationProp }) {
@@ -105,7 +107,7 @@ export default function SignInScreen({ navigation }: { navigation: SignInScreenN
                   key={i}
                   style={[
                     styles.progressBar,
-                    i === 0 ? styles.progressBar_flex_x2 : styles.progressBar_flex_x1,
+                    i === 0 ? styles.flex_x2 : styles.flex_x1,
                     i === 0 ? styles.progressBarActive : styles.progressBarInactive,
                   ]}
                 />
@@ -117,7 +119,8 @@ export default function SignInScreen({ navigation }: { navigation: SignInScreenN
           <View style={styles.form}>
             <InputField
               inputRef={emailRef}
-              icon="mail-outline"
+              testID="signin-email-input"
+              leftIcon={<MaterialCommunityIcons name="email-outline" color={colors.content.tertiary} size={24} />}
               placeholder="Email address"
               value={email}
               onChangeText={handleEmailChange}
@@ -131,7 +134,8 @@ export default function SignInScreen({ navigation }: { navigation: SignInScreenN
 
             <InputField
               inputRef={passwordRef}
-              icon="lock-closed-outline"
+              testID="signin-password-input"
+              leftIcon={<MaterialCommunityIcons name="lock-outline" color={colors.content.tertiary} size={24} />}
               placeholder="Password"
               value={password}
               onChangeText={handlePasswordChange}
@@ -145,21 +149,14 @@ export default function SignInScreen({ navigation }: { navigation: SignInScreenN
             </TouchableOpacity>
 
             {/* Sign In CTA */}
-            <GlowButton
-              label="Sign In"
-              onPress={handleUserSignIn}
-              style={styles.submitBtn}
-              disabled={loading}
-              loading={loading}
-              loadingLabel="Signing..."
-            />
+            <Button label="Sign In" onPress={handleUserSignIn} style={styles.submitBtn} disabled={loading} loading={loading} />
 
             {/* Biometric toggle */}
             <TouchableOpacity
               onPress={() => setBiometricActive(!biometricActive)}
               style={[styles.biometricBtn, biometricActive && styles.biometricBtnActive]}
             >
-              <Text style={styles.biometricIcon}>👆</Text>
+              <MaterialCommunityIcons name="line-scan" color={colors.content.secondary} size={24} />
               <Text style={[styles.biometricLabel, biometricActive && styles.biometricLabelActive]}>
                 {biometricActive ? 'Touch ID Active' : 'Use Touch ID / Face ID'}
               </Text>
@@ -168,13 +165,7 @@ export default function SignInScreen({ navigation }: { navigation: SignInScreenN
             <Divider label="or continue with" />
 
             <View style={styles.socialRow}>
-              <SocialButton
-                icon="logo-google"
-                label="Google"
-                onPress={() => {
-                  signInWithGoogle();
-                }}
-              />
+              <SocialButton icon="logo-google" label="Google" onPress={signInWithGoogle} />
               <SocialButton icon="logo-apple" label="Apple" onPress={() => {}} />
             </View>
           </View>
@@ -192,11 +183,12 @@ export default function SignInScreen({ navigation }: { navigation: SignInScreenN
   );
 }
 
+// ── Styles ─────────────────────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
   iconGradient: {
     width: 64,
     height: 64,
-    borderRadius: rounded['2xl'] - 2,
+    borderRadius: rounded.xl2 - 4,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: colors.accent.green,
@@ -206,14 +198,14 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
   iconBadge: { marginBottom: spacing[6] },
-  iconEmoji: { fontSize: typography.size['3xl'] },
+  iconEmoji: { fontSize: typography.size.xl3 },
 
-  progressBar_flex_x1: { flex: 1 },
-  progressBar_flex_x2: { flex: 2 },
-  progressRow: { flexDirection: 'row', gap: spacing.xs, marginTop: spacing.md },
-  progressBar: { height: spacing.xs, borderRadius: rounded.xs },
+  flex_x1: { flex: 1 },
+  flex_x2: { flex: 2 },
+  progressRow: { flexDirection: 'row', gap: spacing.xs1, marginTop: spacing.md },
+  progressBar: { height: spacing.xs1, borderRadius: rounded.full },
   progressBarActive: { backgroundColor: colors.accent.green },
-  progressBarInactive: { backgroundColor: colors.border.DEFAULT },
+  progressBarInactive: { backgroundColor: colors.border.default },
 
   form: {},
   forgotRow: { alignSelf: 'flex-end', marginBottom: spacing[6], marginTop: -spacing[2] },
@@ -228,12 +220,11 @@ const styles = StyleSheet.create({
     paddingVertical: spacing[3] + 2,
     borderWidth: 1,
     borderRadius: rounded.lg + 2,
-    borderColor: colors.border.DEFAULT,
+    borderColor: colors.border.default,
     backgroundColor: colors.surface.glass,
   },
   biometricBtnActive: { borderColor: colors.accent.green, backgroundColor: 'rgba(0,255,135,0.08)' },
-  biometricIcon: { fontSize: typography.size.lg },
-  biometricLabel: { color: colors.content.tertiary, fontWeight: typography.weight.semibold, fontSize: typography.size.sm },
+  biometricLabel: { color: colors.content.secondary, fontWeight: typography.weight.semibold, fontSize: typography.size.sm },
   biometricLabelActive: { color: colors.accent.green },
 
   socialRow: { flexDirection: 'row', justifyContent: 'center', gap: spacing[3] },

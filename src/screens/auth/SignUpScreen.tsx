@@ -1,11 +1,12 @@
+import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Animated, Dimensions, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-import GlowButton from '@/components/common/GlowButton';
+import Button from '@/components/common/Button';
 import InputField from '@/components/common/InputField';
 import { SectionLabel } from '@/components/common/SectionLabel';
 import { Divider, SocialButton } from '@/components/common/SharedComponents';
@@ -18,6 +19,9 @@ import { colors, rounded, spacing, typography } from '@/themes';
 import { GoalType } from '@/types/onboarding.types';
 import { validateEmail, validatePasswordStrength } from '@/utils/security';
 
+const { width } = Dimensions.get('window');
+
+// ── SignUp Sreen: Main Screen ─────────────────────────────────────────────────────────────────────────────
 type SignUpScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'SignUp'>;
 
 export default function SignUpScreen({ navigation }: { navigation: SignUpScreenNavigationProp }) {
@@ -124,7 +128,7 @@ export default function SignUpScreen({ navigation }: { navigation: SignUpScreenN
                   key={i}
                   style={[
                     styles.progressBar,
-                    i === 0 ? styles.progressBar_flex_x2 : styles.progressBar_flex_x1,
+                    i === 0 ? styles.flex_x2 : styles.flex_x1,
                     i === 0 ? styles.progressBarActive : styles.progressBarInactive,
                   ]}
                 />
@@ -136,8 +140,8 @@ export default function SignUpScreen({ navigation }: { navigation: SignUpScreenN
           <View style={styles.form}>
             <InputField
               inputRef={nameRef}
-              id="name"
-              icon="person-outline"
+              testID="signup-user-name-input"
+              leftIcon={<MaterialIcons name="person-outline" color={colors.content.tertiary} size={24} />}
               placeholder="Full name"
               value={name}
               onChangeText={setName}
@@ -148,10 +152,11 @@ export default function SignUpScreen({ navigation }: { navigation: SignUpScreenN
               editable={!loading}
               onSubmitEditing={() => passwordRef.current?.focus()}
             />
+
             <InputField
               inputRef={emailRef}
-              id="email"
-              icon="mail-outline"
+              testID="signup-email-input"
+              leftIcon={<MaterialCommunityIcons name="email-outline" color={colors.content.tertiary} size={24} />}
               placeholder="Email address"
               value={email}
               onChangeText={setEmail}
@@ -160,10 +165,11 @@ export default function SignUpScreen({ navigation }: { navigation: SignUpScreenN
               error={emailError}
               editable={!loading}
             />
+
             <InputField
               inputRef={passwordRef}
-              id="password"
-              icon="lock-closed-outline"
+              testID="signup-password-input"
+              leftIcon={<MaterialCommunityIcons name="lock-outline" color={colors.content.tertiary} size={24} />}
               placeholder="Password"
               value={password}
               onChangeText={setPassword}
@@ -174,8 +180,8 @@ export default function SignUpScreen({ navigation }: { navigation: SignUpScreenN
 
             <InputField
               inputRef={confirmPasswordRef}
-              id="confirmPassword"
-              icon="lock-closed-outline"
+              testID="signup-confirm-password-input"
+              leftIcon={<MaterialCommunityIcons name="checkbox-marked-circle-outline" color={colors.content.tertiary} size={24} />}
               placeholder="Confirm password"
               value={confirmPassword}
               onChangeText={setConfirmPassword}
@@ -242,18 +248,13 @@ export default function SignUpScreen({ navigation }: { navigation: SignUpScreenN
               })}
             </View>
 
-            <GlowButton
-              label="Create My Account"
-              onPress={handleSignUp}
-              style={styles.submitBtn}
-              loading={loading}
-              disabled={loading}
-              loadingLabel="Creating..."
-            />
+            <Button label="Create My Account" onPress={handleSignUp} style={styles.submitBtn} loading={loading} disabled={loading} />
           </View>
 
           <Text style={styles.legal}>
-            By signing up you agree to our <Text style={styles.legalLink}>Terms</Text> &{' '}
+            By signing up you agree to our{'  '}
+            <Text style={styles.legalLink}>Terms</Text>
+            {'  '}&{'  '}
             <Text style={styles.legalLink}>Privacy Policy</Text>
           </Text>
 
@@ -277,11 +278,12 @@ export default function SignUpScreen({ navigation }: { navigation: SignUpScreenN
   );
 }
 
+// ── Styles ─────────────────────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
   iconGradient: {
     width: 64,
     height: 64,
-    borderRadius: rounded['2xl'] - 2,
+    borderRadius: rounded.xl2 - 4,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: colors.accent.green,
@@ -291,27 +293,30 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
   iconBadge: { marginBottom: spacing[6] },
-  iconEmoji: { fontSize: typography.size['3xl'] },
+  iconEmoji: { fontSize: typography.size.xl3 },
 
-  progressBar_flex_x1: { flex: 1 },
-  progressBar_flex_x2: { flex: 2 },
-  progressRow: { flexDirection: 'row', gap: spacing.xs, marginTop: spacing.md },
-  progressBar: { height: spacing.xs, borderRadius: rounded.xs },
+  flex_x1: { flex: 1 },
+  flex_x2: { flex: 2 },
+  progressRow: { flexDirection: 'row', gap: spacing.xs1, marginTop: spacing.md },
+  progressBar: { height: spacing.xs1, borderRadius: rounded.full },
   progressBarActive: { backgroundColor: colors.accent.green },
-  progressBarInactive: { backgroundColor: colors.border.DEFAULT },
+  progressBarInactive: { backgroundColor: colors.border.default },
 
   form: {},
   goalGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: spacing[3], marginBottom: spacing[6] },
   goalCard: {
-    width: `${50 - 1.5}%`,
+    // Formula: (width - PADDING - GAP * (COLUMNS - 1)) / COLUMNS
+    width: (width - 2 * globalStyles.content.paddingHorizontal - spacing[3] * (2 - 1)) / 2,
     overflow: 'hidden',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
     paddingVertical: spacing[3],
-    paddingHorizontal: spacing[4] - 2,
+    paddingHorizontal: spacing['3.5'],
+
     borderWidth: 1,
     borderRadius: rounded.lg,
-    borderColor: colors.border.DEFAULT,
+    borderColor: colors.border.default,
     backgroundColor: colors.surface.glass,
-    alignItems: 'center',
   },
   goalCardActive: {
     borderColor: COLORS.accent,
@@ -327,9 +332,9 @@ const styles = StyleSheet.create({
     }),
     elevation: 6,
   },
-  goalText: { color: colors.content.tertiary, fontSize: typography.size.xs + 1, fontWeight: typography.weight.semibold },
+  goalText: { color: colors.content.secondary, fontSize: typography.size.xs + 1, fontWeight: typography.weight.semibold },
   goalTextActive: { color: colors.accent.green },
-  submitBtn: { marginBottom: spacing[3] + 2 },
+  submitBtn: { marginBottom: spacing['3.5'] },
 
   legal: { textAlign: 'center', color: colors.content.tertiary, fontSize: typography.size.xs, lineHeight: 18 },
   legalLink: { color: colors.accent.green, fontWeight: typography.weight.semibold },
@@ -339,38 +344,24 @@ const styles = StyleSheet.create({
   footerText: { color: colors.content.tertiary, fontSize: typography.size.sm },
   footerLink: { color: colors.accent.green, fontWeight: typography.weight.bold, fontSize: typography.size.sm },
 
-  strengthRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    marginTop: -6,
-    marginBottom: 14,
-  },
-  strengthBar: {
-    flex: 1,
-    height: 4,
-    borderRadius: 4,
-  },
-  strengthLabel: {
-    fontSize: 12,
-    fontWeight: '700',
-    width: 44,
-    textAlign: 'right',
-  },
+  // ── Strength meter ── //
+  strengthRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs1, marginBottom: spacing.xs },
+  strengthBar: { flex: 1, height: spacing[1], borderRadius: rounded.full },
+  strengthLabel: { minWidth: spacing[12], fontSize: typography.size.xs, fontWeight: typography.weight.bold, textAlign: 'right' },
 
-  // Password rules (step 3)
+  // ── Password rules ── //
   rulesCard: {
-    backgroundColor: COLORS.bgCard,
-    borderRadius: 14,
     borderWidth: 1,
-    borderColor: COLORS.border,
-    padding: 16,
-    marginBottom: 24,
-    gap: 10,
+    borderRadius: rounded.xl,
+    borderColor: colors.border.default,
+    backgroundColor: colors.surface.raised,
+    padding: spacing.md,
+    marginBottom: spacing.md,
+    gap: spacing.xs,
   },
-  ruleRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  ruleDot: { color: COLORS.textMuted, fontSize: 13, fontWeight: '700', width: 16 },
-  ruleDotMet: { color: COLORS.accent },
-  ruleText: { color: COLORS.textMuted, fontSize: 13 },
-  ruleTextMet: { color: COLORS.text },
+  ruleRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
+  ruleDot: { color: colors.content.tertiary, fontSize: typography.size.xs + 1, fontWeight: typography.weight.bold, width: spacing.xs },
+  ruleDotMet: { color: colors.accent.green },
+  ruleText: { color: colors.content.tertiary, fontSize: typography.size.xs + 1 },
+  ruleTextMet: { color: colors.content.primary },
 });

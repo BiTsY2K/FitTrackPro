@@ -1,8 +1,33 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, ViewStyle } from 'react-native';
 
 import { colors, rounded, spacing, typography } from './themes';
 
+type SpacingKey = 'sm' | 'md' | 'lg';
+type MarginKey = `marg_t_${SpacingKey}` | `marg_b_${SpacingKey}`;
+
+const sizes: SpacingKey[] = ['sm', 'md', 'lg'];
+
+type MarginStyles = Record<MarginKey, ViewStyle>;
+
+export const marginStyles = sizes.reduce((acc, size) => {
+  acc[`marg_t_${size}`] = { marginTop: spacing[size] };
+  acc[`marg_b_${size}`] = { marginBottom: spacing[size] };
+  return acc;
+}, {} as MarginStyles);
+
+// ─── Global Styles ──────────────────────────────────────────────────────────────────────────────────────────────
 export const globalStyles = StyleSheet.create({
+  alignItemsCenter: { alignItems: 'center' },
+  alignItemsStart: { alignItems: 'flex-start' },
+
+  displayNone: { display: 'none' },
+
+  flex_1: { flex: 1 },
+  flexDirectionColumn: { flexDirection: 'column' },
+  flexDirectionRow: { flexDirection: 'row' },
+
+  ...marginStyles,
+
   // ─── Layout ──────────────────────────────────────────────────────────────────────────────────────────────
   safe: { flex: 1, backgroundColor: colors.surface.page, alignItems: 'stretch' },
   scroll: { flex: 1 },
@@ -45,7 +70,7 @@ export const globalStyles = StyleSheet.create({
     height: 36,
     borderWidth: 1,
     borderRadius: rounded.lg,
-    borderColor: colors.border.DEFAULT,
+    borderColor: colors.border.default,
     backgroundColor: colors.surface.glass,
   },
   backArrow: { color: colors.content.primary, fontSize: typography.size.lg },
@@ -62,22 +87,23 @@ export const globalStyles = StyleSheet.create({
   header: { marginBottom: spacing[6] },
   title: {
     color: colors.content.primary,
-    fontSize: typography.size['3xl'] + 2,
+    fontSize: typography.size.xl3,
+    lineHeight: typography.height.xl3,
     fontWeight: typography.weight.black,
     letterSpacing: -0.5,
     marginBottom: spacing[2],
   },
   titleAccent: {
     color: colors.accent.green,
-    fontSize: typography.size['5xl'],
+    fontSize: typography.size.xl5,
+    lineHeight: typography.size.xl5 * 1.125,
     fontWeight: typography.weight.black,
     letterSpacing: -0.8,
-    marginTop: -6,
-    lineHeight: 54,
+    marginTop: -spacing['1.5'],
   },
   subtitle: {
     color: colors.content.tertiary,
     fontSize: typography.size.sm,
-    lineHeight: 22,
+    lineHeight: typography.size.sm * 1.25,
   },
 });

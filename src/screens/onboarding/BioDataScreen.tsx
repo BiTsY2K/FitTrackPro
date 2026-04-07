@@ -17,6 +17,8 @@ import { OnboardingStackParamList } from '@/navigation/OnboardingNavigation';
 import { colors, rounded, spacing, typography } from '@/themes';
 import { Gender } from '@/types/onboarding.types';
 
+import { PROGRESS_STEPS_LABELS } from './GoalSelectionScreen';
+
 export type GenderOption = {
   type: 'gender';
   id: Gender;
@@ -61,7 +63,7 @@ interface DatePickerFieldProps {
   styleContainerView?: ViewStyle;
 }
 
-const DatePickerField = React.memo<DatePickerFieldProps>(
+const DatePickerField: React.FC<DatePickerFieldProps> = React.memo(
   ({ value, onChange, styleContainerView }) => {
     const [show, setShow] = useState(false);
     const pressScale = useRef(new Animated.Value(1)).current;
@@ -90,7 +92,11 @@ const DatePickerField = React.memo<DatePickerFieldProps>(
             <Text style={datePickerStyles.icon}>📅</Text>
             <View style={datePickerStyles.textBlock}>
               <Text style={datePickerStyles.fieldLabel}>Birth Date</Text>
-              <Text style={datePickerStyles.fieldValue}>{formattedDate}</Text>
+              <View style={datePickerStyles.fieldValue}>
+                <View style={datePickerStyles.valueGroup}>
+                  <Text style={datePickerStyles.valueText}>{formattedDate}</Text>
+                </View>
+              </View>
             </View>
 
             <FontAwesome name="chevron-right" color={colors.content.tertiary} size={typography.size.lg} />
@@ -174,7 +180,9 @@ const datePickerStyles = StyleSheet.create({
   icon: { fontSize: typography.size.xl2 },
   textBlock: { flex: 1, flexShrink: 1, minWidth: 0 },
   fieldLabel: { color: colors.content.tertiary, fontSize: typography.size.xs, fontWeight: typography.weight.bold },
-  fieldValue: { color: colors.content.primary, fontSize: typography.size.lg, fontWeight: typography.weight.extrabold, letterSpacing: -0.3 },
+  fieldValue: { flexDirection: 'row', alignItems: 'baseline', gap: spacing[2] },
+  valueGroup: { flexDirection: 'row', alignItems: 'baseline', gap: spacing['0.5'] },
+  valueText: { color: colors.content.primary, fontSize: typography.size.lg, fontWeight: typography.weight.extrabold, letterSpacing: -0.3 },
 
   // ── iOS Modal sheet ── //
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)' },
@@ -215,7 +223,7 @@ interface AgeBadgeProps {
   valid: boolean;
 }
 
-const AgeBadge = React.memo<AgeBadgeProps>(
+const AgeBadge: React.FC<AgeBadgeProps> = React.memo(
   ({ age, valid }) => {
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const slideAnim = useRef(new Animated.Value(8)).current;
@@ -298,7 +306,7 @@ interface CaloriePreviewProps {
   styleContainerView?: ViewStyle;
 }
 
-const CaloriePreview = React.memo<CaloriePreviewProps>(
+const CaloriePreview: React.FC<CaloriePreviewProps> = React.memo(
   ({ gender, age, styleContainerView }) => {
     const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -480,12 +488,7 @@ export const BioDataScreen: React.FC<Props> = ({ navigation, route }) => {
           </Text>
 
           {/* ── Progress Bar ── */}
-          <ProgressBar
-            name="Onboarding"
-            currentStep={2}
-            totalSteps={5}
-            stepLabels={['Goal', 'Bio', 'Measurement', 'Activity', 'Summary']}
-          />
+          <ProgressBar name="Onboarding" currentStep={2} totalSteps={5} stepLabels={PROGRESS_STEPS_LABELS} />
 
           <Text style={globalStyles.subtitle}>We use this to personalise your macros, training volume & recovery windows.</Text>
         </Animated.View>

@@ -11,6 +11,7 @@ interface ImperialDisplayProp {
   secondaryValue?: string | number;
   secondaryUnit?: string;
   styleContainerView?: ViewStyle;
+  onPress?: () => void;
 }
 
 const ImperialDisplay: React.FC<ImperialDisplayProp> = ({
@@ -21,6 +22,7 @@ const ImperialDisplay: React.FC<ImperialDisplayProp> = ({
   secondaryValue,
   secondaryUnit,
   styleContainerView,
+  onPress,
 }) => {
   const pressScale = useRef(new Animated.Value(1)).current;
 
@@ -29,7 +31,7 @@ const ImperialDisplay: React.FC<ImperialDisplayProp> = ({
 
   return (
     <Animated.View style={[{ transform: [{ scale: pressScale }] }, styleContainerView]}>
-      <TouchableOpacity onPress={() => {}} onPressIn={onPressIn} onPressOut={onPressOut} activeOpacity={1} style={impStyles.field}>
+      <TouchableOpacity onPress={onPress} onPressIn={onPressIn} onPressOut={onPressOut} activeOpacity={1} style={impStyles.field}>
         <Text style={impStyles.icon}>{icon}</Text>
         <View style={[impStyles.textBlock]}>
           <Text style={impStyles.fieldLabel}>{label}</Text>

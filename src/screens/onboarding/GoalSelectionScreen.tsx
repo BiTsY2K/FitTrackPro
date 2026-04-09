@@ -80,7 +80,7 @@ const GOAL_HINTS: Record<GoalType, { text: string; emoji: string }> = {
   body_recomp: { emoji: '🔥', text: "Bold move. This route demands discipline — you're up for it." },
 };
 
-export const PROGRESS_STEPS = ['Goal', 'Bio', 'Measurement', 'Activity', 'Summary'];
+export const PROGRESS_STEPS_LABELS = ['Goal', 'Bio', 'Measurement', 'Activity', 'Summary'];
 
 // ── GoalHint ─────────────────────────────────────────────────────────────────────────────
 interface GoalHintProps {
@@ -200,7 +200,7 @@ export const GoalSelectionScreen: React.FC<Props> = ({ navigation, route }) => {
           </Text>
 
           {/* Progress bar */}
-          <ProgressBar name="Onboarding" currentStep={1} totalSteps={5} stepLabels={PROGRESS_STEPS} />
+          <ProgressBar name="Onboarding" currentStep={1} totalSteps={5} stepLabels={PROGRESS_STEPS_LABELS} />
 
           <Text style={globalStyles.subtitle}>We'll build a plan around what matters most to you. You can always change this later.</Text>
         </Animated.View>

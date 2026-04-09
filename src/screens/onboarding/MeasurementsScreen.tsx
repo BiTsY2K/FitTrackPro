@@ -1,11 +1,13 @@
+import { FontAwesome } from '@expo/vector-icons';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-import GlowButton from '@/components/common/GlowButton';
+import Button from '@/components/common/Button';
 import GradientText from '@/components/common/GradientText';
+import { SectionLabel } from '@/components/common/SectionLabel';
 import { BMIIndicator } from '@/components/onboarding/measurement/BMIIndicator';
 import { ImperialDisplay } from '@/components/onboarding/measurement/ImperialDisplay';
 import { UnitToggle } from '@/components/onboarding/measurement/UnitToggle';
@@ -57,7 +59,7 @@ export const MeasurementsScreen: React.FC<Props> = ({ navigation, route }) => {
 
   const needsTargetWeight = onboardingData?.goal !== 'maintain_weight';
 
-  const [metric, setMetric] = useState<boolean>(true);
+  const [metric, setMetric] = useState<boolean>(false);
   const [currentHeightCm, setCurrentHeightCm] = useState<number>(170);
   const [currentWeightKg, setCurrentWeightKg] = useState<number>(78);
   const [targetWeightKg, setTargetWeightKg] = useState<number>(70);
@@ -135,48 +137,71 @@ export const MeasurementsScreen: React.FC<Props> = ({ navigation, route }) => {
         {/* ── Unit Toggle ── */}
         <UnitToggle metric={metric} onToggle={setMetric} />
 
-        {/* ── Body Height Section ── */}
-        <View style={globalStyles.marg_b_md}>
-          {/* <SectionLabel icon="📐">Height</SectionLabel> */}
-          <View style={metric ? null : globalStyles.displayNone}>
-            {/* prettier-ignore */}
-            <NumberPicker label="Height" value={currentHeightCm} onChange={setCurrentHeightCm} min={120} max={220} 
-                step={1} unit="cm" accentColor={colors.accent.blue} icon="📐" />
-          </View>
-          <View style={metric ? globalStyles.displayNone : null}>
-            <ImperialDisplay label="Height" icon="📐" primaryValue={ftTotal} primaryUnit="ft" secondaryValue={inRem} secondaryUnit="in" />
-          </View>
-        </View>
+        <View style={styles.measurement}>
+          {!metric && <SectionLabel icon="🧍">Body Metric</SectionLabel>}
 
-        {/* ── Body Height Section ── */}
-        <View style={globalStyles.marg_b_md}>
-          {/* <SectionLabel icon="⚖️">Current Weight</SectionLabel> */}
-          <View style={metric ? null : globalStyles.displayNone}>
-            {/* prettier-ignore */}
-            <NumberPicker label="Current Weight" value={currentWeightKg} onChange={setCurrentWeightKg} min={30} max={250} 
+          {/* ── Body Height Section ── */}
+          <View style={globalStyles.marg_b_md}>
+            <View style={metric ? null : globalStyles.displayNone}>
+              {/* prettier-ignore */}
+              <NumberPicker label="Height" value={currentHeightCm} onChange={setCurrentHeightCm} min={120} max={220} 
+                step={1} unit="cm" accentColor={colors.accent.blue} icon="📏" />
+            </View>
+            <View style={metric ? globalStyles.displayNone : null}>
+              <ImperialDisplay
+                label="Height"
+                icon="📏"
+                primaryValue={ftTotal}
+                primaryUnit="ft"
+                secondaryValue={inRem}
+                secondaryUnit="in"
+                onPress={() => setMetric(true)}
+              />
+            </View>
+          </View>
+
+          {/* ── Body Weight Section ── */}
+          <View style={globalStyles.marg_b_md}>
+            {/* <SectionLabel icon="⚖️">Current Weight</SectionLabel> */}
+            <View style={metric ? null : globalStyles.displayNone}>
+              {/* prettier-ignore */}
+              <NumberPicker label="Current Weight" value={currentWeightKg} onChange={setCurrentWeightKg} min={30} max={250} 
                   step={0.5} unit="kg" accentColor={colors.accent.green} icon="⚖️​️​" />
+            </View>
+            <View style={metric ? globalStyles.displayNone : null}>
+              <ImperialDisplay
+                label="Current Weight"
+                icon="⚖️"
+                primaryValue={currentLbs}
+                primaryUnit="lbs"
+                onPress={() => setMetric(true)}
+              />
+            </View>
           </View>
-          <View style={metric ? globalStyles.displayNone : null}>
-            <ImperialDisplay label="Current Weight" icon="⚖️" primaryValue={currentLbs} primaryUnit="lbs" />
-          </View>
-        </View>
 
-        {/* ── BMI ── */}
-        <View style={globalStyles.marg_b_md}>
+          {/* ── BMI ── */}
           <BMIIndicator heightCm={currentHeightCm} weightKg={currentWeightKg} />
         </View>
+
         {/* ── Target Weight ── */}
         {needsTargetWeight && (
           <>
+            {!metric && <SectionLabel icon="🎯">Your Goal</SectionLabel>}
+
             <View style={globalStyles.marg_b_md}>
-              {/* <SectionLabel icon="🎯" style={{}}>Target Weight</SectionLabel> */}
               <View style={metric ? null : globalStyles.displayNone}>
                 {/* prettier-ignore */}
                 <NumberPicker label="Target Weight" value={targetWeightKg} onChange={setTargetWeightKg} min={30} max={250} 
                 step={0.5} unit="kg" accentColor={colors.accent.purple} icon="🎯" />
               </View>
               <View style={metric ? globalStyles.displayNone : null}>
-                <ImperialDisplay label="Target Weight" icon="🎯" primaryValue={targetLbs} primaryUnit="lbs" />
+                <ImperialDisplay
+                  label="Target Weight"
+                  icon="🎯"
+                  primaryValue={targetLbs}
+                  primaryUnit="lbs"
+                  onPress={() => setMetric(true)}
+                />
               </View>
             </View>
 
@@ -184,8 +209,12 @@ export const MeasurementsScreen: React.FC<Props> = ({ navigation, route }) => {
           </>
         )}
 
-        {/* ── CTA ── */}
-        <GlowButton label="Continue to Activity Level" onPress={handleContinue} />
+        {/* ── CTA Button ── */}
+        <Button
+          rightIcon={<FontAwesome name="long-arrow-right" color="#000" size={18} />}
+          label={'Continue to Activity Level'}
+          onPress={() => handleContinue()}
+        />
 
         <Text style={styles.finePrint}>
           You can update measurements anytime in <Text style={styles.finePrintAccent}>Settings</Text>.
@@ -218,6 +247,7 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
 
+  measurement: { flexDirection: 'column', marginBottom: spacing[5] },
   finePrint: { color: colors.content.tertiary, fontSize: typography.size.xs, textAlign: 'center',
     marginTop: spacing.sm, lineHeight: typography.height.xs }, // prettier-ignore
   finePrintAccent: { color: colors.accent.green, fontWeight: typography.weight.bold },

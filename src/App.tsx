@@ -2,38 +2,33 @@ import './global.css';
 
 import * as Sentry from '@sentry/react-native';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { initialWindowMetrics, SafeAreaProvider } from 'react-native-safe-area-context';
 
-import { COLORS } from '@/constants/theme';
 import { AuthProvider } from '@/contexts/AuthContext';
 import RootNavigation from '@/navigation/RootNavigation';
+import { colors } from '@/themes';
+
+import { OnboardingProvider } from './contexts/OnboardingContext';
 
 function AppContent() {
   return (
     <View style={styles.container}>
       <StatusBar style="light" translucent={true} />
+
       <AuthProvider>
-        <RootNavigation />
+        <OnboardingProvider>
+          <RootNavigation />
+        </OnboardingProvider>
       </AuthProvider>
     </View>
   );
 }
 
 export const App = () => {
-  useEffect(() => {}, []);
-
   return (
     <SafeAreaProvider initialMetrics={initialWindowMetrics}>
       <AppContent />
-      {/**
-       * To make sure everything is set up correctly, put the following code snippet into your application.
-       * The snippet will create a button that, when tapped, sends a test event to Sentry.
-       *
-       * After that check your project issues: https://bits-development.sentry.io/issues/?project=4510936952864848
-       * <Button title="Try!" onPress={() => { Sentry.captureException(new Error('First error')); }} />
-       **/}
     </SafeAreaProvider>
   );
 };
@@ -41,7 +36,7 @@ export const App = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.bg,
+    backgroundColor: colors.surface.page,
   },
 });
 
@@ -51,9 +46,7 @@ Sentry.init({
   // Adds more context data to events (IP address, cookies, user, etc.)
   // For more information, visit: https://docs.sentry.io/platforms/react-native/data-management/data-collected/
   sendDefaultPii: true,
-
-  // Enable Logs
-  enableLogs: true,
+  enableLogs: true, // Enable Logs
 
   // Configure Session Replay
   replaysSessionSampleRate: 0.1,

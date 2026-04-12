@@ -1,9 +1,10 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User } from 'firebase/auth';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+
 import { authService } from '@/services/auth/AuthService';
-import { useAuthStore } from '@/store/authStore';
-import { sessionManager } from '@/services/auth/SessionManager';
 import { useGoogleAuth } from '@/services/auth/GoogleAuthService';
+import { sessionManager } from '@/services/auth/SessionManager';
+import { useAuthStore } from '@/store/authStore';
 
 interface AuthContextValue {
   user: User | null;
@@ -25,7 +26,7 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [initialized, setInitialized] = useState(false);
-  const { signInWithGoogle: gOAuthSignIn, loading: gOAuthLoading, error: gOAuthError, isReady: gOAuthIsReady } = useGoogleAuth(); // Google Auth hook
+  const { signInWithGoogle: gOAuthSignIn, loading: gOAuthLoading, error: _gOAuthError, isReady: gOAuthIsReady } = useGoogleAuth(); // Google Auth hook
   const { user, loading, error, isAuthenticated, setUser, setLoading, setError, clearError, initialize } = useAuthStore(); // Auth store
 
   useEffect(() => {

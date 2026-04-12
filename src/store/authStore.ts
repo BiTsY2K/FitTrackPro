@@ -1,7 +1,8 @@
-import { create } from 'zustand';
 import { User } from 'firebase/auth';
-import { auth, initializeFirebase } from '@/services/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
+import { create } from 'zustand';
+
+import { auth, initializeFirebase } from '@/services/firebase';
 import { logger } from '@/utils/logger';
 
 interface AuthState {
@@ -35,8 +36,8 @@ export const useAuthStore = create<AuthState>(set => ({
     const unsubscribe = onAuthStateChanged(
       auth,
       user => {
-        // User is signed in, see docs for a list of available properties
-        // https://firebase.google.com/docs/reference/js/auth.user
+        // User is signed in, see docs (https://firebase.google.com/docs/reference/js/auth.user)
+        // for a list of available properties
         logger.info('Auth state changed', { authenticated: !!user, uid: user?.uid });
         set({ user, isAuthenticated: !!user, loading: false });
       },

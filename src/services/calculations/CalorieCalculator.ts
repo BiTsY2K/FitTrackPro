@@ -1,12 +1,5 @@
-import { Gender, Goal, ActivityLevel, OnboardingData } from '@/types/onboarding.types';
-import {
-  ACTIVITY_MULTIPLIERS,
-  GOAL_ADJUSTMENTS,
-  PROTEIN_TARGETS,
-  FAT_PERCENTAGE,
-  SAFE_RATES,
-  CALORIES_PER_KG,
-} from '@/constants/onboarding';
+import { ACTIVITY_MULTIPLIERS, FAT_PERCENTAGE, GOAL_ADJUSTMENTS, PROTEIN_TARGETS, SAFE_RATES } from '@/constants/onboarding';
+import { ActivityLevelType, Gender, GoalType, OnboardingData } from '@/types/onboarding.types';
 import { logger } from '@/utils/logger';
 
 /**
@@ -61,7 +54,7 @@ export class CalorieCalculator {
    * @param activityLevel - User's activity level
    * @returns TDEE in calories per day
    */
-  static calculateTDEE(bmr: number, activityLevel: ActivityLevel): number {
+  static calculateTDEE(bmr: number, activityLevel: ActivityLevelType): number {
     const multiplier = ACTIVITY_MULTIPLIERS[activityLevel];
     const tdee = bmr * multiplier;
 
@@ -88,7 +81,7 @@ export class CalorieCalculator {
    * @param goal - User's fitness goal
    * @returns Daily calorie target
    */
-  static calculateCalorieTarget(tdee: number, goal: Goal): number {
+  static calculateCalorieTarget(tdee: number, goal: GoalType): number {
     const adjustment = GOAL_ADJUSTMENTS[goal];
     const target = tdee + adjustment;
 
@@ -124,7 +117,7 @@ export class CalorieCalculator {
    * @param goal - User's fitness goal
    * @returns Daily protein in grams
    */
-  static calculateProteinTarget(weightKg: number, goal: Goal): number {
+  static calculateProteinTarget(weightKg: number, goal: GoalType): number {
     const proteinPerKg = PROTEIN_TARGETS[goal];
     const proteinGrams = weightKg * proteinPerKg;
 
@@ -158,13 +151,11 @@ export class CalorieCalculator {
   static calculateFatTarget(dailyCalories: number, dietType: 'standard' | 'keto' | 'low_fat' = 'standard'): number {
     let fatPercentage: number;
 
-    if (dietType === 'keto') {
-      fatPercentage = FAT_PERCENTAGE.keto; // 70%
-    } else if (dietType === 'low_fat') {
-      fatPercentage = FAT_PERCENTAGE.low_fat; // 20%
-    } else {
-      fatPercentage = FAT_PERCENTAGE.standard; // 25%
-    }
+    if (dietType === 'keto')
+      fatPercentage = FAT_PERCENTAGE.keto ?? 0.7; // 70%
+    else if (dietType === 'low_fat')
+      fatPercentage = FAT_PERCENTAGE.low_fat ?? 0.2; // 20%
+    else fatPercentage = FAT_PERCENTAGE.standard ?? 0.25; // 25%
 
     const fatCalories = dailyCalories * fatPercentage;
     const fatGrams = fatCalories / 9; // 9 calories per gram of fat
@@ -198,7 +189,7 @@ export class CalorieCalculator {
     const remainingCalories = dailyCalories - proteinCalories - fatCalories;
     const carbsGrams = remainingCalories / 4; // 4 cal/g
 
-    // Safety check: never negative carbs
+    // Safety check: never negative carbs //
     const safeCarbsGrams = Math.max(carbsGrams, 0);
 
     logger.info('Carbs target calculated', {
@@ -258,19 +249,15 @@ export class CalorieCalculator {
    * @param goal - User's fitness goal
    * @returns Estimated weeks to goal (null if maintain/recomp)
    */
-  static estimateTimeToGoal(currentWeightKg: number, targetWeightKg: number, goal: Goal): number | null {
-    if (goal === 'maintain_weight' || goal === 'body_recomp') {
-      return null; // No specific timeline for these goals
-    }
+  static estimateTimeToGoal(currentWeightKg: number, targetWeightKg: number, goal: GoalType): number | null {
+    if (goal === 'maintain_weight' || goal === 'body_recomp') return null; // No specific timeline for these goals
 
     const weightDifference = Math.abs(currentWeightKg - targetWeightKg);
+    if (weightDifference < 0.5) return null; // Already at goal
 
-    if (weightDifference < 0.5) {
-      return null; // Already at goal
-    }
-
-    const safeRate = goal === 'lose_weight' ? SAFE_RATES.lose_weight : SAFE_RATES.gain_weight;
-
+    const loseWeight_safeRate = SAFE_RATES.lose_weight ?? 0.5;
+    const gainMuscle_safeRate = SAFE_RATES.gain_muscle ?? 0.25;
+    const safeRate = goal === 'lose_weight' ? loseWeight_safeRate : gainMuscle_safeRate;
     const weeks = weightDifference / safeRate;
 
     logger.info('Time to goal estimated', {
@@ -294,26 +281,19 @@ export class CalorieCalculator {
    * @returns Complete nutrition plan with all targets
    */
   static calculateNutritionPlan(data: OnboardingData) {
-    // Step 1: Calculate BMR
-    const bmr = this.calculateBMR(data.currentWeightKg, data.heightCm, data.age, data.gender);
+    const bmr = this.calculateBMR(data.currentWeightKg, data.currentHeightCm, data.age, data.gender); // Step 1: Calculate BMR
+    const tdee = this.calculateTDEE(bmr, data.activityLevel); // Step 2: Calculate TDEE
+    const dailyCalorieTarget = this.calculateCalorieTarget(tdee, data.goal); // Step 3: Calculate calorie target based on goal
 
-    // Step 2: Calculate TDEE
-    const tdee = this.calculateTDEE(bmr, data.activityLevel);
-
-    // Step 3: Calculate calorie target based on goal
-    const dailyCalorieTarget = this.calculateCalorieTarget(tdee, data.goal);
-
-    // Step 4: Calculate macros (protein-first approach)
+    // Step 4: Calculate macros (protein-first approach) //
     const dailyProteinGrams = this.calculateProteinTarget(data.currentWeightKg, data.goal);
-
     const dailyFatGrams = this.calculateFatTarget(dailyCalorieTarget, data.dietType === 'keto' ? 'keto' : 'standard');
-
     const dailyCarbsGrams = this.calculateCarbsTarget(dailyCalorieTarget, dailyProteinGrams, dailyFatGrams);
 
-    // Step 5: Calculate water target
+    // Step 5: Calculate water target //
     const dailyWaterMl = this.calculateWaterTarget(data.currentWeightKg, data.workoutFrequencyPerWeek);
 
-    // Step 6: Estimate timeline
+    // Step 6: Estimate timeline //
     const estimatedWeeksToGoal = data.targetWeightKg ? this.estimateTimeToGoal(data.currentWeightKg, data.targetWeightKg, data.goal) : null;
 
     const result = {

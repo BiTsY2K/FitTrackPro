@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
 
-import { COLORS } from '@/constants/theme';
+import { colors, rounded, spacing, typography } from '@/themes';
 
 interface ProgressBarProps {
   currentStep: number;
@@ -63,55 +63,28 @@ export function ProgressBar({ currentStep, totalSteps, name, stepLabels }: Progr
 }
 
 const styles = StyleSheet.create({
-  container: { marginBottom: 28 },
+  container: { marginBottom: spacing[7] },
 
-  topRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 4,
-  },
+  topRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.xs1 },
   stepLabel: {
-    color: COLORS.accent,
-    fontSize: 11,
-    fontWeight: '700',
+    color: colors.accent.green,
+    fontSize: typography.size.xs - 1,
+    fontWeight: typography.weight.bold,
     letterSpacing: 1.5,
     textTransform: 'uppercase',
   },
-  progressLabel: {
-    color: COLORS.textMuted,
-    fontSize: 11,
-    fontWeight: '600',
-  },
+  progressLabel: { color: colors.content.tertiary, fontSize: typography.size.xs - 1, fontWeight: typography.weight.semibold },
 
-  barsRow: {
-    flexDirection: 'row',
-    marginBottom: 6,
-    gap: 4,
-  },
-  bar: {
-    flex: 1,
-    height: 5,
-    borderRadius: 10,
-    overflow: 'hidden',
-  },
-  barInactive: { backgroundColor: COLORS.border },
-  barDone: { backgroundColor: COLORS.accentDim },
-  barActive: { flexGrow: 2, backgroundColor: COLORS.accent },
-  shimmer: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    width: 60,
-    backgroundColor: 'rgba(255,255,255,0.25)',
-  },
+  barsRow: { flexDirection: 'row', marginBottom: spacing['1.5'], gap: spacing.xs1 },
+  bar: { flex: 1, height: spacing.xs1, borderRadius: rounded.full, overflow: 'hidden' },
+  barInactive: { backgroundColor: colors.border.default },
+  barDone: { backgroundColor: colors.brand.dim },
+  barActive: { flexGrow: 2, backgroundColor: colors.accent.green },
+  shimmer: { position: 'absolute', top: 0, bottom: 0, width: 60, backgroundColor: 'rgba(255,255,255,0.25)' },
 
-  labelsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  barLabel: { flex: 1, fontSize: 11, fontWeight: '700', marginLeft: 3 },
-  barLabelInactive: { color: COLORS.textMuted },
-  barLabelDone: { color: COLORS.accentDim },
-  barLabelActive: { flexGrow: 2, color: COLORS.accent },
+  labelsRow: { flexDirection: 'row', justifyContent: 'space-between' },
+  barLabel: { flex: 1, fontSize: typography.size.xs - 1, fontWeight: typography.weight.bold, marginLeft: spacing['0.5'] },
+  barLabelInactive: { color: colors.content.tertiary },
+  barLabelDone: { color: colors.brand.dim },
+  barLabelActive: { flexGrow: 2, color: colors.accent.green },
 });

@@ -53,11 +53,7 @@ export default {
       package: 'com.bitsdev.fittrack',
     },
 
-    /**
-     * Any extra fields you want to pass to your experience.
-     * Values are accessible via Constants.expoConfig.extra
-     */
-
+    /* Any extra fields you want to pass to your experience. Values are accessible via Constants.expoConfig.extra */
     extra: {
       firebaseApiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
       firebaseAuthDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -67,17 +63,23 @@ export default {
       firebaseAppId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
       firebaseMeasurementId: process.env.EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID,
 
+      usdaApiKey: process.env.EXPO_PUBLIC_USDA_API_KEY,
+      // nutritionixAppId: process.env.EXPO_PUBLIC_NUTRITIONIX_APP_ID,
+      // nutritionixAppKey: process.env.EXPO_PUBLIC_NUTRITIONIX_APP_KEY,
+
       // EAS Project ID - Only needed if using Expo Application Services
       // Run 'npm install -g eas-cli' and 'eas build:configure' to set up
       eas: {
         projectId: '9ede588f-efce-4fb6-99de-8bcb585817c5',
       },
     },
+
     web: {
       favicon: './assets/favicon.png',
       bundler: 'metro',
     },
     plugins: [
+      'expo-barcode-scanner',
       'expo-secure-store',
       'expo-web-browser',
       '@react-native-community/datetimepicker',

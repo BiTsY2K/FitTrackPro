@@ -134,7 +134,7 @@ export class ValidationService {
     }
 
     // Validate height
-    const heightValidation = this.validateHeight(data.heightCm);
+    const heightValidation = this.validateHeight(data.currentHeightCm);
     if (!heightValidation.valid) {
       errors.push(heightValidation.error!);
     }

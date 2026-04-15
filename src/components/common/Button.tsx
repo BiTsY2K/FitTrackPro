@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
   container: { marginBottom: spacing[3] },
   fullWidth: { width: '100%' },
   touchable: { borderRadius: rounded.xl, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' },
-  disabled: { opacity: 0.6 },
+  disabled: { backgroundColor: '#1E1E2A', opacity: 0.6 },
   gradient: { width: '100%', alignItems: 'center', justifyContent: 'center' },
   contentContainer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing[2] },
   baseText: { textAlign: 'center', letterSpacing: 0.3 },

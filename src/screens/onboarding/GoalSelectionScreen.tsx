@@ -56,7 +56,7 @@ export const GOAL_OPTIONS: GoalOption[] = [
     description: "Stay consistent, keep performance high & protect what you've built.",
     iconEmoji: '⚖️',
     accentColor: colors.accent.blue,
-    accentGlow: colors.accentGlow.blueSoft, // 'rgba(59,130,246,0.12)',
+    accentGlow: colors.accentGlow.blueSoft, // 'rgba(59,130,246,0.14)',
     tag: null,
     stat: 'Balanced macros',
   },
@@ -80,8 +80,14 @@ const GOAL_HINTS: Record<GoalType, { text: string; emoji: string }> = {
   body_recomp: { emoji: '🔥', text: "Bold move. This route demands discipline — you're up for it." },
 };
 
+export const PROGRESS_STEPS_LABELS = ['Goal', 'Bio', 'Measurement', 'Activity', 'Summary'];
+
 // ── GoalHint ─────────────────────────────────────────────────────────────────────────────
-const GoalHint = React.memo<{ goalId: GoalType | null }>(
+interface GoalHintProps {
+  goalId: GoalType | null;
+}
+
+const GoalHint = React.memo<GoalHintProps>(
   ({ goalId }) => {
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const slideAnim = useRef(new Animated.Value(8)).current;
@@ -114,24 +120,17 @@ const GoalHint = React.memo<{ goalId: GoalType | null }>(
       </Animated.View>
     );
   },
+
   (prev, next) => prev.goalId === next.goalId,
 );
 
 GoalHint.displayName = 'GoalHint';
+export { GoalHint };
 
 const hintStyles = StyleSheet.create({
-  card: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing[3],
-    borderWidth: 1,
-    borderRadius: rounded.xl,
-    borderColor: colors.border.default,
-    backgroundColor: colors.surface.raised,
-    padding: spacing.sm,
-    overflow: 'hidden',
-    minHeight: spacing.xl3,
-  },
+  card: { flexDirection: 'row', alignItems: 'center', gap: spacing['3.5'], borderWidth: 1, borderRadius: rounded.xl, borderColor: colors.border.default, 
+    backgroundColor: colors.surface.raised, padding: spacing.sm, overflow: 'hidden', minHeight: spacing.xl3,
+  }, // prettier-ignore
 
   emoji: { fontSize: typography.size.xl2 },
   text: { flex: 1, color: colors.content.tertiary, fontSize: typography.size.xs, lineHeight: typography.height.xs },
@@ -200,33 +199,25 @@ export const GoalSelectionScreen: React.FC<Props> = ({ navigation, route }) => {
             <GradientText textStyle={[globalStyles.titleAccent]}>primary goal?</GradientText>
           </Text>
 
-          {/* ── Progress bar ── */}
-          <ProgressBar
-            name="Onboarding"
-            currentStep={1}
-            totalSteps={5}
-            stepLabels={['Goal', 'Bio', 'Measurement', 'Activity', 'Summary']}
-          />
+          {/* Progress bar */}
+          <ProgressBar name="Onboarding" currentStep={1} totalSteps={5} stepLabels={PROGRESS_STEPS_LABELS} />
 
           <Text style={globalStyles.subtitle}>We'll build a plan around what matters most to you. You can always change this later.</Text>
         </Animated.View>
 
         {/* ── Goal cards ── */}
         <View style={styles.cards}>
-          {GOAL_OPTIONS.map((goal, i) => (
-            <SelectionCard
-              key={goal.id}
-              option={goal}
-              selected={selectedGoal === goal.id}
-              onPress={() => setSelectedGoal(goal.id)}
-              animDelay={i * 80 + 80}
-            />
-          ))}
+          {GOAL_OPTIONS.map((goal, i) =>
+            /* prettier-ignore */
+            <SelectionCard key={goal.id} option={goal} selected={selectedGoal === goal.id} 
+              onPress={() => setSelectedGoal(goal.id)} animDelay={i * 80 + 80}
+            />,
+          )}
         </View>
 
         {/* ── Motivational hint ── */}
         {selectedGoal && (
-          <View style={styles.goalHint}>
+          <View style={globalStyles.marg_b_md}>
             <GoalHint goalId={selectedGoal} />
           </View>
         )}
@@ -276,8 +267,7 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
 
-  cards: { marginBottom: spacing[5], gap: spacing.sm },
-  goalHint: { marginBottom: spacing[5] },
+  cards: { flexDirection: 'column', marginBottom: spacing.md, gap: spacing.sm },
   finePrint: { color: colors.content.tertiary, fontSize: typography.size.xs, textAlign: 'center',
     marginTop: spacing.sm, lineHeight: typography.height.xs }, // prettier-ignore
   finePrintAccent: { color: colors.accent.green, fontWeight: typography.weight.bold },

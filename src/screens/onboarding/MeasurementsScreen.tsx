@@ -17,7 +17,9 @@ import { ProgressBar } from '@/components/onboarding/ProgressBar';
 import { COLORS } from '@/constants/theme';
 import { globalStyles } from '@/globalStyles';
 import { OnboardingStackParamList } from '@/navigation/OnboardingNavigation';
+import { CalorieCalculator } from '@/services/calculations/CalorieCalculator';
 import { colors, rounded, spacing, typography } from '@/themes';
+import { MetabolicInfo, PhysicalMeasurements_Cm_Kg } from '@/types/onboarding.types';
 
 import { PROGRESS_STEPS_LABELS } from './GoalSelectionScreen';
 
@@ -77,24 +79,29 @@ export const MeasurementsScreen: React.FC<Props> = ({ navigation, route }) => {
     return () => cancelAnimationFrame(id);
   }, []);
 
-  // Imperial conversions (read-only display)
+  // Imperial conversions (read-only display) //
   const { ftTotal, inRem, currentLbs, targetLbs } = useMemo(() => {
     const ftTotal = Math.floor(currentHeightCm / 30.48);
     const inRem = Math.round((currentHeightCm % 30.48) / 2.54);
+
     const currentLbs = Math.round(currentWeightKg * 2.205);
     const targetLbs = Math.round(targetWeightKg * 2.205);
+
     return { ftTotal, inRem, currentLbs, targetLbs };
   }, [currentHeightCm, currentWeightKg, targetWeightKg]);
 
   const handleContinue = useCallback(() => {
-    navigation.navigate('Activity', {
-      onboardingData: {
-        ...onboardingData,
-        currentHeightCm,
-        currentWeightKg,
-        ...(needsTargetWeight && { targetWeightKg }),
-      },
-    });
+    const bmr = CalorieCalculator.calculateBMR(currentWeightKg, currentHeightCm, onboardingData?.age, onboardingData?.gender);
+    const tdee = CalorieCalculator.calculateTDEE(bmr, 'sedentary');
+
+    const metabolicInfo: MetabolicInfo = { bmr, tdee };
+    const physicalMeasurements_Cm_Kg: PhysicalMeasurements_Cm_Kg = {
+      currentHeightCm,
+      currentWeightKg,
+      ...(needsTargetWeight && { targetWeightKg }),
+    };
+
+    navigation.navigate('Activity', { onboardingData: { ...onboardingData, ...physicalMeasurements_Cm_Kg, ...metabolicInfo } });
   }, [navigation, onboardingData, currentHeightCm, currentWeightKg, targetWeightKg, needsTargetWeight]);
 
   return (

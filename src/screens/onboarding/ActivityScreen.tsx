@@ -1,7 +1,7 @@
 import { FontAwesome } from '@expo/vector-icons';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
@@ -14,7 +14,7 @@ import { COLORS } from '@/constants/theme';
 import { globalStyles } from '@/globalStyles';
 import { OnboardingStackParamList } from '@/navigation/OnboardingNavigation';
 import { colors, rounded, spacing, typography } from '@/themes';
-import type { ActivityLevelType } from '@/types/onboarding.types';
+import type { ActivityLevelType, PhysicalActivity } from '@/types/onboarding.types';
 
 import { PROGRESS_STEPS_LABELS } from './GoalSelectionScreen';
 
@@ -388,16 +388,10 @@ export const ActivityScreen: React.FC<Props> = ({ navigation, route }) => {
   // Ambient glow shifts with selected activity color
   const selectedOption = ACTIVITY_OPTIONS.find(o => o.id === activityLevel);
 
-  const handleContinue = () => {
-    navigation.navigate('Summary', {
-      onboardingData: {
-        ...onboardingData,
-        activityLevel,
-        workoutFrequencyPerWeek: workoutFrequency,
-        dietType: 'standard',
-      },
-    });
-  };
+  const handleContinue = useCallback(() => {
+    const physicalActivity: PhysicalActivity = { activityLevel, workoutFrequencyPerWeek: workoutFrequency };
+    navigation.navigate('Summary', { onboardingData: { ...onboardingData, ...physicalActivity, dietType: 'standard' } });
+  }, [navigation, onboardingData, activityLevel, workoutFrequency]);
 
   return (
     <View style={[globalStyles.safe, { paddingTop: headerHeight }]}>

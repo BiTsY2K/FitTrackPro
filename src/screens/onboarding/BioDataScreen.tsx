@@ -2,7 +2,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, Modal, Platform, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
@@ -14,8 +14,9 @@ import { ProgressBar } from '@/components/onboarding/ProgressBar';
 import { COLORS } from '@/constants/theme';
 import { globalStyles } from '@/globalStyles';
 import { OnboardingStackParamList } from '@/navigation/OnboardingNavigation';
+import { CalorieCalculator } from '@/services/calculations/CalorieCalculator';
 import { colors, rounded, spacing, typography } from '@/themes';
-import { Gender } from '@/types/onboarding.types';
+import { Gender, MetabolicInfo, UserBioInfo } from '@/types/onboarding.types';
 
 import { PROGRESS_STEPS_LABELS } from './GoalSelectionScreen';
 
@@ -303,25 +304,21 @@ const ageBadgeStyles = StyleSheet.create({
 interface CaloriePreviewProps {
   gender: Gender | null;
   age: number | null;
+  tdee: number | null;
   styleContainerView?: ViewStyle;
 }
 
 const CaloriePreview: React.FC<CaloriePreviewProps> = React.memo(
-  ({ gender, age, styleContainerView }) => {
+  ({ gender, age, tdee, styleContainerView }) => {
     const fadeAnim = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
-      if (gender && age) {
-        Animated.timing(fadeAnim, { toValue: 1, duration: 300, useNativeDriver: true }).start();
-      } else {
-        Animated.timing(fadeAnim, { toValue: 0, duration: 200, useNativeDriver: true }).start();
-      }
-    }, [gender, age]);
+      if (gender && age && tdee) Animated.timing(fadeAnim, { toValue: 1, duration: 300, useNativeDriver: true }).start();
+      else Animated.timing(fadeAnim, { toValue: 0, duration: 200, useNativeDriver: true }).start();
+    }, [gender, age, tdee]);
 
-    if (!gender || !age) return <Animated.View style={{ opacity: fadeAnim }} />;
+    if (!gender || !age || !tdee) return <Animated.View style={{ opacity: fadeAnim }} />;
 
-    const bmr = gender === 'male' ? Math.round(10 * 75 + 6.25 * 175 - 5 * age + 5) : Math.round(10 * 60 + 6.25 * 162 - 5 * age - 161);
-    const tdee = Math.round(bmr * 1.55);
     const protein = Math.round((tdee * 0.3) / 4);
     const carbs = Math.round((tdee * 0.4) / 4);
 
@@ -351,7 +348,7 @@ const CaloriePreview: React.FC<CaloriePreviewProps> = React.memo(
             </View>
           ))}
         </View>
-        <Text style={caloriePreviewStyles.note}>Estimates based on avg body composition.{'\n'} Finalised after measurements step.</Text>
+        <Text style={caloriePreviewStyles.note}>Estimates based on avg. body composition.{'\n'} Finalised after measurements step.</Text>
       </Animated.View>
     );
   },
@@ -438,26 +435,23 @@ export const BioDataScreen: React.FC<Props> = ({ navigation, route }) => {
   // Accurate age calculation (handles birthday not yet passed this year) //
   const today = new Date();
   const rawAge = today.getFullYear() - birthDate.getFullYear();
-  const birthdayPassed =
-    today.getMonth() > birthDate.getMonth() || (today.getMonth() === birthDate.getMonth() && today.getDate() >= birthDate.getDate());
+  const birthdayPassed = today.getMonth() > birthDate.getMonth() || 
+    (today.getMonth() === birthDate.getMonth() && today.getDate() >= birthDate.getDate()); // prettier-ignore
   const age = birthdayPassed ? rawAge : rawAge - 1;
   const ageValid = age >= 13 && age <= 100;
   const isValid = gender !== null && ageValid;
 
   const selectedGenderData = GENDER_OPTIONS.find(g => g.id === gender) ?? null;
+  const bmr = gender === 'male' ? CalorieCalculator.calculateBMR(75, 175, age, 'male') 
+    : CalorieCalculator.calculateBMR(60, 162, age, 'female'); // prettier-ignore
+  const tdee = CalorieCalculator.calculateTDEE(bmr, 'moderately_active');
 
-  const handleContinue = () => {
+  const handleContinue = useCallback(() => {
     if (!isValid) return;
-    navigation.navigate('Measurements', {
-      onboardingData: {
-        ...onboardingData,
-        gender,
-        birthDate: birthDate,
-        // birthDate: birthDate.toISOString(),
-        age,
-      },
-    });
-  };
+    const userBioInfo: UserBioInfo = { gender, birthDate, age };
+    const metabolicInfo: MetabolicInfo = { bmr, tdee };
+    navigation.navigate('Measurements', { onboardingData: { ...onboardingData, ...userBioInfo, ...metabolicInfo } });
+  }, [navigation, onboardingData, gender, birthDate, age]);
 
   return (
     <View style={[globalStyles.safe, { paddingTop: headerHeight }]}>
@@ -518,7 +512,7 @@ export const BioDataScreen: React.FC<Props> = ({ navigation, route }) => {
         </View>
 
         {/* ── Live Calorie Preview ── */}
-        <CaloriePreview gender={gender} age={ageValid ? age : null} styleContainerView={globalStyles.marg_b_md} />
+        <CaloriePreview gender={gender} age={ageValid ? age : null} tdee={tdee} styleContainerView={globalStyles.marg_b_md} />
 
         {/* ── Privacy Card ── */}
         <View style={[privacyCardStyles.card, globalStyles.marg_b_md]}>

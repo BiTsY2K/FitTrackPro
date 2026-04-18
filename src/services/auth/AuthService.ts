@@ -1,15 +1,17 @@
-import {
-  createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendEmailVerification, sendPasswordResetEmail, 
-  updatePassword, updateProfile, User, AuthError, GoogleAuthProvider, signInWithCredential, OAuthProvider,
-} from 'firebase/auth'; // prettier-ignore
-import { doc, setDoc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
-import { auth, db } from '@/services/firebase';
-import { validatePasswordStrength, validateEmail, sanitizeInput, SecureStorage } from '@/utils/security';
-import { AUTH_ERRORS, RATE_LIMIT_CONFIG } from '@/constants/security';
-import { logger } from '@/utils/logger';
-import { logEvent, AnalyticsEvent, setAnalyticsUserId } from '@/services/analytics';
 import * as Sentry from '@sentry/react-native';
+import {
+AuthError,   createUserWithEmailAndPassword, GoogleAuthProvider, OAuthProvider,
+sendEmailVerification, sendPasswordResetEmail, 
+signInWithCredential, signInWithEmailAndPassword, signOut,   updatePassword, updateProfile, User, } from 'firebase/auth'; // prettier-ignore
+import { doc, getDoc, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore';
+
+import { AUTH_ERRORS, RATE_LIMIT_CONFIG } from '@/constants/security';
+import { AnalyticsEvent, logEvent, setAnalyticsUserId } from '@/services/analytics';
+import { auth, db } from '@/services/firebase';
+import { GoalType } from '@/types/onboarding.types';
 import { UserProfile } from '@/types/users.types';
+import { logger } from '@/utils/logger';
+import { sanitizeInput, SecureStorage, validateEmail, validatePasswordStrength } from '@/utils/security';
 
 /**
  * Rate Limiter (In-Memory)
@@ -48,7 +50,7 @@ const rateLimiter = new RateLimiter();
  */
 class AuthenticationService {
   /** Sign Up with Email/Password */
-  async signUp(email: string, password: string, displayName: string): Promise<User> {
+  async signUp(email: string, password: string, displayName: string, primaryGoal: GoalType): Promise<User> {
     try {
       // Rate limiting //
       const rateLimitKey = `signup:${email}`;
@@ -80,8 +82,12 @@ class AuthenticationService {
       await this.createUserDocument(user.uid, {
         email: cleanEmail,
         displayName: cleanName,
-        createdAt: new Date(),
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
         emailVerified: false,
+        onboardingData: {
+          goal: primaryGoal,
+        },
       });
 
       // Store auth state securely //

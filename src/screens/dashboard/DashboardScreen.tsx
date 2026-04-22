@@ -28,9 +28,6 @@ const MEAL_CONFIG: Record<MealType, { label: string; icon: string; color: string
   snack: { label: 'Snack', icon: '🍎', color: Colors.success },
 };
 
-const RING_RADIUS = 85;
-const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
-
 function CalorieHeroCard({ log, plan }: { log: DailyTotals; plan: DailyMacroTargets }) {
   const remaining = Math.max(0, plan.dailyCalorieTarget - log.calories);
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -51,7 +48,7 @@ function CalorieHeroCard({ log, plan }: { log: DailyTotals; plan: DailyMacroTarg
 
   /* prettier-ignore */
   const macros = [
-    { icon: '🥩', label: 'Protein', rawValue: log.calories, max: plan.dailyProteinGrams, unit: 'g', color: colors.accent.blue, bg: colors.accentGlow.blue },
+    { icon: '🥩', label: 'Protein', rawValue: log.protein, max: plan.dailyProteinGrams, unit: 'g', color: colors.accent.blue, bg: colors.accentGlow.blue },
     { icon: '🌾', label: 'Carbs', rawValue: log.carbs, max: plan.dailyCarbsGrams, unit: 'g', color: colors.accent.orange, bg: colors.accentGlow.orange },
     { icon: '🫒', label: 'Fat', rawValue: log.fat, max: plan.dailyFatGrams, unit: 'g', color: colors.accent.purple, bg: colors.accentGlow.purple },
   ];
@@ -113,9 +110,7 @@ const calorieHeroCardStyles = StyleSheet.create({
   statsLabel: { color: COLORS.textMuted, fontSize: typography.size.xs, fontWeight: typography.weight.semibold },
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-// COMPONENT: QuickActionRow
-// ─────────────────────────────────────────────────────────────────────────────
+// ── COMPONENT: QuickActionRow ─────────────────────────────────────────────────────────────────────────────
 interface QuickActionRowProps {
   onLogFood: () => void;
   onScan: () => void;
@@ -160,9 +155,7 @@ const quickActionStyles = StyleSheet.create({
   btnLabelPrimary: { color: COLORS.accent },
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-// COMPONENT: WaterTrackerCard
-// ─────────────────────────────────────────────────────────────────────────────
+// ── COMPONENT: WaterTrackerCard ─────────────────────────────────────────────────────────────────────────────
 function WaterTrackerCard({ waterMl, targetMl }: { waterMl: number; targetMl: number }) {
   const [currentWater, setCurrentWater] = useState(waterMl);
   const fillAnim = useRef(new Animated.Value(0)).current;
@@ -180,13 +173,13 @@ function WaterTrackerCard({ waterMl, targetMl }: { waterMl: number; targetMl: nu
 
       <View style={waterTrackerStyles.btns}>
         {[250, 500].map(ml => (
-          <>
+          <Fragment key={ml}>
             {/* prettier-ignore */}
-            <TouchableOpacity key={ml} onPress={() => setCurrentWater(w => Math.min(targetMl, w + ml))}
+            <TouchableOpacity onPress={() => setCurrentWater(w => Math.min(targetMl, w + ml))}
               style={waterTrackerStyles.addBtn} activeOpacity={0.75}>
               <Text style={waterTrackerStyles.addBtnText}>+{ml}ml</Text>
             </TouchableOpacity>
-          </>
+          </Fragment>
         ))}
       </View>
     </View>
@@ -202,13 +195,7 @@ const waterTrackerStyles = StyleSheet.create({
     padding: spacing.md,
   },
 
-  icon: { fontSize: typography.size.lg },
-  iconBox: { width: 44, height: 44, borderWidth: 1, borderRadius: rounded.lg, alignItems: 'center', 
-    justifyContent: 'center', flexShrink: 0 }, // prettier-ignore
-
-  labelTrackContainer: { flex: 1, marginTop: -spacing.xs1 },
-
-  btns: { flexDirection: 'row', gap: 5, flexShrink: 1 },
+  btns: { flexDirection: 'row', gap: spacing['2.5'], flexShrink: 1 },
   addBtn: { flex: 1, paddingHorizontal: spacing.sm, paddingVertical: spacing.md, borderWidth: 1, borderRadius: rounded.lg, 
     backgroundColor: 'rgba(6,182,212,0.12)', borderColor: 'rgba(6,182,212,0.3)' }, // prettier-ignore
   addBtnText: { textAlign: 'center', color: COLORS.teal, fontSize: typography.size.sm, fontWeight: typography.weight.bold },
@@ -265,7 +252,7 @@ function MealAccordionItem({ meal, onAddFood }: MealAccordionItemProps) {
           <Text style={mealAccordionStyles.mealSub}>
             {isEmpty
               ? 'Nothing logged yet'
-              : `${meal.foodLogs.length} item${meal.foodLogs.length > 1 ? 's' : ''} · ${meal.time ?? `${new Date().getHours()}:${new Date().getMinutes()}`}`}
+              : `${meal.foodLogs.length} item${meal.foodLogs.length > 1 ? 's' : ''} · ${meal.time || `${new Date().getHours()}:${new Date().getMinutes()} AM`}`}
           </Text>
         </View>
         <Animated.Text
@@ -369,7 +356,7 @@ interface MacroRingProps {
 export function MacroRingChart({ size, strokeWidth, calories, calorieTarget, proteinG, carbsG, fatG }: MacroRingProps) {
   const R = (size - strokeWidth) / 2, CX = size / 2, CY = size / 2; // prettier-ignore
   const circumference = 2 * Math.PI * R;
-  const GAP = 3;
+  const GAP = 0;
 
   const totalKcal = proteinG * 4 + carbsG * 4 + fatG * 9 || 1;
   const segments = [
@@ -453,8 +440,8 @@ function MacroTrackerBar({
 
   return (
     <View style={[macrobarStyles.macroRow, isLastMacroRow && macrobarStyles.macroRowBorder]}>
-      <View style={[waterTrackerStyles.iconBox, { backgroundColor: bg, borderColor: `${color}30` }]}>
-        <Text style={waterTrackerStyles.icon}>{icon}</Text>
+      <View style={[macrobarStyles.iconBox, { backgroundColor: bg, borderColor: `${color}30` }]}>
+        <Text style={macrobarStyles.icon}>{icon}</Text>
       </View>
 
       <View style={macrobarStyles.labelFillTrack}>
@@ -488,6 +475,10 @@ function MacroTrackerBar({
 const macrobarStyles = StyleSheet.create({
   macroRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingVertical: 12 },
   macroRowBorder: { borderBottomWidth: 1, borderBottomColor: colors.border.default },
+
+  icon: { fontSize: typography.size.lg },
+  iconBox: { width: 44, height: 44, borderWidth: 1, borderRadius: rounded.lg, alignItems: 'center', 
+    justifyContent: 'center', flexShrink: 0 }, // prettier-ignore
 
   labelFillTrack: { flex: 1, marginTop: -spacing.xs1 },
   labelRow: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: spacing['1.5'] },
@@ -578,11 +569,6 @@ export const DashboardScreen: React.FC<Props> = ({ navigation }) => {
 
   const dailyMacroTargets = profile.nutritionPlan?.dailyMacroTargets ?? DEFAULT_DAILY_MACRO_TARGETS;
 
-  // ── Derived values ── //
-  const caloriesRemaining = Math.max(0, dailyMacroTargets.dailyCalorieTarget - dailyTotals.calories);
-  const caloriesPercentage = Math.min(1, dailyTotals.calories / dailyMacroTargets.dailyCalorieTarget);
-  const strokeOffset = RING_CIRCUMFERENCE * (1 - caloriesPercentage);
-
   const now = new Date();
   const greeting = now.getHours() < 12 ? 'Good morning' : now.getHours() < 17 ? 'Good afternoon' : 'Good evening';
   const today = new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
@@ -634,67 +620,31 @@ export const DashboardScreen: React.FC<Props> = ({ navigation }) => {
         </View>
 
         {/* ── Quick actions ── */}
-        <QuickActionRow
-          onLogFood={() => navigation.navigate('FoodSearchScreen', { mealType: 'lunch' })}
-          onScan={() => {}}
-          onWater={() => {}}
-        />
+        <View style={globalStyles.marg_b_md}>
+          <QuickActionRow
+            onLogFood={() => navigation.navigate('FoodSearchScreen', { mealType: 'lunch' })}
+            onScan={() => {}}
+            onWater={() => {}}
+          />
+        </View>
 
         {/* ── Water ── */}
-        <View style={globalStyles.marg_b_md}>
+        <View style={globalStyles.marg_b_lg}>
           <WaterTrackerCard waterMl={dailyTotals.water} targetMl={dailyMacroTargets.dailyWaterMl} />
         </View>
 
         {/* ── Meals ── */}
-        <SectionLabel icon="🍴">Today's Meals</SectionLabel>
-        {(Object.keys(logsByMeal) as MealType[]).map(mealType => (
-          <MealAccordionItem
-            key={mealType}
-            meal={{ type: mealType, foodLogs: logsByMeal[mealType], ...MEAL_CONFIG[mealType], time: '', calories: 290 }}
-            onAddFood={() => navigation.navigate('FoodSearchScreen', { mealType })}
-          />
-        ))}
-
-        {/* ── Calorie Ring ── */}
-        <View style={styles.calorieCard}>
-          <View style={styles.calorieRing}>
-            <Svg width={200} height={200}>
-              {/* Track */}
-              <Circle cx={100} cy={100} r={RING_RADIUS} stroke={Colors.gray[200]} strokeWidth={12} fill="none" />
-              {/* Progress */}
-              <Circle
-                cx={100}
-                cy={100}
-                r={RING_RADIUS}
-                stroke={caloriesPercentage >= 1 ? Colors.error : Colors.primary[400]}
-                strokeWidth={12}
-                fill="none"
-                strokeDasharray={RING_CIRCUMFERENCE}
-                strokeDashoffset={strokeOffset}
-                strokeLinecap="round"
-                rotation="-90"
-                origin="100, 100"
-              />
-            </Svg>
-            <View style={styles.calorieCenter}>
-              <Text style={styles.caloriesRemaining}>{caloriesRemaining}</Text>
-              <Text style={styles.caloriesLabel}>kcal left</Text>
-              <Text style={styles.caloriesSubtext}>
-                {dailyTotals.calories} / {profile.nutritionPlan.dailyMacroTargets.dailyCalorieTarget}
-              </Text>
-            </View>
-          </View>
-
-          <View style={styles.calorieBreakdown}>
-            <View style={styles.breakdownItem}>
-              <Ionicons name="flame-outline" size={16} color={Colors.primary[400]} />
-              <Text style={styles.breakdownText}>Goal: {profile.nutritionPlan.dailyMacroTargets.dailyCalorieTarget} kcal</Text>
-            </View>
-            <View style={styles.breakdownItem}>
-              <Ionicons name="restaurant-outline" size={16} color={Colors.success} />
-              <Text style={styles.breakdownText}>Eaten: {dailyTotals.calories} kcal</Text>
-            </View>
-          </View>
+        <View style={globalStyles.marg_b_lg}>
+          <SectionLabel icon="🍴">Today's Meals</SectionLabel>
+          {(Object.keys(logsByMeal) as MealType[]).map(mealType =>
+            /* prettier-ignore */
+            <MealAccordionItem key={`meal_accordion_${mealType}`} 
+              onAddFood={() => navigation.navigate('FoodSearchScreen', { mealType })}
+              meal={{ type: mealType, foodLogs: logsByMeal[mealType], ...MEAL_CONFIG[mealType], time: '',
+                calories: (logsByMeal[mealType] || []).reduce<number>((acc: number, log: FoodLog) => acc + log.totalCalories, 0),
+              }}
+            />,
+          )}
         </View>
 
         {/* ── Meal Sections ── */}
@@ -763,56 +713,6 @@ const styles = StyleSheet.create({
   avatarText: { color: colors.content.onBrand, fontSize: typography.size.xl, fontWeight: typography.weight.black, marginTop: -spacing['0.5'] }, // prettier-ignore
 
   // avatarSmall: { width: 40, height: 40, borderRadius: BorderRadius.full, backgroundColor: Colors.primary[100], alignItems: 'center', justifyContent: 'center' },
-
-  // ── Calorie ring card ── //
-  calorieCard: {
-    backgroundColor: Colors.surface,
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.lg,
-    marginBottom: Spacing.md,
-    alignItems: 'center',
-  },
-  calorieRing: {
-    position: 'relative',
-    marginBottom: Spacing.md,
-  },
-  calorieCenter: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  caloriesRemaining: {
-    fontSize: Typography.fontSize['3xl'],
-    fontWeight: Typography.fontWeight.bold,
-    color: Colors.text.primary,
-  },
-  caloriesLabel: {
-    fontSize: Typography.fontSize.sm,
-    color: Colors.text.secondary,
-    marginTop: Spacing.xs,
-  },
-  caloriesSubtext: {
-    fontSize: Typography.fontSize.xs,
-    color: Colors.text.tertiary,
-    marginTop: Spacing.xs,
-  },
-  calorieBreakdown: {
-    flexDirection: 'row',
-    gap: Spacing.md,
-  },
-  breakdownItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.xs,
-  },
-  breakdownText: {
-    fontSize: Typography.fontSize.xs,
-    color: Colors.text.secondary,
-  },
 
   // ── Meal sections ── //
   mealCard: {

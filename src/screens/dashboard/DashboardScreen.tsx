@@ -14,6 +14,7 @@ import { BorderRadius, COLORS, Colors, Spacing, Typography } from '@/constants/t
 import { globalStyles } from '@/globalStyles';
 import { DailyTotals, useFoodLog } from '@/hooks/useFoodLog';
 import { useProfile } from '@/hooks/useProfile';
+import { useWaterLog } from '@/hooks/useWaterLog';
 import { BottomTabParamList, MainStackParamList } from '@/navigation/MainNavigation';
 import { colors, rounded, spacing, typography } from '@/themes';
 import { FoodLog, MealType } from '@/types/food.types';
@@ -156,26 +157,25 @@ const quickActionStyles = StyleSheet.create({
 });
 
 // ── COMPONENT: WaterTrackerCard ─────────────────────────────────────────────────────────────────────────────
-function WaterTrackerCard({ waterMl, targetMl }: { waterMl: number; targetMl: number }) {
-  const [currentWater, setCurrentWater] = useState(waterMl);
+function WaterTrackerCard({ waterMl, targetMl, onAdd }: { waterMl: number; targetMl: number; onAdd: (ml: number) => void }) {
   const fillAnim = useRef(new Animated.Value(0)).current;
-  const pct = Math.min(1, currentWater / targetMl);
+  const pct = Math.min(1, waterMl / targetMl);
 
   useEffect(() => {
     Animated.spring(fillAnim, { toValue: pct, useNativeDriver: false, speed: 10, bounciness: 4 }).start();
-  }, [currentWater]);
+  }, [waterMl]);
 
   return (
     <View style={waterTrackerStyles.card}>
       {/* prettier-ignore */}
-      <MacroTrackerBar icon={'💧'} label={'Water'} value={Number((currentWater / 1000).toFixed(2))} maxValue= {Number((targetMl / 1000).toFixed(2))} 
-        unit='L' color={COLORS.teal} bg={'rgba(6,182,212,0.15)'} isLastMacroRow= {false} />
+      <MacroTrackerBar icon={'💧'} label={'Water'} value={Number((waterMl / 1000).toFixed(2))} maxValue={Number((targetMl / 1000).toFixed(2))}
+        unit='L' color={COLORS.teal} bg={'rgba(6,182,212,0.15)'} isLastMacroRow={false} />
 
       <View style={waterTrackerStyles.btns}>
         {[250, 500].map(ml => (
           <Fragment key={ml}>
             {/* prettier-ignore */}
-            <TouchableOpacity onPress={() => setCurrentWater(w => Math.min(targetMl, w + ml))}
+            <TouchableOpacity onPress={() => onAdd(ml)}
               style={waterTrackerStyles.addBtn} activeOpacity={0.75}>
               <Text style={waterTrackerStyles.addBtnText}>+{ml}ml</Text>
             </TouchableOpacity>
@@ -215,9 +215,10 @@ interface MealAccordionItemProps {
     calories: number;
   };
   onAddFood: () => void;
+  onDeleteFood: (logId: string) => void;
 }
 
-function MealAccordionItem({ meal, onAddFood }: MealAccordionItemProps) {
+function MealAccordionItem({ meal, onAddFood, onDeleteFood }: MealAccordionItemProps) {
   const [expanded, setExpanded] = useState(false);
   const heightAnim = useRef(new Animated.Value(0)).current;
   const rotateAnim = useRef(new Animated.Value(0)).current;
@@ -268,7 +269,7 @@ function MealAccordionItem({ meal, onAddFood }: MealAccordionItemProps) {
       <Animated.View style={{ maxHeight: heightAnim.interpolate({ inputRange: [0, 1], outputRange: [0, maxHeight] }), overflow: 'hidden' }}>
         <View style={mealAccordionStyles.body}>
           {meal.foodLogs.map((item, ii) => (
-            <View key={ii} style={[mealAccordionStyles.itemRow, ii < meal.foodLogs.length - 1 && mealAccordionStyles.itemBorder]}>
+            <View key={item.id} style={[mealAccordionStyles.itemRow, ii < meal.foodLogs.length - 1 && mealAccordionStyles.itemBorder]}>
               <View style={{ flex: 1 }}>
                 <Text style={mealAccordionStyles.itemName}>{item.foodItem.name}</Text>
                 <Text style={mealAccordionStyles.itemMacros}>
@@ -279,6 +280,23 @@ function MealAccordionItem({ meal, onAddFood }: MealAccordionItemProps) {
               <View style={mealAccordionStyles.calBadge}>
                 <Text style={mealAccordionStyles.calBadgeText}>{item.foodItem.nutrition.calories} kcal</Text>
               </View>
+              {/* Delete log entry */}
+              <Pressable
+                style={mealAccordionStyles.deleteBtn}
+                hitSlop={10}
+                onPress={() =>
+                  Alert.alert(
+                    'Remove Food',
+                    `Remove "${item.foodItem.name}" from ${meal.label}?`,
+                    [
+                      { text: 'Cancel', style: 'cancel' },
+                      { text: 'Remove', style: 'destructive', onPress: () => onDeleteFood(item.id) },
+                    ],
+                  )
+                }
+              >
+                <Ionicons name="trash-outline" size={15} color={COLORS.error} />
+              </Pressable>
             </View>
           ))}
           {/* Meal Add Button */}
@@ -338,6 +356,7 @@ const mealAccordionStyles = StyleSheet.create({
   addBtn: { borderWidth: 1, borderRadius: rounded.lg, borderColor: colors.border.default, backgroundColor: colors.surface.glass,
     alignItems: 'center', marginTop: spacing.xs, paddingVertical: spacing.md }, // prettier-ignore
   addBtnText: { color: colors.accent.green, fontSize: typography.size.xs, fontWeight: typography.weight.bold },
+  deleteBtn: { padding: 6, marginLeft: 6, alignItems: 'center', justifyContent: 'center' },
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -493,49 +512,6 @@ const macrobarStyles = StyleSheet.create({
   fill: { height: '100%', borderRadius: rounded.full },
 });
 
-/** Per-meal section with logged items and an add button */
-const MealSection: React.FC<{
-  meal: { label: string; icon: string; color: string };
-  logs: FoodLog[];
-  onAddPress: () => void;
-}> = ({ meal, logs, onAddPress }) => {
-  const mealCalories = logs.reduce((sum, l) => sum + l.totalCalories, 0);
-
-  return (
-    <View style={styles.mealCard}>
-      <View style={styles.mealHeader}>
-        <Text style={styles.mealIcon}>{meal.icon}</Text>
-        <Text style={styles.mealLabel}>{meal.label}</Text>
-        {mealCalories > 0 && <Text style={[styles.mealCalories, { color: meal.color }]}>{mealCalories} kcal</Text>}
-        <Pressable style={styles.mealAddBtn} onPress={onAddPress} hitSlop={8}>
-          <Ionicons name="add" size={20} color={Colors.primary[400]} />
-        </Pressable>
-      </View>
-
-      {logs.length > 0 ? (
-        logs.map(log => (
-          <View key={log.id} style={styles.logItem}>
-            <View style={styles.logItemInfo}>
-              <Text style={styles.logItemName} numberOfLines={1}>
-                {log.foodItem.name}
-              </Text>
-              <Text style={styles.logItemMeta}>
-                {log.servingsConsumed} serving{log.servingsConsumed !== 1 ? 's' : ''}
-                {log.foodItem.brand ? ` · ${log.foodItem.brand}` : ''}
-              </Text>
-            </View>
-            <Text style={styles.logItemCal}>{log.totalCalories}</Text>
-          </View>
-        ))
-      ) : (
-        <Pressable style={styles.emptyMeal} onPress={onAddPress}>
-          <Ionicons name="add-circle-outline" size={16} color={Colors.gray[400]} />
-          <Text style={styles.emptyMealText}>Add {meal.label.toLowerCase()}</Text>
-        </Pressable>
-      )}
-    </View>
-  );
-};
 
 // ── DashboardScreen: Main Screen ─────────────────────────────────────────────────────────────────────────────
 type Props = CompositeScreenProps<BottomTabScreenProps<BottomTabParamList, 'Dashboard'>, NativeStackScreenProps<MainStackParamList>>;
@@ -545,12 +521,13 @@ const DEFAULT_DAILY_MACRO_TARGETS: DailyMacroTargets = {
   dailyProteinGrams: 90,
   dailyFatGrams: 85,
   dailyCarbsGrams: 290,
-  dailyWaterMl: 3.2,
+  dailyWaterMl: 3200, // 3.2 L expressed in ml — matches WaterTrackerCard's /1000 display logic
 } as const;
 
 export const DashboardScreen: React.FC<Props> = ({ navigation }) => {
   const { profile, isLoading: profileLoading, refetch: refetchProfile } = useProfile();
-  const { dailyTotals, logsByMeal, isLoading: logsLoading, refetch: refetchLogs } = useFoodLog(new Date(), profile);
+  const { dailyTotals, logsByMeal, isLoading: logsLoading, refetch: refetchLogs, deleteFood } = useFoodLog(new Date(), profile);
+  const { waterMl, addWater } = useWaterLog(new Date()); // Persisted daily water — AsyncStorage-backed
 
   const onRefresh = () => {
     refetchProfile();
@@ -623,14 +600,14 @@ export const DashboardScreen: React.FC<Props> = ({ navigation }) => {
         <View style={globalStyles.marg_b_md}>
           <QuickActionRow
             onLogFood={() => navigation.navigate('FoodSearchScreen', { mealType: 'lunch' })}
-            onScan={() => {}}
-            onWater={() => {}}
+            onScan={() => navigation.navigate('BarcodeScanner', { mealType: 'snack' })}
+            onWater={() => addWater(250)}
           />
         </View>
 
         {/* ── Water ── */}
         <View style={globalStyles.marg_b_lg}>
-          <WaterTrackerCard waterMl={dailyTotals.water} targetMl={dailyMacroTargets.dailyWaterMl} />
+          <WaterTrackerCard waterMl={waterMl} targetMl={dailyMacroTargets.dailyWaterMl} onAdd={addWater} />
         </View>
 
         {/* ── Meals ── */}
@@ -638,8 +615,9 @@ export const DashboardScreen: React.FC<Props> = ({ navigation }) => {
           <SectionLabel icon="🍴">Today's Meals</SectionLabel>
           {(Object.keys(logsByMeal) as MealType[]).map(mealType =>
             /* prettier-ignore */
-            <MealAccordionItem key={`meal_accordion_${mealType}`} 
+            <MealAccordionItem key={`meal_accordion_${mealType}`}
               onAddFood={() => navigation.navigate('FoodSearchScreen', { mealType })}
+              onDeleteFood={(logId) => deleteFood(logId)}
               meal={{ type: mealType, foodLogs: logsByMeal[mealType], ...MEAL_CONFIG[mealType], time: '',
                 calories: (logsByMeal[mealType] || []).reduce<number>((acc: number, log: FoodLog) => acc + log.totalCalories, 0),
               }}
@@ -647,33 +625,6 @@ export const DashboardScreen: React.FC<Props> = ({ navigation }) => {
           )}
         </View>
 
-        {/* ── Meal Sections ── */}
-        {(Object.keys(MEAL_CONFIG) as MealType[]).map(meal => (
-          <MealSection
-            key={meal}
-            meal={MEAL_CONFIG[meal]}
-            logs={logsByMeal[meal] || []}
-            onAddPress={() => navigation.navigate('FoodSearchScreen', { mealType: meal })}
-          />
-        ))}
-
-        {/* ── Quick Actions ── */}
-        <View style={styles.actionsRow}>
-          <Pressable style={styles.actionChip} onPress={() => navigation.navigate('FoodSearchScreen', { mealType: 'snack' })}>
-            <Ionicons name="add-circle" size={20} color={Colors.primary[400]} />
-            <Text style={styles.actionChipText}>Log Food</Text>
-          </Pressable>
-
-          <Pressable style={styles.actionChip} onPress={() => Alert.alert('Coming Soon', 'Exercise logging arrives in Phase 2!')}>
-            <Ionicons name="fitness" size={20} color={Colors.success} />
-            <Text style={styles.actionChipText}>Log Exercise</Text>
-          </Pressable>
-
-          <Pressable style={styles.actionChip} onPress={() => Alert.alert('Coming Soon', 'Water tracking arrives in Phase 2!')}>
-            <Ionicons name="water" size={20} color={Colors.info} />
-            <Text style={styles.actionChipText}>Log Water</Text>
-          </Pressable>
-        </View>
       </KeyboardAwareScrollView>
     </SafeAreaView>
   );
@@ -714,99 +665,5 @@ const styles = StyleSheet.create({
 
   // avatarSmall: { width: 40, height: 40, borderRadius: BorderRadius.full, backgroundColor: Colors.primary[100], alignItems: 'center', justifyContent: 'center' },
 
-  // ── Meal sections ── //
-  mealCard: {
-    backgroundColor: Colors.surface,
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.md,
-    marginBottom: Spacing.sm,
-  },
-  mealHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: Spacing.sm,
-  },
-  mealIcon: { fontSize: 16, marginRight: Spacing.xs },
-  mealLabel: {
-    flex: 1,
-    fontSize: Typography.fontSize.base,
-    fontWeight: Typography.fontWeight.semibold,
-    color: Colors.text.primary,
-  },
-  mealCalories: {
-    fontSize: Typography.fontSize.sm,
-    fontWeight: Typography.fontWeight.medium,
-    marginRight: Spacing.sm,
-  },
-  mealAddBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: BorderRadius.full,
-    backgroundColor: Colors.primary[50],
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  logItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: Spacing.xs,
-    borderTopWidth: 1,
-    borderTopColor: Colors.border,
-  },
-  logItemInfo: {
-    flex: 1,
-    marginRight: Spacing.sm,
-  },
-  logItemName: {
-    fontSize: Typography.fontSize.sm,
-    fontWeight: Typography.fontWeight.medium,
-    color: Colors.text.primary,
-  },
-  logItemMeta: {
-    fontSize: Typography.fontSize.xs,
-    color: Colors.text.secondary,
-    marginTop: 1,
-  },
-  logItemCal: {
-    fontSize: Typography.fontSize.sm,
-    fontWeight: Typography.fontWeight.semibold,
-    color: Colors.text.secondary,
-  },
-  emptyMeal: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.xs,
-    paddingVertical: Spacing.xs,
-    borderTopWidth: 1,
-    borderTopColor: Colors.border,
-  },
-  emptyMealText: {
-    fontSize: Typography.fontSize.sm,
-    color: Colors.gray[400],
-  },
 
-  // ── Quick actions row ── //
-  actionsRow: {
-    flexDirection: 'row',
-    gap: Spacing.sm,
-    marginTop: Spacing.sm,
-    marginBottom: Spacing.xl,
-  },
-  actionChip: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.xs,
-    paddingVertical: Spacing.md,
-    backgroundColor: Colors.surface,
-    borderRadius: BorderRadius.lg,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  actionChipText: {
-    fontSize: Typography.fontSize.xs,
-    fontWeight: Typography.fontWeight.medium,
-    color: Colors.text.primary,
-  },
 });

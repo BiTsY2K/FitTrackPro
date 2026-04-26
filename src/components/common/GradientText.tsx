@@ -13,16 +13,16 @@ interface Props {
 
 export function GradientText({ children, textStyle, gradientColors = ['#ff7e5f', '#feb47b'] }: Props) {
   return (
-    <MaskedView maskElement={<Text style={[styles.text, textStyle]}>{children}</Text>}>
+    <MaskedView maskElement={<Text style={[textStyle]}>{children}</Text>}>
       <LinearGradient colors={gradientColors} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
-        <Text style={[styles.text, textStyle, { opacity: 0 }]}>{children}</Text>
+        <Text style={[textStyle, styles.textOpacity]}>{children}</Text>
       </LinearGradient>
     </MaskedView>
   );
 }
 
 const styles = StyleSheet.create({
-  text: {},
+  textOpacity: { opacity: 0 },
 });
 
 export default GradientText;

@@ -4,10 +4,14 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React, { ComponentProps } from 'react';
 
 import { DashboardScreen } from '@/screens/dashboard/DashboardScreen';
+import { BarcodeScannerScreen } from '@/screens/food/BarcodeScannerScreen';
 import { FoodDetailScreen } from '@/screens/food/FoodDetailScreen';
 import { FoodSearchScreen } from '@/screens/food/FoodSearchScreen';
+import { ManualFoodEntryScreen } from '@/screens/food/ManualFoodEntryScreen';
+import { RecentFoodsScreen } from '@/screens/food/RecentFoodsScreen';
 import { ProfileScreen } from '@/screens/profile/ProfileScreen';
 import { colors } from '@/themes';
+import { FoodItem, MealType } from '@/types/food.types';
 
 export type BottomTabParamList = {
   Dashboard: undefined;
@@ -17,8 +21,11 @@ export type BottomTabParamList = {
 // ── Navigation param types ── //
 export type MainStackParamList = {
   Tabs: undefined;
-  FoodSearchScreen: { mealType: string };
-  FoodDetail: { food: object; mealType: string };
+  FoodSearch: { mealType: MealType };
+  FoodDetail: { food: FoodItem; mealType: MealType };
+  BarcodeScanner: { mealType: MealType };
+  ManualFoodEntry: { mealType: MealType };
+  RecentFoods: { mealType: MealType };
 };
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
@@ -29,11 +36,11 @@ const TabNavigator = () => (
   <Tab.Navigator
     screenOptions={({ route }) => ({
       tabBarIcon: ({ focused, color, size }) => {
-        let iconName;
+        let iconName: ComponentProps<typeof Ionicons>['name'];
         if (route.name === 'Dashboard') iconName = focused ? 'home' : 'home-outline';
-        else if (route.name === 'Profile') iconName = focused ? 'person' : 'person-outline';
+        else iconName = focused ? 'person' : 'person-outline';
 
-        return <Ionicons name={iconName as ComponentProps<typeof Ionicons>['name']} size={size} color={color} />;
+        return <Ionicons name={iconName} size={size} color={color} />;
       },
 
       tabBarActiveTintColor: colors.brand.dim,
@@ -47,11 +54,14 @@ const TabNavigator = () => (
   </Tab.Navigator>
 );
 
-// ── Main Navigator ─────────────────────────────────────────────────────────────────────────────
+// ── Main Navigator ──────────────────────────────────────────────────────────────────────────────
 export const MainNavigator = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="Tabs" component={TabNavigator} />
-    <Stack.Screen name="FoodSearchScreen" component={FoodSearchScreen} options={{ animation: 'slide_from_bottom' }} />
+    <Stack.Screen name="FoodSearch" component={FoodSearchScreen} options={{ animation: 'slide_from_bottom' }} />
     <Stack.Screen name="FoodDetail" component={FoodDetailScreen} options={{ animation: 'slide_from_right' }} />
+    <Stack.Screen name="BarcodeScanner" component={BarcodeScannerScreen} options={{ animation: 'slide_from_bottom' }} />
+    <Stack.Screen name="ManualFoodEntry" component={ManualFoodEntryScreen} options={{ animation: 'slide_from_bottom' }} />
+    <Stack.Screen name="RecentFoods" component={RecentFoodsScreen} options={{ animation: 'slide_from_bottom' }} />
   </Stack.Navigator>
 );

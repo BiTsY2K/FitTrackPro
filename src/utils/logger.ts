@@ -1,54 +1,41 @@
 import * as Sentry from '@sentry/react-native';
+import { Extras } from 'react-native/Libraries/Utilities/IPerformanceLogger';
 
-enum LogLevel {
-  DEBUG = 'debug',
-  INFO = 'info',
-  WARN = 'warn',
-  ERROR = 'error',
-}
+enum LogLevel { DEBUG = 'debug', INFO = 'info', WARN = 'warn', ERROR = 'error' } // prettier-ignore
 
 class Logger {
+  private get timeStamp(): string {
+    return new Date().toString();
+  }
+
   private shouldLog(level: LogLevel): boolean {
-    // In production, only log warnings and errors
-    if (__DEV__) return true;
+    if (__DEV__) return true; // In production, only log warnings and errors
     return level === LogLevel.WARN || level === LogLevel.ERROR;
   }
 
-  debug(message: string, data?: any) {
+  debug(message: string, data?: Record<string, unknown>) {
     if (this.shouldLog(LogLevel.DEBUG)) {
-      console.log(`🔍 [DEBUG] ${message}`, data || '');
+      console.log(`\t🔍 [${this.timeStamp}] [DEBUG]\t${message}`, data || '');
     }
   }
 
-  info(message: string, data?: any) {
+  info(message: string, data?: Record<string, unknown>) {
     if (this.shouldLog(LogLevel.INFO)) {
-      console.log(`ℹ️  [INFO] ${message}`, data || '');
+      console.log(`\tℹ️  [${this.timeStamp}] [INFO]\t${message}`, data || '');
     }
   }
 
-  warn(message: string, data?: any) {
+  warn(message: string, data?: Record<string, unknown>) {
     if (this.shouldLog(LogLevel.WARN)) {
-      console.warn(`⚠️  [WARN] ${message}`, data || '');
-
-      Sentry.captureMessage(message, {
-        level: 'warning',
-        extra: data,
-      });
+      console.warn(`\t⚠️  [${this.timeStamp}] [WARN]\t${message}`, data || '');
+      Sentry.captureMessage(message, { level: 'warning', extra: data as Extras });
     }
   }
 
-  error(message: string, error?: Error, data?: any) {
+  error(message: string, error?: Error, data?: Record<string, unknown>) {
     if (this.shouldLog(LogLevel.ERROR)) {
-      console.error(`❌ [ERROR] ${message}`, error, data || '');
-
-      if (error) {
-        Sentry.captureException(error, {
-          extra: {
-            message,
-            ...data,
-          },
-        });
-      }
+      console.error(`\t❌ [${this.timeStamp}] [ERROR]\t${message}`, error, data || '');
+      if (error) Sentry.captureException(error, { extra: { message, ...data } });
     }
   }
 }

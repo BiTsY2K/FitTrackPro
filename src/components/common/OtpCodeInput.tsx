@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, Platform, StyleSheet, TextInput, View } from 'react-native';
+import { Animated, Platform, StyleSheet, TextInput, TextInputKeyPressEvent, View } from 'react-native';
 
 import { COLORS } from '@/constants/theme';
 
@@ -37,7 +37,7 @@ export default function OtpCodeInput({ value, onChange, onSubmitEditing, verifie
     }
   };
 
-  const handleKeyPress = (e: any, index: number) => {
+  const handleKeyPress = (e: TextInputKeyPressEvent, index: number) => {
     if (e.nativeEvent.key === 'Backspace' && !digits[index] && index > 0) {
       const arr = digits.map((d, i) => (i === index - 1 ? '' : d));
       onChange(arr.join(''));
@@ -66,7 +66,7 @@ export default function OtpCodeInput({ value, onChange, onSubmitEditing, verifie
         return (
           <Animated.View key={i} style={[style.cellWrap, { transform: [{ scale: cellScales[i] }] }]}>
             {/* Glow behind filled */}
-            {isFilled && <View style={[style.cellGlow, hasError && { backgroundColor: 'rgba(255,76,106,0.12)' }]} />}
+            {isFilled && <View style={[style.cellGlow, hasError && style.cellErrorGlow]} />}
             <TextInput
               ref={ref => {
                 inputRefs.current[i] = ref;
@@ -135,6 +135,7 @@ const style = StyleSheet.create({
     borderColor: COLORS.error,
     color: COLORS.error,
   },
+  cellErrorGlow: { backgroundColor: 'rgba(255,76,106,0.12)' },
   cellVerified: {
     color: COLORS.accent,
     borderColor: COLORS.accent,

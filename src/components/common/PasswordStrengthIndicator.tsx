@@ -1,20 +1,23 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated,StyleSheet, Text, View } from 'react-native';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 
-import { BorderRadius,Colors, Spacing, Typography } from '@/constants/theme';
+import { BorderRadius, Colors, Spacing, Typography } from '@/constants/theme';
 import { validatePasswordStrength } from '@/utils/security';
 
 interface PasswordStrengthIndicatorProps {
   password: string;
 }
 
-export const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps> = ({
-  password,
-}) => {
-  if (!password) return null;
+export const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps> = ({ password }) => {
+  const { strength, errors } = validatePasswordStrength(password);
+  const animatedWidth = useRef(new Animated.Value(0)).current;
 
-  const validation = validatePasswordStrength(password);
-  const { strength, errors } = validation;
+  useEffect(() => {
+    const percentage = strength === 'fair' ? 10 : strength === 'weak' ? 33 : strength === 'medium' ? 66 : 100;
+    Animated.timing(animatedWidth, { toValue: percentage, duration: 300, useNativeDriver: false }).start();
+  }, [strength]);
+
+  if (!password) return null;
 
   const strengthConfig = {
     fair: { color: Colors.error, width: '10%', label: 'Fair' },
@@ -22,20 +25,7 @@ export const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps>
     medium: { color: Colors.success, width: '66%', label: 'Medium' },
     strong: { color: Colors.success, width: '100%', label: 'Strong' },
   };
-
   const config = strengthConfig[strength];
-  const animatedWidth = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    const percentage =
-      strength === 'fair' ? 10 : strength === 'weak' ? 33 : strength === 'medium' ? 66 : 100;
-
-    Animated.timing(animatedWidth, {
-      toValue: percentage,
-      duration: 300,
-      useNativeDriver: false, // width requires false
-    }).start();
-  }, [strength]);
 
   return (
     <View style={styles.container}>
@@ -53,9 +43,7 @@ export const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps>
           ]}
         />
 
-        <View
-          style={[styles.bar, { width: Number(config.width), backgroundColor: config.color }]}
-        />
+        <View style={[styles.bar, { width: Number(config.width), backgroundColor: config.color }]} />
       </View>
 
       <View style={styles.textContainer}>

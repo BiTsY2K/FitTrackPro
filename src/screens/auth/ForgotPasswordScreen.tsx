@@ -1,3 +1,4 @@
+import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -7,6 +8,7 @@ import { TouchableOpacity, View } from 'react-native';
 import { Animated, StyleSheet, TextInput } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
+import Button from '@/components/common/Button';
 import GlowButton from '@/components/common/GlowButton';
 import InputField from '@/components/common/InputField';
 import OtpCodeInput from '@/components/common/OtpCodeInput';
@@ -47,9 +49,9 @@ function SecurityBadges() {
 const badgeStyles = StyleSheet.create({
   row: { flexDirection: 'row', gap: spacing[2], marginBottom: spacing[6] },
   badge: { flex: 1, backgroundColor: colors.surface.raised, borderRadius: rounded.lg, borderWidth: 1, 
-    borderColor: colors.border.DEFAULT, padding: spacing[3], alignItems: 'center', gap: spacing[2] - 2 }, // prettier-ignore
+    borderColor: colors.border.default, padding: spacing[3], alignItems: 'center', gap: spacing['1.5'] }, // prettier-ignore
   icon: { fontSize: typography.size.md },
-  label: { color: colors.content.tertiary, fontSize: typography.size['2xs'], fontWeight: typography.weight.bold, letterSpacing: 0.4 },
+  label: { color: colors.content.tertiary, fontSize: typography.size.xs, fontWeight: typography.weight.bold, letterSpacing: 0.4 },
 });
 
 // ── Success Stats ───────────────────────────────────────────────────────────────
@@ -73,9 +75,9 @@ function SuccessStats() {
 
 const statsStyles = StyleSheet.create({
   successStats: { flexDirection: 'row', justifyContent: 'center', gap: spacing[2] + 2, marginVertical: 32 },
-  statChip: { flex: 1, alignItems: 'center', borderWidth: 1, borderRadius: rounded.xl - 2, borderColor: colors.border.DEFAULT,
+  statChip: { flex: 1, alignItems: 'center', borderWidth: 1, borderRadius: rounded.xl - 2, borderColor: colors.border.default,
     backgroundColor: colors.surface.raised, padding: spacing[3] + 2, gap: spacing[2] - 2 }, // prettier-ignore
-  statIcon: { fontSize: typography.size['2xl'] },
+  statIcon: { fontSize: typography.size.xl2 },
   statText: { color: colors.content.primary, fontSize: typography.size.xs, fontWeight: typography.weight.bold },
 });
 
@@ -317,7 +319,8 @@ export default function ForgotPasswordScreen({ navigation, route }: ForgotPasswo
             <View>
               <InputField
                 inputRef={emailRef}
-                icon="mail-outline"
+                testID="forgot-password-email-input"
+                leftIcon={<MaterialCommunityIcons name="email-outline" color={colors.content.tertiary} size={24} />}
                 placeholder="Enter your email"
                 keyboardType="email-address"
                 value={email}
@@ -331,7 +334,14 @@ export default function ForgotPasswordScreen({ navigation, route }: ForgotPasswo
                 onSubmitEditing={handleEmailSubmit}
               />
 
-              <GlowButton label="Send Reset Code →" onPress={handleEmailSubmit} loading={loading} disabled={!isValidEmail(email)} />
+              <Button
+                label="Send Reset Code"
+                rightIcon={<FontAwesome name="long-arrow-right" color="#000" size={18} />}
+                onPress={handleEmailSubmit}
+                style={styles.submitBtn}
+                loading={loading}
+                disabled={!isValidEmail(email)}
+              />
 
               <View style={styles.tipCard}>
                 <Text style={styles.tipIcon}>💡</Text>
@@ -423,7 +433,7 @@ export default function ForgotPasswordScreen({ navigation, route }: ForgotPasswo
             <View>
               <InputField
                 inputRef={passwordRef}
-                icon="lock-closed-outline"
+                leftIcon={<MaterialCommunityIcons name="lock-outline" color={colors.content.tertiary} size={24} />}
                 placeholder="New password"
                 value={newPassword}
                 onChangeText={t => {
@@ -444,7 +454,7 @@ export default function ForgotPasswordScreen({ navigation, route }: ForgotPasswo
                       style={[
                         styles.strengthBar,
                         {
-                          backgroundColor: i <= strength ? strengthColors[strength] : colors.border.DEFAULT,
+                          backgroundColor: i <= strength ? strengthColors[strength] : colors.border.default,
                         },
                       ]}
                     />
@@ -453,10 +463,10 @@ export default function ForgotPasswordScreen({ navigation, route }: ForgotPasswo
                 </View>
               )}
 
-              <View style={{ marginTop: newPassword ? 4 : 0 }}>
+              <View style={{ marginTop: newPassword ? spacing[1] : spacing[0] }}>
                 <InputField
                   inputRef={confirmPasswordRef}
-                  icon="checkmark-circle-outline"
+                  leftIcon={<MaterialCommunityIcons name="checkbox-marked-circle-outline" color={colors.content.tertiary} size={24} />}
                   placeholder="Confirm new password"
                   value={confirmPassword}
                   onChangeText={t => {
@@ -497,7 +507,7 @@ export default function ForgotPasswordScreen({ navigation, route }: ForgotPasswo
             <View>
               <SuccessStats />
               <GlowButton label="Sign In Now →" onPress={() => navigation?.navigate?.('SignIn')} />
-              <TouchableOpacity style={styles.backToHome} onPress={() => navigation?.navigate?.('Landing')}>
+              <TouchableOpacity style={styles.backToHome} onPress={() => navigation.popToTop()}>
                 <Text style={styles.backToHomeText}>← Back to Home</Text>
               </TouchableOpacity>
             </View>
@@ -516,7 +526,7 @@ const styles = StyleSheet.create({
   iconGradient: {
     width: 64,
     height: 64,
-    borderRadius: rounded['2xl'] - 2,
+    borderRadius: rounded.xl2 - 4,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: colors.accent.green,
@@ -526,14 +536,23 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
   iconBadge: { marginBottom: spacing[6] },
-  iconEmoji: { fontSize: typography.size['3xl'] },
+  iconEmoji: { fontSize: typography.size.xl3 },
+  submitBtn: { marginBottom: spacing['3.5'] },
 
   // Tip card (step 1) //
-  tipCard: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing[3], borderWidth: 1, borderRadius: rounded.xl, 
-    borderColor: colors.border.DEFAULT, backgroundColor: colors.surface.raised, marginTop: spacing[5], padding: spacing[4],
-  }, // prettier-ignore
+  tipCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[3],
+    borderWidth: 1,
+    borderRadius: rounded.xl,
+    borderColor: colors.border.default,
+    backgroundColor: colors.surface.raised,
+    marginTop: spacing[7],
+    padding: spacing[4],
+  },
   tipIcon: { fontSize: typography.size.md },
-  tipText: { flex: 1, color: colors.content.tertiary, fontSize: typography.size.sm - 1, lineHeight: 18 },
+  tipText: { flex: 1, color: colors.content.tertiary, fontSize: typography.size.xs, lineHeight: typography.size.xs * 1.4 },
 
   // Resend (step 2) //
   resendRow: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginBottom: spacing[4] },
@@ -545,7 +564,7 @@ const styles = StyleSheet.create({
   resendConfirmIcon: { fontSize: typography.size.sm },
   resendConfirmText: { color: colors.content.tertiary, fontSize: typography.size.xs, flex: 1 },
   resendConfirm: { flexDirection: 'row', alignItems: 'center', gap: spacing[2], backgroundColor: colors.surface.raised,
-    borderRadius: rounded.lg, borderWidth: 1, borderColor: colors.border.DEFAULT, padding: spacing[3], marginBottom: spacing[4],
+    borderRadius: rounded.lg, borderWidth: 1, borderColor: colors.border.default, padding: spacing[3], marginBottom: spacing[4],
   }, // prettier-ignore
 
   helpRow: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: spacing[1] },
@@ -554,7 +573,7 @@ const styles = StyleSheet.create({
 
   // Email tag (step 2) //
   emailTag: { flexDirection: 'row', alignItems: 'center', gap: spacing[2] + 2, backgroundColor: colors.surface.raised, 
-    borderRadius: rounded.xl - 2, borderWidth: 1, borderColor: colors.border.DEFAULT, padding: spacing[3] + 2, marginBottom: spacing[4]}, // prettier-ignore
+    borderRadius: rounded.xl - 2, borderWidth: 1, borderColor: colors.border.default, padding: spacing[3] + 2, marginBottom: spacing[4]}, // prettier-ignore
   emailTagIcon: { fontSize: 16, color: colors.content.tertiary },
   emailTagText: { flex: 1, color: colors.content.tertiary, fontSize: typography.size.sm - 1 },
   emailTagChange: { color: colors.accent.green, fontSize: typography.size.sm - 1, fontWeight: typography.weight.bold },
@@ -563,18 +582,25 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,76,106,0.08)', alignItems: 'center', padding: 12, marginBottom: 14 }, // prettier-ignore
   errorText: { color: COLORS.error, fontSize: typography.size.sm - 1, fontWeight: typography.weight.semibold },
 
-  // Strength meter (step 3) //
+  // ── Strength meter ── //
   strengthRow: { flexDirection: 'row', alignItems: 'center', gap: spacing[2] - 2, marginTop: -spacing[2] - 2, marginBottom: 14 },
   strengthBar: { flex: 1, height: 4, borderRadius: rounded.xs },
   strengthLabel: { fontSize: typography.size.xs, fontWeight: typography.weight.bold, width: 44, textAlign: 'right' },
 
-  // Password rules (step 3) //
-  rulesCard: { borderWidth: 1, borderRadius: rounded.xl - 2, borderColor: colors.border.DEFAULT, backgroundColor: colors.surface.raised, 
-    padding: spacing[4], marginBottom: spacing[6], gap: spacing[2] + 2 }, // prettier-ignore
-  ruleRow: { flexDirection: 'row', alignItems: 'center', gap: spacing[2] + 2 },
-  ruleDot: { color: colors.content.tertiary, fontSize: typography.size.sm - 1, fontWeight: typography.weight.bold, width: 16 },
+  // ── Password rules ── //
+  rulesCard: {
+    borderWidth: 1,
+    borderRadius: rounded.xl,
+    borderColor: colors.border.default,
+    backgroundColor: colors.surface.raised,
+    padding: spacing.md,
+    marginBottom: spacing.md,
+    gap: spacing.xs,
+  },
+  ruleRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
+  ruleDot: { color: colors.content.tertiary, fontSize: typography.size.xs + 1, fontWeight: typography.weight.bold, width: spacing.xs },
   ruleDotMet: { color: colors.accent.green },
-  ruleText: { color: colors.content.tertiary, fontSize: typography.size.sm - 1 },
+  ruleText: { color: colors.content.tertiary, fontSize: typography.size.xs + 1 },
   ruleTextMet: { color: colors.content.primary },
 
   backToHome: { alignItems: 'center', marginTop: spacing[5] },

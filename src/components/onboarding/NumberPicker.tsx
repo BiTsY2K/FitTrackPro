@@ -4,6 +4,7 @@ import { Animated, FlatList, PanResponder, Platform, StyleSheet, Text, Touchable
 import { Easing } from 'react-native';
 
 import { COLORS } from '@/constants/theme';
+import { globalStyles } from '@/globalStyles';
 
 import { SectionLabel } from '../common/SectionLabel';
 
@@ -50,11 +51,6 @@ export const NumberPicker: React.FC<NumberPickerProps> = ({
 
   const decimals = step < 1 ? 1 : 0;
   const formatVal = useCallback((v: number) => v.toFixed(decimals), [decimals]);
-
-  const clamp = useCallback(
-    (v: number) => Math.min(max, Math.max(min, parseFloat((Math.round(v / step) * step).toFixed(decimals)))),
-    [min, max, step, decimals],
-  );
 
   /* prettier-ignore */
   const indexOfValue = useCallback(
@@ -198,7 +194,7 @@ export const NumberPicker: React.FC<NumberPickerProps> = ({
   );
 
   const keyExtractor = useCallback((item: number) => item.toString(), []);
-  const getItemLayout = useCallback((_: any, index: number) => ({ length: ITEM_WIDTH, offset: ITEM_WIDTH * index, index }), []);
+  const getItemLayout = useCallback((_: unknown, index: number) => ({ length: ITEM_WIDTH, offset: ITEM_WIDTH * index, index }), []);
 
   return (
     <View>
@@ -248,10 +244,7 @@ export const NumberPicker: React.FC<NumberPickerProps> = ({
           maxToRenderPerBatch={5}
           updateCellsBatchingPeriod={40}
           removeClippedSubviews={!IS_IOS}
-          contentContainerStyle={{
-            paddingHorizontal: (DRUM_WIDTH - ITEM_WIDTH) / 2,
-            alignItems: 'center',
-          }}
+          contentContainerStyle={[globalStyles.alignItemsCenter, { paddingHorizontal: (DRUM_WIDTH - ITEM_WIDTH) / 2 }]}
           // ItemSeparatorComponent={() => <Text style={{ color: 'red', textAlignVertical: 'center' }}>|</Text>}
         />
 
@@ -301,7 +294,7 @@ interface DrumItemProps {
 }
 
 const DrumItem = React.memo<DrumItemProps>(
-  ({ value, idx, selectedIdx, accentColor, formatVal, onTap }) => {
+  ({ value, idx, selectedIdx, formatVal, onTap }) => {
     const dist = Math.abs(idx - selectedIdx);
     const isSelected = dist === 0;
     const isAdjacent = dist === 1;
@@ -378,13 +371,6 @@ const styles = StyleSheet.create({
     width: ITEM_WIDTH,
     borderLeftWidth: 1,
     borderRightWidth: 1,
-  },
-  strip: {
-    position: 'absolute',
-    zIndex: 1,
-    left: (DRUM_WIDTH - ITEM_WIDTH) / 2,
-    width: ITEM_WIDTH,
-    height: 3,
   },
   item: { width: ITEM_WIDTH, height: DRUM_HEIGHT, alignItems: 'center', justifyContent: 'center' },
   itemText: { color: COLORS.textMuted, fontSize: 13, fontWeight: '400', opacity: 0.3 },

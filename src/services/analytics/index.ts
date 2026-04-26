@@ -1,6 +1,7 @@
-import { logEvent as firebaseLogEvent, setUserId, setUserProperties } from 'firebase/analytics';
-import { analytics } from '@/services/firebase';
 import Constants from 'expo-constants';
+import { logEvent as firebaseLogEvent, setUserId, setUserProperties } from 'firebase/analytics';
+
+import { analytics } from '@/services/firebase';
 
 const APP_ENV = Constants.expoConfig?.extra?.appEnv || 'development';
 const ANALYTICS_ENABLED = APP_ENV === 'production';
@@ -53,17 +54,14 @@ export enum AnalyticsEvent {
 }
 
 // Log event helper
-export const logEvent = (eventName: string, params?: Record<string, any>) => {
+export const logEvent = (eventName: string, params?: Record<string, unknown>) => {
   if (!ANALYTICS_ENABLED || !analytics) {
     console.log(`[Analytics] ${eventName}`, params);
     return;
   }
 
   try {
-    firebaseLogEvent(analytics, eventName, {
-      ...params,
-      timestamp: new Date().toISOString(),
-    });
+    firebaseLogEvent(analytics, eventName, { ...params, timestamp: new Date().toISOString() });
   } catch (error) {
     console.error('Analytics error:', error);
   }
@@ -81,7 +79,7 @@ export const setAnalyticsUserId = (userId: string) => {
 };
 
 // Set user properties
-export const setAnalyticsUserProperties = (properties: Record<string, any>) => {
+export const setAnalyticsUserProperties = (properties: Record<string, unknown>) => {
   if (!ANALYTICS_ENABLED || !analytics) return;
 
   try {

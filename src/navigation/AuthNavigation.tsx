@@ -18,24 +18,12 @@ type Props = {
   showSkip?: boolean;
 };
 
-const NavigationHeader: React.FC<Props> = ({ navigation, route, showSkip = true }: Props) => {
+const NavigationHeader: React.FC<Props> = ({ navigation }: Props) => {
   const canGoBack = navigation.canGoBack();
-
-  // const goToNextScreen = React.useCallback(() => {
-  //   const current: keyof AuthStackParamList = route.name;
-  //   const flowOrder: (keyof AuthStackParamList)[] = ['SignIn', 'SignUp', 'ForgotPassword', 'EmailVerification'];
-
-  //   const currentIndex = flowOrder.indexOf(current);
-  //   if (currentIndex === -1 || currentIndex >= flowOrder.length - 1) return;
-
-  //   const nextScreen = flowOrder[currentIndex + 1];
-  //   navigation.navigate(nextScreen, { onboardingData: route.params?.onboardingData ?? undefined });
-  // }, [navigation, route]);
-
   return (
     <SafeAreaView style={{ paddingHorizontal: spacing[4] + 1, paddingVertical: spacing[3] }}>
       {/* ── Nav row ── */}
-      <View style={[globalStyles.navRow, { columnGap: spacing.lg, marginBottom: 0 }]}>
+      <View style={[globalStyles.navRow, { columnGap: spacing.lg, marginBottom: spacing[0] }]}>
         {/* Back Button */}
         {canGoBack && (
           <TouchableOpacity style={globalStyles.backBtn} onPress={() => navigation.goBack()}>
@@ -47,19 +35,12 @@ const NavigationHeader: React.FC<Props> = ({ navigation, route, showSkip = true 
         )}
 
         {/* Logo lockup */}
-        <View style={[globalStyles.logoRow, { flex: 1, justifyContent: 'flex-end' }]}>
+        <View style={[globalStyles.logoRow, globalStyles.flex_1, globalStyles.justifyContentEnd]}>
           <LinearGradient colors={[colors.accent.green, colors.accent.purple]} style={globalStyles.logoBadge}>
             <Text style={globalStyles.logoIcon}>⚡</Text>
           </LinearGradient>
           <Text style={[globalStyles.logoText, { fontSize: typography.size.lg }]}>FitTrack PRO</Text>
         </View>
-
-        {/* Skip Button */}
-        {/* {showSkip && route.name !== 'Summary' && (
-          <TouchableOpacity onPress={() => goToNextScreen()}>
-            <Text style={globalStyles.skipText}>Skip</Text>
-          </TouchableOpacity>
-        )} */}
       </View>
     </SafeAreaView>
   );

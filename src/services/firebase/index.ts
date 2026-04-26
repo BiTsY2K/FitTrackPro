@@ -1,9 +1,9 @@
-import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
-import { getAnalytics, Analytics } from 'firebase/analytics';
-import { getAuth, Auth } from 'firebase/auth';
-import { getFirestore, Firestore } from 'firebase/firestore';
-import { getStorage, FirebaseStorage } from 'firebase/storage';
 import Constants from 'expo-constants';
+import { Analytics, getAnalytics } from 'firebase/analytics';
+import { FirebaseApp, getApps, initializeApp } from 'firebase/app';
+import { Auth, getAuth } from 'firebase/auth';
+import { Firestore, getFirestore } from 'firebase/firestore';
+import { FirebaseStorage, getStorage } from 'firebase/storage';
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -66,4 +66,4 @@ const initializeFirebase = () => {
 
 // Export initialized instances //
 // const firebase = initializeFirebase();
-export { app, auth, db, storage, analytics, initializeFirebase };
+export { analytics, app, auth, db, initializeFirebase, storage };

@@ -22,19 +22,12 @@ export class CalorieCalculator {
    * @param gender - Biological sex
    * @returns BMR in calories per day
    */
-  static calculateBMR(weightKg: number, heightCm: number, age: number, gender: Gender): number {
-    // Mifflin-St Jeor equation
+  static calculateBMR(weightKg: number, heightCm: number, age: number = 62, gender: Gender = 'male'): number {
+    // Mifflin-St Jeor equation //
     const base = 10 * weightKg + 6.25 * heightCm - 5 * age;
     const bmr = gender === 'male' ? base + 5 : base - 161;
 
-    logger.info('BMR calculated', {
-      weightKg,
-      heightCm,
-      age,
-      gender,
-      bmr: Math.round(bmr),
-    });
-
+    logger.info('BMR calculated', { weightKg, heightCm, age, gender, bmr: Math.round(bmr) });
     return Math.round(bmr);
   }
 
@@ -58,13 +51,7 @@ export class CalorieCalculator {
     const multiplier = ACTIVITY_MULTIPLIERS[activityLevel];
     const tdee = bmr * multiplier;
 
-    logger.info('TDEE calculated', {
-      bmr,
-      activityLevel,
-      multiplier,
-      tdee: Math.round(tdee),
-    });
-
+    logger.info('TDEE calculated', { bmr, activityLevel, multiplier, tdee: Math.round(tdee) });
     return Math.round(tdee);
   }
 
@@ -85,17 +72,11 @@ export class CalorieCalculator {
     const adjustment = GOAL_ADJUSTMENTS[goal];
     const target = tdee + adjustment;
 
-    // Safety bounds: never below 1200 (women) or 1500 (men)
+    // Safety bounds: never below 1200 (women) or 1500 (men) //
     const minimum = 1200;
     const safeCappedTarget = Math.max(target, minimum);
 
-    logger.info('Calorie target calculated', {
-      tdee,
-      goal,
-      adjustment,
-      target: Math.round(safeCappedTarget),
-    });
-
+    logger.info('Calorie target calculated', { tdee, goal, adjustment, target: Math.round(safeCappedTarget) });
     return Math.round(safeCappedTarget);
   }
 
@@ -121,13 +102,7 @@ export class CalorieCalculator {
     const proteinPerKg = PROTEIN_TARGETS[goal];
     const proteinGrams = weightKg * proteinPerKg;
 
-    logger.info('Protein target calculated', {
-      weightKg,
-      goal,
-      proteinPerKg,
-      proteinGrams: Math.round(proteinGrams),
-    });
-
+    logger.info('Protein target calculated', { weightKg, goal, proteinPerKg, proteinGrams: Math.round(proteinGrams) });
     return Math.round(proteinGrams);
   }
 

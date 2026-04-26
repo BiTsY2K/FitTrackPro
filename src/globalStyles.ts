@@ -20,6 +20,9 @@ export const globalStyles = StyleSheet.create({
   alignItemsCenter: { alignItems: 'center' },
   alignItemsStart: { alignItems: 'flex-start' },
 
+  justifyContentCenter: { justifyContent: 'center' },
+  justifyContentEnd: { justifyContent: 'flex-end' },
+
   textAlignCenter: { textAlign: 'center' },
 
   displayNone: { display: 'none' },

@@ -1,7 +1,6 @@
 import { FontAwesome } from '@expo/vector-icons';
 import { useHeaderHeight } from '@react-navigation/elements';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
 import React, { useCallback, useEffect, useState } from 'react';
 import { StatusBar, StyleSheet, Text, View } from 'react-native';
@@ -22,12 +21,11 @@ import { TimelineCard } from '@/components/onboarding/summary/TimeLineCard';
 import { useAuth } from '@/contexts/AuthContext';
 import { globalStyles } from '@/globalStyles';
 import { OnboardingStackParamList } from '@/navigation/OnboardingNavigation';
-import { RootStackParamList } from '@/navigation/RootNavigation';
 import { CalorieCalculator } from '@/services/calculations/CalorieCalculator';
 import { ValidationService } from '@/services/calculations/ValidationService';
 import { db } from '@/services/firebase';
 import { colors, rounded, spacing, typography } from '@/themes';
-import { CalculatedNutritionPlan } from '@/types/calcorieCalculator.types';
+import { CalculatedNutritionPlan } from '@/types/calorieCalculator.types';
 import { OnboardingData } from '@/types/onboarding.types';
 
 import { PROGRESS_STEPS_LABELS } from './GoalSelectionScreen';
@@ -38,7 +36,7 @@ type Props = NativeStackScreenProps<OnboardingStackParamList, 'Summary'>;
 export const PlanSummaryScreen: React.FC<Props> = ({ navigation, route }) => {
   const headerHeight = useHeaderHeight();
   const { onboardingData } = route.params ?? {};
-  const rootNavigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  // const rootNavigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const { user } = useAuth();
 
@@ -81,21 +79,27 @@ export const PlanSummaryScreen: React.FC<Props> = ({ navigation, route }) => {
         doc(db, 'users', user.uid),
         {
           uid: user.uid,
-          ...onboardingData,
-          bmr: plan.bmr,
-          tdee: plan.tdee,
-          dailyCalorieTarget: plan.dailyCalorieTarget,
-          dailyProteinGrams: plan.dailyProteinGrams,
-          dailyFatGrams: plan.dailyFatGrams,
-          dailyCarbsGrams: plan.dailyCarbsGrams,
-          dailyWaterMl: plan.dailyWaterMl,
+          onboardingData: { ...onboardingData },
+          nutritionPlan: {
+            metabolicInfo: {
+              bmr: plan.bmr,
+              tdee: plan.tdee,
+            },
+
+            dailyMacroTargets: {
+              dailyCalorieTarget: plan.dailyCalorieTarget,
+              dailyProteinGrams: plan.dailyProteinGrams,
+              dailyFatGrams: plan.dailyFatGrams,
+              dailyCarbsGrams: plan.dailyCarbsGrams,
+              dailyWaterMl: plan.dailyWaterMl,
+            },
+          },
           estimatedWeeksToGoal: plan.estimatedWeeksToGoal,
           onboardingCompletedAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
         },
         { merge: true },
       );
-      rootNavigation.navigate('Main');
     } catch {
       setErrors(['Failed to save your plan. Please try again.']);
     } finally {

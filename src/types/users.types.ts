@@ -1,6 +1,6 @@
 import { FieldValue, Timestamp } from '@firebase/firestore';
 
-import { ActivityLevelType, DietType, Gender, GoalType } from './onboarding.types';
+import { NutritionPlan, OnboardingData } from './onboarding.types';
 
 export interface UserProfile {
   uid: string;
@@ -9,26 +9,13 @@ export interface UserProfile {
   photoURL?: string;
   emailVerified: boolean;
 
-  // ── Onboarding Data ── //
-  gender: Gender;
-  birthDate: Date;
-  currentHeightCm: number;
-  currentWeightKg: number;
-  targetWeightKg?: number;
-  goal: GoalType;
-  activityLevel: ActivityLevelType;
-  workoutFrequencyPerWeek: number;
-  dietType: DietType;
-  allergies?: string[];
+  onboardingData: OnboardingData | Partial<OnboardingData>;
+  nutritionPlan: NutritionPlan;
 
-  // ── Calculated Targets ── //
-  bmr: number;
-  tdee: number;
-  dailyCalorieTarget: number;
-  dailyProteinGrams: number;
-  dailyFatGrams: number;
-  dailyCarbsGrams: number;
-  dailyWaterMl: number;
+  // ── Streak Tracking ── //
+  currentStreak?: number; // Consecutive days with at least one food log
+  longestStreak?: number; // All-time best streak
+  lastLogDate?: string; // YYYY-MM-DD of last food log entry
 
   // ── Metadata ── //
   createdAt: Date | Timestamp | FieldValue;

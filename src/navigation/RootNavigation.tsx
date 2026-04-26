@@ -5,8 +5,10 @@ import { ActivityIndicator, View } from 'react-native';
 
 import { useAuth } from '@/contexts/AuthContext';
 import { useOnboarding } from '@/contexts/OnboardingContext';
+import { globalStyles } from '@/globalStyles';
 import LandingScreen from '@/screens/LandingScreen';
 import { logScreenView } from '@/services/analytics';
+import { colors } from '@/themes';
 
 import AuthNavigator, { AuthStackParamList } from './AuthNavigation';
 import { MainNavigator } from './MainNavigation';
@@ -30,8 +32,8 @@ export default function RootNavigator() {
 
   if (loading || checkingOnboarding) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator />
+      <View style={[globalStyles.flex_1, globalStyles.alignItemsCenter, globalStyles.justifyContentCenter]}>
+        <ActivityIndicator color={colors.accent.green} size="large" />
       </View>
     );
   }
@@ -53,7 +55,6 @@ export default function RootNavigator() {
         routeNameRef.current = currentRouteName;
       }}
     >
-      {/* Your screens */}
       <Stack.Navigator
         initialRouteName={!isAuthenticated ? 'Landing' : !hasCompletedOnboarding ? 'Onboarding' : 'Main'}
         screenOptions={{ headerShown: false, animation: 'fade' }}

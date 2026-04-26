@@ -5,6 +5,7 @@ import { authService } from '@/services/auth/AuthService';
 import { useGoogleAuth } from '@/services/auth/GoogleAuthService';
 import { sessionManager } from '@/services/auth/SessionManager';
 import { useAuthStore } from '@/store/authStore';
+import { GoalType } from '@/types/onboarding.types';
 
 interface AuthContextValue {
   user: User | null;
@@ -13,7 +14,7 @@ interface AuthContextValue {
   isAuthenticated: boolean;
 
   // Methods
-  signUp: (email: string, password: string, displayName: string) => Promise<void>;
+  signUp: (email: string, password: string, displayName: string, primaryGoal: GoalType) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
   signInWithApple: () => Promise<void>;
@@ -48,11 +49,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [initialize]);
 
   /** Sign Up with Email/Password */
-  const signUp = async (email: string, password: string, displayName: string) => {
+  const signUp = async (email: string, password: string, displayName: string, primaryGoal: GoalType) => {
     setLoading(true);
     clearError();
     try {
-      const user = await authService.signUp(email, password, displayName);
+      const user = await authService.signUp(email, password, displayName, primaryGoal);
       setUser(user);
     } catch (error) {
       setError((error as Error).message);

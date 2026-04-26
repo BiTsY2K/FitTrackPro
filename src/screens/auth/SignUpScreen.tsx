@@ -2,7 +2,7 @@ import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { LinearGradient } from 'expo-linear-gradient';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, Dimensions, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
@@ -39,7 +39,7 @@ export default function SignUpScreen({ navigation }: { navigation: SignUpScreenN
   const [emailError, setEmailError] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
-  const [goal, setGoal] = useState<GoalType | null>('gain_muscle');
+  const [goal, setGoal] = useState<GoalType>('gain_muscle');
   const [isFormValid, setIsFormValid] = useState<boolean>(false);
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -62,15 +62,15 @@ export default function SignUpScreen({ navigation }: { navigation: SignUpScreenN
     setIsFormValid(isValid);
   };
 
-  const handleSignUp = async () => {
+  const handleSignUp = useCallback(async () => {
     validateForm(name, email, password, confirmPassword);
     if (!isFormValid) return;
 
     try {
-      await signUp(email, password, name); // Navigation handled by AuthContext
+      await signUp(email, password, name, goal); // Navigation handled by AuthContext
       // navigation.navigate('EmailVerification', { email: email }); // Show email verification screen
     } catch (error) { console.error('Handle_User_SignUp. Error: ', error) } // prettier-ignore
-  };
+  }, [email, password, name, goal]);
 
   // Password strength //
   const getStrength = (p: string) => {
@@ -111,10 +111,6 @@ export default function SignUpScreen({ navigation }: { navigation: SignUpScreenN
                 <Text style={styles.iconEmoji}>⚡</Text>
               </LinearGradient>
             </View>
-
-            {/* <View style={styles.freeBadge}>
-            <Text style={styles.freeBadgeText}>✦ FREE FOREVER PLAN INCLUDED</Text>
-          </View> */}
 
             <Text style={globalStyles.title}>Create Account</Text>
             <Text style={globalStyles.subtitle}>
@@ -310,7 +306,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
-    paddingVertical: spacing[3],
+    paddingVertical: spacing[4],
     paddingHorizontal: spacing['3.5'],
 
     borderWidth: 1,

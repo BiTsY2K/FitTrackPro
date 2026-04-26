@@ -45,7 +45,7 @@ export default [
       //  Expected severity of "off", 0, "warn", 1, "error", or 2.
       'react-hooks/exhaustive-deps': 'off',
 
-      'no-console': ['warn', { allow: ['warn', 'error'] }],
+      'no-console': ['warn', { allow: ['log', 'warn', 'error'] }],
     },
   },
 ];

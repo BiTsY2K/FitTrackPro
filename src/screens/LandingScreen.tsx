@@ -211,13 +211,20 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     borderWidth: 1,
     borderRadius: rounded.full,
-    borderColor: 'rgba(0,255,135,0.25)',
-    backgroundColor: 'rgba(0,255,135,0.12)',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing[1],
-    marginBottom: spacing.sm,
+    borderColor: colors.accent.greenDimmed,
+    backgroundColor: colors.accentGlow.greenStrong,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing['1.5'],
+    marginBottom: spacing['3.5'],
   },
-  heroBadgeText: { color: colors.accent.green, fontSize: typography.size.xs, fontWeight: typography.weight.bold, letterSpacing: 1.5 },
+  heroBadgeText: {
+    color: colors.accent.greenVivid,
+    fontSize: typography.size.xs,
+    fontWeight: typography.weight.bold,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+  },
+
   heroTitleContainer: { marginBottom: spacing[4] },
   heroTitle: {
     color: colors.content.primary,
@@ -235,18 +242,18 @@ const styles = StyleSheet.create({
   signInLinkAccent: { color: colors.accent.green, fontWeight: typography.weight.bold, fontSize: typography.size.sm },
 
   featuresSection: { paddingTop: spacing[8], backgroundColor: 'transparent' },
-  featuresGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[3.5], marginBottom: spacing[5] },
+  featuresGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing['3.5'], marginBottom: spacing[5] },
   featureCard: {
-    borderWidth: 1,
+    // Formula: (width - PADDING - GAP * (COLUMNS - 1)) / COLUMNS
+    width: (width - 2 * globalStyles.content.paddingHorizontal - spacing['3.5'] * (2 - 1)) / 2,
+    borderWidth: 1.5,
     borderRadius: rounded.xl2 - 4,
     borderColor: colors.border.default,
     backgroundColor: colors.surface.raised,
-    // Formula: (width - PADDING - GAP * (COLUMNS - 1)) / COLUMNS
-    width: (width - 2 * globalStyles.content.paddingHorizontal - spacing[3.5] * (2 - 1)) / 2,
-    padding: spacing.md + 2,
+    padding: spacing.md,
     overflow: 'hidden',
   },
-  featureTopBar: { position: 'absolute', top: 0, left: 0, right: 0, height: spacing[0.5], opacity: 0.9 },
+  featureTopBar: { position: 'absolute', top: 0, left: 0, right: 0, height: spacing['0.5'], opacity: 0.9 },
   featureIcon: { fontSize: typography.size.xl3 - 2, marginBottom: spacing[3] },
   featureTitle: {
     color: colors.content.primary,
@@ -257,15 +264,17 @@ const styles = StyleSheet.create({
   featureDesc: { color: colors.content.tertiary, fontSize: typography.size.xs, lineHeight: 18 },
 
   socialProof: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    marginBottom: spacing['2.5'],
+
     borderWidth: 1,
     borderRadius: rounded.xl2 - 4,
     borderColor: colors.border.default,
     backgroundColor: colors.surface.raised,
-    padding: spacing.md + 2,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    marginBottom: spacing[3] - 2,
+    padding: spacing.md,
+    overflow: 'hidden',
   },
 
   avatarRow: { flexDirection: 'row', alignItems: 'center' },

@@ -52,7 +52,7 @@ const ACTIVITY_OPTIONS: ActivityOption[] = [
     title: 'Lightly Active',
     description: 'Light exercise or sports 1-3 days per week.',
     iconEmoji: '🚶',
-    accentColor: COLORS.teal,
+    accentColor: colors.accent.teal,
     accentGlow: 'rgba(6,182,212,0.14)',
     multiplier: 1.375,
     tag: null,

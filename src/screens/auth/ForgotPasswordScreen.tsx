@@ -9,12 +9,10 @@ import { Animated, StyleSheet, TextInput } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import Button from '@/components/common/Button';
-import GlowButton from '@/components/common/GlowButton';
 import InputField from '@/components/common/InputField';
 import OtpCodeInput from '@/components/common/OtpCodeInput';
 import SuccessAnimation from '@/components/common/SuccessAnimation';
 import { ProgressBar } from '@/components/onboarding/ProgressBar';
-import { COLORS } from '@/constants/theme';
 import { globalStyles } from '@/globalStyles';
 import { AuthStackParamList } from '@/navigation/AuthNavigation';
 import { colors, rounded, spacing, typography } from '@/themes';
@@ -371,8 +369,9 @@ export default function ForgotPasswordScreen({ navigation, route }: ForgotPasswo
               ) : null}
 
               {/* Verify CTA */}
-              <GlowButton
+              <Button
                 label={otpVerifying ? 'Verifying…' : 'Change Password →'}
+                rightIcon={!otpVerifying ? <FontAwesome name="long-arrow-right" color="#000" size={18} /> : null}
                 onPress={() => handleVerify(otp)}
                 disabled={otp.length < 6}
                 loading={otpVerifying}
@@ -493,12 +492,7 @@ export default function ForgotPasswordScreen({ navigation, route }: ForgotPasswo
                 ))}
               </View>
 
-              <GlowButton
-                label="Reset Password"
-                onPress={handlePasswordSubmit}
-                loading={loading}
-                disabled={!newPassword || !confirmPassword}
-              />
+              <Button label="Reset Password" onPress={handlePasswordSubmit} loading={loading} disabled={!newPassword || !confirmPassword} />
             </View>
           )}
 
@@ -506,7 +500,11 @@ export default function ForgotPasswordScreen({ navigation, route }: ForgotPasswo
           {step === 4 && (
             <View>
               <SuccessStats />
-              <GlowButton label="Sign In Now →" onPress={() => navigation?.navigate?.('SignIn')} />
+              <Button
+                label="Sign In Now"
+                rightIcon={<FontAwesome name="long-arrow-right" color="#000" size={18} />}
+                onPress={() => navigation?.navigate?.('SignIn')}
+              />
               <TouchableOpacity style={styles.backToHome} onPress={() => navigation.popToTop()}>
                 <Text style={styles.backToHomeText}>← Back to Home</Text>
               </TouchableOpacity>
@@ -580,7 +578,7 @@ const styles = StyleSheet.create({
 
   errorBox: { borderWidth: 1, borderRadius: 12, borderColor: 'rgba(255,76,106,0.25)', 
     backgroundColor: 'rgba(255,76,106,0.08)', alignItems: 'center', padding: 12, marginBottom: 14 }, // prettier-ignore
-  errorText: { color: COLORS.error, fontSize: typography.size.sm - 1, fontWeight: typography.weight.semibold },
+  errorText: { color: colors.accent.red, fontSize: typography.size.sm - 1, fontWeight: typography.weight.semibold },
 
   // ── Strength meter ── //
   strengthRow: { flexDirection: 'row', alignItems: 'center', gap: spacing[2] - 2, marginTop: -spacing[2] - 2, marginBottom: 14 },

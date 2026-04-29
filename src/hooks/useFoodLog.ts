@@ -64,7 +64,7 @@ export const useFoodLog = (date: Date = new Date(), profile?: UserProfile | null
 
   // ── Group logs by meal type ── //
   const logsByMeal = (logs || []).reduce<Record<MealType, FoodLog[]>>(
-    (acc, log) => {
+    (acc: Record<MealType, FoodLog[]>, log: FoodLog) => {
       acc[log.mealType] = [...(acc[log.mealType] || []), log];
       return acc;
     },

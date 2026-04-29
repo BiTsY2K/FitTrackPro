@@ -3,7 +3,7 @@ import { StyleProp, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-n
 import { colors, spacing, typography } from '@/themes';
 
 interface SectionLabelProps {
-  icon?: string;
+  icon?: React.ReactNode;
   children: string;
   styleContainerView?: StyleProp<ViewStyle>;
   styleIconView?: StyleProp<TextStyle>;
@@ -34,7 +34,7 @@ const sectionLabel = StyleSheet.create({
     marginBottom: spacing[3],
     marginTop: spacing[1],
   },
-  icon: { fontSize: typography.size.sm },
+  icon: { fontSize: typography.size.lg, color: colors.content.tertiary },
   label: {
     letterSpacing: 1.5,
     textTransform: 'uppercase',

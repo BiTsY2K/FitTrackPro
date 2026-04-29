@@ -1,4 +1,4 @@
-import { addDoc, collection, Timestamp } from 'firebase/firestore';
+import { addDoc, collection, deleteDoc, doc, getDocs, orderBy, query, Timestamp, updateDoc, where } from 'firebase/firestore';
 
 import { FoodItem, FoodLog, MealType } from '@/types/food.types';
 import { logger } from '@/utils/logger';
@@ -47,11 +47,7 @@ class FoodLogService {
   /** Reference to the top-level food_logs collection */
   private logsCollection = () => collection(db, 'food_logs');
 
-  /**
-   * Add a food log entry
-   *
-   * Calculates totals from servings consumed, denormalized for fast reads.
-   */
+  /** Add a food log entry. Calculates totals from servings consumed, denormalized for fast reads. */
   async addFoodLog(userId: string, foodItem: FoodItem, servingsConsumed: number, mealType: MealType): Promise<FoodLog> {
     logger.info('Adding food log', { userId, foodId: foodItem.id, servingsConsumed, mealType });
 
@@ -97,6 +93,88 @@ class FoodLogService {
       logger.error('Failed to add food log', error as Error);
       throw error;
     }
+  }
+
+  /** Get all food logs for a specific local date. Uses start-of-day / end-of-day boundaries (local time). */
+  async getDailyLogs(userId: string, date: Date = new Date()): Promise<FoodLog[]> {
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    try {
+      const q = query(
+        this.logsCollection(),
+        where('userId', '==', userId),
+        where('consumedAt', '>=', Timestamp.fromDate(startOfDay)),
+        where('consumedAt', '<=', Timestamp.fromDate(endOfDay)),
+        orderBy('consumedAt', 'asc'),
+      );
+      const snapshot = await getDocs(q);
+
+      return snapshot.docs.map(docSnap => {
+        const data = docSnap.data();
+        return {
+          ...data,
+          id: docSnap.id,
+          consumedAt: (data.consumedAt as Timestamp).toDate(),
+          createdAt: (data.createdAt as Timestamp).toDate(),
+        } as FoodLog;
+      });
+    } catch (error) {
+      logger.error('Failed to get daily logs', error as Error);
+      return [];
+    }
+  }
+
+  /* Delete a food log entry. */
+  async deleteFoodLog(userId: string, logId: string): Promise<void> {
+    try {
+      await deleteDoc(doc(db, 'food_logs', logId));
+      logger.info('Food log deleted', { userId, logId });
+    } catch (error) {
+      logger.error('Failed to delete food log', error as Error);
+      throw error;
+    }
+  }
+
+  /**
+   * Update the user's streak after a successful log entry
+   *
+   * Logic:
+   * - If already logged today → streak unchanged
+   * - If last log was yesterday → streak extends by 1
+   * - Otherwise → streak resets to 1 (broken streak)
+   */
+  async updateStreak(
+    userId: string,
+    currentStreak: number,
+    lastLogDate: string | undefined,
+  ): Promise<{ currentStreak: number; lastLogDate: string }> {
+    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+
+    // Already logged today — no change needed //
+    if (lastLogDate === today) {
+      return { currentStreak, lastLogDate: today };
+    }
+
+    const yesterday = new Date(Date.now() - 86_400_000).toISOString().split('T')[0];
+    const newStreak = lastLogDate === yesterday ? currentStreak + 1 : 1;
+
+    try {
+      await updateDoc(doc(db, 'users', userId), {
+        currentStreak: newStreak,
+        longestStreak: newStreak, // simplified: will be a Cloud Function later
+        lastLogDate: today,
+      });
+      logger.info('Streak updated', { userId, newStreak, today });
+    } catch (error) {
+      // Non-critical — don't throw, streak update failure shouldn't block food logging //
+      logger.error('Failed to update streak', error as Error);
+    }
+
+    return { currentStreak: newStreak, lastLogDate: today };
   }
 }
 

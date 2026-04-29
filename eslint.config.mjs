@@ -25,6 +25,18 @@ export default [
   ...compat.extends('expo', 'plugin:@typescript-eslint/recommended', 'prettier'),
 
   {
+    languageOptions: {
+      globals: {
+        jest: 'readonly',
+        describe: 'readonly',
+        it: 'readonly',
+        expect: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
+      },
+    },
     plugins: {
       'simple-import-sort': simpleImportSort,
       'react-native': reactNativePlugin,

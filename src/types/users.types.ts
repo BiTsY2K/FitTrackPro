@@ -9,8 +9,12 @@ export interface UserProfile {
   photoURL?: string;
   emailVerified: boolean;
 
+  // Set during onboarding, populated incrementally //
   onboardingData: OnboardingData | Partial<OnboardingData>;
-  nutritionPlan: NutritionPlan;
+
+  // Populated only after PlanSummaryScreen completes //
+  nutritionPlan?: NutritionPlan;
+  onboardingCompletedAt?: Date | Timestamp | FieldValue;
 
   // ── Streak Tracking ── //
   currentStreak?: number; // Consecutive days with at least one food log
@@ -20,6 +24,6 @@ export interface UserProfile {
   // ── Metadata ── //
   createdAt: Date | Timestamp | FieldValue;
   updatedAt: Date | Timestamp | FieldValue;
-  isPremium: boolean;
+  isPremium?: boolean;
   premiumExpiresAt?: Date | Timestamp | FieldValue;
 }

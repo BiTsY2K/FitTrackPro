@@ -72,6 +72,39 @@ class FoodAPIService {
     }
   }
 
+  /**
+   * Search by barcode
+   *
+   * Priority: Open Food Facts (best barcode coverage)
+   * Fallback: USDA (limited barcode data)
+   */
+  async searchByBarcode(barcode: string): Promise<FoodItem | null> {
+    logger.info('Barcode search started', { barcode });
+
+    try {
+      const offResponse = await openFoodFactsAPI.getByBarcode(barcode); // Try Open Food Facts first (best barcode database)
+      if (offResponse.success && offResponse.data) {
+        logger.info('Barcode found in Open Food Facts', { barcode });
+        return offResponse.data;
+      }
+
+      const usdaResponse = await usdaAPI.search(barcode, 5); // Fallback: Try USDA (rare, but possible)
+      if (usdaResponse.success && usdaResponse.data) {
+        const match = usdaResponse.data.find(f => f.barcode === barcode);
+        if (match) {
+          logger.info('Barcode found in USDA', { barcode });
+          return match;
+        }
+      }
+
+      logger.warn('Barcode not found', { barcode });
+      return null;
+    } catch (error) {
+      logger.error('Barcode search failed', error as Error, { barcode });
+      return null;
+    }
+  }
+
   /** Deduplicate foods by name + brand. Keep the one with highest trust score */
   private deduplicateFoods(foods: FoodItem[]): FoodItem[] {
     const seen = new Map<string, FoodItem>();
@@ -130,6 +163,20 @@ class FoodAPIService {
     const off = true; // OFF is always available (no key required)
 
     return { usda, off, any: usda || off };
+  }
+
+  /** Get API status for monitoring */
+  getStatus() {
+    return {
+      usda: {
+        available: usdaAPI.isAvailable(),
+        remainingQuota: usdaAPI.getRemainingQuota(),
+      },
+      openFoodFacts: {
+        available: true,
+        unlimited: true,
+      },
+    };
   }
 }
 

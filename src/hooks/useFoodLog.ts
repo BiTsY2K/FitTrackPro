@@ -79,9 +79,13 @@ export const useFoodLog = (date: Date = new Date(), profile?: UserProfile | null
       // Refresh daily logs immediately //
       queryClient.invalidateQueries({ queryKey: [DAILY_LOG_QUERY_KEY, user?.uid] });
 
+      // Invalidate recent foods so RecentFoodsScreen reflects the new log //
+      queryClient.invalidateQueries({ queryKey: ['recentFoods', user?.uid] });
+
       // Update streak (non-blocking) //
       if (profile) {
         await foodLogService.updateStreak(user!.uid, profile.currentStreak ?? 0, profile.lastLogDate);
+        queryClient.invalidateQueries({ queryKey: ['userProfile', user?.uid] });
       }
 
       logger.info('Food log added, cache invalidated');

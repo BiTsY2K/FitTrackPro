@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 
 import { useAuth } from '@/contexts/AuthContext';
 import { db } from '@/services/firebase';
@@ -31,7 +31,22 @@ export const useProfile = () => {
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-          return docSnap.data() as UserProfile;
+          const profileData = docSnap.data() as UserProfile;
+
+          // Reset broken streak if today is past the lastLogDate's yesterday
+          if ((profileData.currentStreak ?? 0) > 0) {
+            const today = new Date().toISOString().split('T')[0];
+            const yesterday = new Date(Date.now() - 86_400_000).toISOString().split('T')[0];
+
+            if (!profileData.lastLogDate || (profileData.lastLogDate !== today && profileData.lastLogDate !== yesterday)) {
+              profileData.currentStreak = 0;
+              updateDoc(docRef, { currentStreak: 0 }).catch(err => {
+                logger.error('Failed to reset broken streak in Firestore', err);
+              });
+            }
+          }
+
+          return profileData;
         }
         return null;
       } catch (error) {

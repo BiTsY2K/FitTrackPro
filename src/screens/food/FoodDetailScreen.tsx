@@ -9,6 +9,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { SectionLabel } from '@/components/common/SectionLabel';
 import { COLORS } from '@/constants/theme';
 import { globalStyles } from '@/globalStyles';
+import { useFoodLog } from '@/hooks/useFoodLog';
 import { useProfile } from '@/hooks/useProfile';
 import { MainStackParamList } from '@/navigation/MainNavigation';
 import { colors, rounded, spacing, typography } from '@/themes';
@@ -17,13 +18,14 @@ import { MacroRingChart, MacroTrackerBar } from '../dashboard/DashboardScreen';
 import { TrustBadge } from './FoodSearchScreen';
 
 // ── FoodDetailScreen: Main Screen ─────────────────────────────────────────────────────────────────────────────
-type FDProps = NativeStackScreenProps<MainStackParamList, 'FoodDetail'>;
+type Props = NativeStackScreenProps<MainStackParamList, 'FoodDetail'>;
 
-export const FoodDetailScreen: React.FC<FDProps> = ({ navigation, route }) => {
+export const FoodDetailScreen: React.FC<Props> = ({ navigation, route }) => {
   const { food, mealType = 'lunch' } = route.params;
 
   //  Profile needed so streak update fires on add //
   const { profile } = useProfile();
+  const { addFood } = useFoodLog(new Date(), profile);
   const plan = profile?.nutritionPlan?.dailyMacroTargets;
   const mealLabel = mealType.charAt(0).toUpperCase() + mealType.slice(1);
 
@@ -49,6 +51,12 @@ export const FoodDetailScreen: React.FC<FDProps> = ({ navigation, route }) => {
       Animated.spring(addScale, { toValue: 0.95, useNativeDriver: true, speed: 50 }),
       Animated.spring(addScale, { toValue: 1, useNativeDriver: true, speed: 30 }),
     ]).start();
+    
+    // Add the food item to the daily log
+    addFood({ foodItem: food, servings: qty, mealType }).catch(error => {
+      console.error('Failed to add food log:', error);
+    });
+
     setAdded(true);
     Animated.spring(addedScale, { toValue: 1, useNativeDriver: true, speed: 20, bounciness: 12 }).start();
     setTimeout(() => navigation.goBack(), 1200);
@@ -136,19 +144,21 @@ export const FoodDetailScreen: React.FC<FDProps> = ({ navigation, route }) => {
         {/* ── Serving size ── */}
         <SectionLabel icon="🥄">Serving Size</SectionLabel>
         <View style={fdS.servingCard}>
-          <Text style={fdS.servingBase}>
-            1 serving = {food.servingSize?.description || `${food.servingSize?.amount}${food.servingSize?.unit}`}
-          </Text>
           {/* Qty stepper */}
           <View style={fdS.stepperRow}>
-            <Text style={fdS.stepperLabel}>Quantity</Text>
+            <View>
+              <Text style={fdS.stepperLabel}>Quantity</Text>
+              <Text style={fdS.servingBase}>
+                1 serving = {food.servingSize?.description || `${food.servingSize?.amount}${food.servingSize?.unit}`}
+              </Text>
+            </View>
             <View style={fdS.stepper}>
-              <TouchableOpacity onPress={() => adjustQty(-0.5)} style={fdS.stepperBtn} activeOpacity={0.8}>
-                <Text style={fdS.stepperBtnText}>−</Text>
+              <TouchableOpacity onPress={() => adjustQty(-0.5)} style={fdS.stepperButton} activeOpacity={0.8}>
+                <Text style={fdS.stepperButtonText}>-</Text>
               </TouchableOpacity>
-              <Text style={fdS.stepperVal}>{qty}</Text>
-              <TouchableOpacity onPress={() => adjustQty(0.5)} style={fdS.stepperBtn} activeOpacity={0.8}>
-                <Text style={fdS.stepperBtnText}>+</Text>
+              <Text style={fdS.stepperValue}>{qty}</Text>
+              <TouchableOpacity onPress={() => adjustQty(0.5)} style={fdS.stepperButton} activeOpacity={0.8}>
+                <Text style={fdS.stepperButtonText}>+</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -225,7 +235,7 @@ export const FoodDetailScreen: React.FC<FDProps> = ({ navigation, route }) => {
                 style={fdS.addBtnGradient}
               >
                 <Text style={fdS.addBtnText}>
-                  Add {qty > 1 ? `×${qty} ` : ''}to {mealLabel}
+                  Add {qty > 1 ? `x${qty} ` : ''}to {mealLabel}
                 </Text>
                 <Text style={fdS.addBtnIcon}>+</Text>
               </LinearGradient>
@@ -294,29 +304,31 @@ const fdS = StyleSheet.create({
     padding: 16,
     marginBottom: 16,
   },
-  servingBase: { color: COLORS.textMuted, fontSize: 11, marginBottom: 12 },
-  stepperRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 },
-  stepperLabel: { color: COLORS.text, fontSize: 13, fontWeight: '700' },
+  servingBase: { color: colors.content.tertiary, fontSize: typography.size.xs },
+  stepperRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.sm },
+  stepperLabel: { color: colors.content.secondary, fontSize: typography.size.lg, fontWeight: typography.weight.bold },
   stepper: {
+    borderWidth: 1,
+    borderRadius: rounded.lg,
+    borderColor: colors.border.default,
+    backgroundColor: colors.surface.page,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.bg,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: COLORS.border,
     overflow: 'hidden',
   },
-  stepperBtn: { paddingHorizontal: 16, paddingVertical: 9 },
-  stepperBtnText: { color: COLORS.text, fontSize: 18, fontWeight: '700' },
-  stepperVal: { color: COLORS.accent, fontSize: 16, fontWeight: '900', minWidth: 32, textAlign: 'center' },
-  unitRow: { flexDirection: 'row', gap: 8 },
+  stepperButton: { paddingHorizontal: spacing.md, paddingVertical: spacing.xs },
+  stepperButtonText: { color: colors.content.primary, fontSize: typography.size.xl2, fontWeight: typography.weight.black },
+  stepperValue: { color: colors.accent.green, fontSize: typography.size.lg, fontWeight: typography.weight.black, 
+    minWidth: 32, textAlign: 'center' }, // prettier-ignore
+
+  unitRow: { flexDirection: 'row', gap: spacing['2.5'] },
   unitPill: {
     flex: 1,
-    paddingVertical: 9,
-    borderRadius: 10,
-    backgroundColor: COLORS.glass,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderRadius: rounded.md,
+    borderColor: colors.border.default,
+    backgroundColor: colors.surface.glass,
+    paddingVertical: spacing['2.5'],
     alignItems: 'center',
   },
   unitPillActive: { backgroundColor: COLORS.accentGlow, borderColor: 'rgba(0,255,135,0.3)' },

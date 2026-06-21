@@ -28,6 +28,9 @@ const TrustBadge = React.memo(function TrustBadge({ score }: { score: number }) 
   );
 });
 
+TrustBadge.displayName = 'TrustBadge';
+export { TrustBadge };
+
 const trustBadgeStyles = StyleSheet.create({
   badge: {
     flexDirection: 'row',
@@ -234,7 +237,11 @@ export const FoodSearchScreen: React.FC<Props> = ({ navigation, route }) => {
           </View>
           <Text style={foodSearchStyles.emptyTitle}>No results found</Text>
           <Text style={foodSearchStyles.emptySub}>Try a different search, or add it manually.</Text>
-          <TouchableOpacity style={foodSearchStyles.emptyBtn} activeOpacity={0.8}>
+          <TouchableOpacity
+            style={foodSearchStyles.emptyBtn}
+            activeOpacity={0.8}
+            onPress={() => navigation.navigate('ManualFoodEntry', { mealType })}
+          >
             <Text style={foodSearchStyles.emptyBtnText}>+ Add Custom Food</Text>
           </TouchableOpacity>
         </View>
@@ -248,7 +255,7 @@ export const FoodSearchScreen: React.FC<Props> = ({ navigation, route }) => {
       <Animated.View style={[foodSearchStyles.navHeader, { opacity: headerFade }]}>
         {/* Header */}
         <View style={foodSearchStyles.navRow}>
-          <TouchableOpacity style={globalStyles.backBtn} onPress={() => navigation.goBack()}>
+          <TouchableOpacity style={globalStyles.backBtn} activeOpacity={0.8} onPress={() => navigation.goBack()}>
             <View style={globalStyles.backCircle}>
               <Text style={globalStyles.backArrow}>←</Text>
               <Text style={globalStyles.backText}>Back</Text>

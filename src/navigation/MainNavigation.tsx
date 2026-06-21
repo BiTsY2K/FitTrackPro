@@ -4,9 +4,15 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React, { ComponentProps } from 'react';
 
 import { DashboardScreen } from '@/screens/dashboard/DashboardScreen';
+import { BarcodeScannerScreen } from '@/screens/food/BarcodeScannerScreen';
+import { FoodDetailScreen } from '@/screens/food/FoodDetailScreen';
+import { FoodSearchScreen } from '@/screens/food/FoodSearchScreen';
+import { ManualFoodEntryScreen } from '@/screens/food/ManualFoodEntryScreen';
+import { RecentFoodsScreen } from '@/screens/food/RecentFoodsScreen';
 import { ProfileScreen } from '@/screens/profile/ProfileScreen';
 import { colors } from '@/themes';
 import { FoodItem, MealType } from '@/types/food.types';
+import { UserProfile } from '@/types/users.types';
 
 export type BottomTabParamList = {
   Dashboard: undefined;
@@ -21,6 +27,10 @@ export type MainStackParamList = {
   BarcodeScanner: { mealType: MealType };
   ManualFoodEntry: { mealType: MealType };
   RecentFoods: { mealType: MealType };
+  EditProfile: { profile: UserProfile | null };
+  ChangeGoal: undefined;
+  WeightHistory: undefined;
+  Settings: undefined;
 };
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
@@ -40,7 +50,7 @@ const TabNavigator = () => (
 
       tabBarActiveTintColor: colors.brand.dim,
       tabBarInactiveTintColor: colors.accent.gray,
-      tabBarStyle: { borderTopColor: colors.accent.grayVivid },
+      tabBarStyle: { borderTopColor: colors.surface.lightGlass, backgroundColor: colors.surface.base },
       headerShown: false,
     })}
   >
@@ -53,10 +63,10 @@ const TabNavigator = () => (
 export const MainNavigator = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="Tabs" component={TabNavigator} />
-    {/* <Stack.Screen name="FoodSearch" component={FoodSearchScreen} options={{ animation: 'slide_from_bottom' }} />
+    <Stack.Screen name="FoodSearch" component={FoodSearchScreen} options={{ animation: 'slide_from_bottom' }} />
     <Stack.Screen name="FoodDetail" component={FoodDetailScreen} options={{ animation: 'slide_from_right' }} />
     <Stack.Screen name="BarcodeScanner" component={BarcodeScannerScreen} options={{ animation: 'slide_from_bottom' }} />
     <Stack.Screen name="ManualFoodEntry" component={ManualFoodEntryScreen} options={{ animation: 'slide_from_bottom' }} />
-    <Stack.Screen name="RecentFoods" component={RecentFoodsScreen} options={{ animation: 'slide_from_bottom' }} /> */}
+    <Stack.Screen name="RecentFoods" component={RecentFoodsScreen} options={{ animation: 'slide_from_bottom' }} />
   </Stack.Navigator>
 );

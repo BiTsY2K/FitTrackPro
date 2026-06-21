@@ -2,6 +2,9 @@
  * Design System
  * Minimal, trust-focused aesthetic for fitness tracking
  */
+
+// bg: {blue: rgba(59,130,246,0.12), orange: rgba(255,107,53,0.12), purple: rgba(124,58,237,0.12), teal: rgba(6,182,212,0.12)}
+
 export const COLORS = {
   bg: '#0A0A0F',
   bgCard: '#12121A',
@@ -12,9 +15,13 @@ export const COLORS = {
   purple: '#7C3AED',
   blue: '#3B82F6',
   orange: '#F59E0B',
+  teal: '#06B6D4',
+  pink: '#EC4899',
   text: '#F0F0F5',
   textMuted: '#8888AA',
   border: 'rgba(255,255,255,0.08)',
+  borderActive: 'rgba(255,255,255,0.14)',
+
   glass: 'rgba(255,255,255,0.04)',
   error: '#FF4C6A',
 

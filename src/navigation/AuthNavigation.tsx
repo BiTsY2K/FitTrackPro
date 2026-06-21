@@ -6,6 +6,7 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { globalStyles } from '@/globalStyles';
+import EmailVerificationScreen from '@/screens/auth/EmailVerificationScreen';
 import ForgotPasswordScreen from '@/screens/auth/ForgotPasswordScreen';
 import SignInScreen from '@/screens/auth/SignInScreen';
 import SignUpScreen from '@/screens/auth/SignUpScreen';
@@ -74,7 +75,7 @@ export default function AuthenticationNavigator() {
       <Stack.Screen name="SignIn" component={SignInScreen} />
       <Stack.Screen name="SignUp" component={SignUpScreen} />
       <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
-      {/* <Stack.Screen name="EmailVerification" component={EmailVerificationScreen} /> */}
+      <Stack.Screen name="EmailVerification" component={EmailVerificationScreen} />
     </Stack.Navigator>
   );
 }

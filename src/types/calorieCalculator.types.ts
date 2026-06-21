@@ -6,7 +6,10 @@ export interface NutritionPlan {
   dailyFatGrams: number;
   dailyCarbsGrams: number;
   dailyWaterMl: number;
-  estimatedWeeksToGoal: number | null;
 }
 
-export type CalculatedNutritionPlan = NutritionPlan | null;
+export type CalculatedNutritionPlan =
+  | (NutritionPlan & {
+      estimatedWeeksToGoal: number | null;
+    })
+  | null;

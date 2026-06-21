@@ -19,6 +19,7 @@ import { ScienceCard } from '@/components/onboarding/summary/ScienceCard';
 import { SuccessHeader } from '@/components/onboarding/summary/SuccessHeader';
 import { TimelineCard } from '@/components/onboarding/summary/TimeLineCard';
 import { useAuth } from '@/contexts/AuthContext';
+import { useOnboarding } from '@/contexts/OnboardingContext';
 import { globalStyles } from '@/globalStyles';
 import { OnboardingStackParamList } from '@/navigation/OnboardingNavigation';
 import { CalorieCalculator } from '@/services/calculations/CalorieCalculator';
@@ -39,6 +40,7 @@ export const PlanSummaryScreen: React.FC<Props> = ({ navigation, route }) => {
   // const rootNavigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const { user } = useAuth();
+  const { setHasCompletedOnboarding } = useOnboarding();
 
   const [plan, setPlan] = useState<CalculatedNutritionPlan | null>(null);
   const [loading, setLoading] = useState(true);
@@ -100,6 +102,7 @@ export const PlanSummaryScreen: React.FC<Props> = ({ navigation, route }) => {
         },
         { merge: true },
       );
+      setHasCompletedOnboarding(true);
     } catch {
       setErrors(['Failed to save your plan. Please try again.']);
     } finally {

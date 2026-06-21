@@ -37,24 +37,56 @@ let db: Firestore;
 let storage: FirebaseStorage;
 let analytics: Analytics | null = null;
 
-const initializeFirebase = () => {
-  try {
-    validateConfig();
+// Eager initialization if configuration is already available in the environment
+const hasConfig = !!(
+  firebaseConfig.apiKey &&
+  firebaseConfig.authDomain &&
+  firebaseConfig.projectId
+);
 
-    // Prevent multiple initializations //
+if (hasConfig) {
+  try {
     if (getApps().length === 0) {
       app = initializeApp(firebaseConfig);
-      console.log('✅ Firebase initialized successfully');
-    } else { app = getApps()[0]; } // prettier-ignore
+      console.log('✅ Firebase initialized successfully (eagerly)');
+    } else {
+      app = getApps()[0];
+    }
 
-    // Initialize services //
     auth = getAuth(app);
     db = getFirestore(app);
     storage = getStorage(app);
 
-    // Analytics only works on web in Expo //
     if (Constants.platform?.web) {
       analytics = getAnalytics(app);
+    }
+  } catch (error) {
+    console.warn('⚠️ Firebase eager initialization failed:', error);
+  }
+}
+
+const initializeFirebase = () => {
+  try {
+    if (!app) {
+      validateConfig();
+
+      // Prevent multiple initializations //
+      if (getApps().length === 0) {
+        app = initializeApp(firebaseConfig);
+        console.log('✅ Firebase initialized successfully (lazily)');
+      } else {
+        app = getApps()[0];
+      }
+
+      // Initialize services //
+      auth = getAuth(app);
+      db = getFirestore(app);
+      storage = getStorage(app);
+
+      // Analytics only works on web in Expo //
+      if (Constants.platform?.web) {
+        analytics = getAnalytics(app);
+      }
     }
 
     return { app, auth, db, storage, analytics };
@@ -65,5 +97,4 @@ const initializeFirebase = () => {
 };
 
 // Export initialized instances //
-// const firebase = initializeFirebase();
 export { analytics, app, auth, db, initializeFirebase, storage };

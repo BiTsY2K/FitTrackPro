@@ -1,6 +1,7 @@
 import './global.css';
 
 import * as Sentry from '@sentry/react-native';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View } from 'react-native';
 import { initialWindowMetrics, SafeAreaProvider } from 'react-native-safe-area-context';
@@ -11,16 +12,28 @@ import { colors } from '@/themes';
 
 import { OnboardingProvider } from './contexts/OnboardingContext';
 
+// Singleton QueryClient — created outside of components so it persists across re-renders //
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 2,
+      staleTime: 30 * 1000, // 30 seconds default
+    },
+  },
+});
+
 function AppContent() {
   return (
     <View style={styles.container}>
       <StatusBar style="light" translucent={true} />
 
-      <AuthProvider>
-        <OnboardingProvider>
-          <RootNavigation />
-        </OnboardingProvider>
-      </AuthProvider>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <OnboardingProvider>
+            <RootNavigation />
+          </OnboardingProvider>
+        </AuthProvider>
+      </QueryClientProvider>
     </View>
   );
 }

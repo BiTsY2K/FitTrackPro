@@ -40,7 +40,6 @@ export default function SignUpScreen({ navigation }: { navigation: SignUpScreenN
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [goal, setGoal] = useState<GoalType>('gain_muscle');
-  const [isFormValid, setIsFormValid] = useState<boolean>(false);
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
@@ -52,25 +51,32 @@ export default function SignUpScreen({ navigation }: { navigation: SignUpScreenN
     ]).start();
   }, []);
 
-  const validateForm = (n: string, e: string, p: string, cp: string) => {
+  const validateForm = useCallback((n: string, e: string, p: string, cp: string) => {
     if (e && !validateEmail(e)) {
       setEmailError('Please enter a valid email address');
     } else { setEmailError('') } // prettier-ignore
 
     const passwordValidation = validatePasswordStrength(p);
     const isValid = n.length >= 2 && validateEmail(e) && passwordValidation.isValid && p === cp;
-    setIsFormValid(isValid);
-  };
+    console.log('Password Validation:', passwordValidation); // prettier-ignore
+    console.log('Name Length:', n.length); // prettier-ignore
+    console.log('Email Valid:', validateEmail(e)); // prettier-ignore
+    console.log('Passwords Match:', p === cp); // prettier-ignore
+    console.log('Is Valid:', isValid); // prettier-ignore
+    return isValid;
+  }, []);
 
   const handleSignUp = useCallback(async () => {
-    validateForm(name, email, password, confirmPassword);
-    if (!isFormValid) return;
+    const isValid = validateForm(name, email, password, confirmPassword);
+    console.log('Is Form Valid:', isValid); // prettier-ignore
+    if (!isValid) return;
 
     try {
+      console.log('Sign Up Triggered'); // prettier-ignore
       await signUp(email, password, name, goal); // Navigation handled by AuthContext
       // navigation.navigate('EmailVerification', { email: email }); // Show email verification screen
     } catch (error) { console.error('Handle_User_SignUp. Error: ', error) } // prettier-ignore
-  }, [email, password, name, goal]);
+  }, [name, email, password, confirmPassword, goal, signUp, validateForm]);
 
   // Password strength //
   const getStrength = (p: string) => {

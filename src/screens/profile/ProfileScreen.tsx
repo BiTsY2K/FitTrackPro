@@ -14,7 +14,7 @@ import { UserProfile } from '@/types/users.types';
 
 type Props = CompositeScreenProps<BottomTabScreenProps<BottomTabParamList, 'Profile'>, NativeStackScreenProps<MainStackParamList>>;
 
-export const ProfileScreen: React.FC<Props> = () => {
+export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
   const { user, signOut } = useAuth();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -51,11 +51,9 @@ export const ProfileScreen: React.FC<Props> = () => {
     ]);
   };
 
-  const handleEditProfile = () => {};
-  // navigation.navigate('EditProfile', { profile });
-  // navigation.navigate('ChangeGoal')
-  // navigation.navigate('WeightHistory')
-  // navigation.navigate('Settings')
+  const handleEditProfile = () => {
+    navigation.navigate('EditProfile', { profile });
+  };
 
   if (loading) {
     return (
@@ -108,13 +106,13 @@ export const ProfileScreen: React.FC<Props> = () => {
             <Ionicons name="chevron-forward" size={24} color={Colors.gray[400]} />
           </Pressable>
 
-          <Pressable style={styles.menuItem} onPress={() => {}}>
+          <Pressable style={styles.menuItem} onPress={() => navigation.navigate('ChangeGoal')}>
             <Ionicons name="flag" size={24} color={Colors.primary[400]} />
             <Text style={styles.menuText}>Change Goal</Text>
             <Ionicons name="chevron-forward" size={24} color={Colors.gray[400]} />
           </Pressable>
 
-          <Pressable style={styles.menuItem} onPress={() => {}}>
+          <Pressable style={styles.menuItem} onPress={() => navigation.navigate('WeightHistory')}>
             <Ionicons name="analytics" size={24} color={Colors.primary[400]} />
             <Text style={styles.menuText}>Weight History</Text>
             <Ionicons name="chevron-forward" size={24} color={Colors.gray[400]} />
@@ -123,7 +121,7 @@ export const ProfileScreen: React.FC<Props> = () => {
 
         {/* Account */}
         <View style={styles.card}>
-          <Pressable style={styles.menuItem} onPress={() => {}}>
+          <Pressable style={styles.menuItem} onPress={() => navigation.navigate('Settings')}>
             <Ionicons name="settings" size={24} color={Colors.gray[600]} />
             <Text style={styles.menuText}>Settings</Text>
             <Ionicons name="chevron-forward" size={24} color={Colors.gray[400]} />

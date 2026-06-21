@@ -2,87 +2,101 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-  
-  	// Helper Functions //
-    function isAuthenticated() {
-      return request.auth != null;
-    }
-    
-    function isOwner(userId) {
-      return request.auth.uid == userId;
-    }
-    
+
+    // ── HELPER FUNCTIONS ───────────────────────────────────────────────────────────────────────────── //
+    function isAuthenticated()  { return request.auth != null; }
+    function isAdmin()          { return isAuthenticated() && request.auth.token.admin == true; }
+    function isOwner(userId)    { return isAuthenticated() && request.auth.uid == userId; }
+    function hasUserId(data)    { return data.userId is string && data.userId == request.auth.uid; }
+
     function isValidEmail(email) {
-      return email.matches('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$');
+      return (email is string && 
+        email.matches('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$'));
     }
-    
-    // User Profiles //
+
+    function isValidTimestamp(ts) {
+      return (ts is timestamp && 
+        ts <= request.time + duration.value(1, 'm'));  // Allow small clock skew
+    }
+
+
+
+    // ── USER PROFILES ───────────────────────────────────────────────────────────────────────────── //
     match /users/{userId} {
-      allow read	: if isAuthenticated() && isOwner(userId);
-      allow create: if isAuthenticated() && isOwner(userId)
-                      && request.resource.data.email is string
-                    		&& isValidEmail(request.resource.data.email);
-      allow update: if isAuthenticated() && isOwner(userId);
-      allow delete: if isAuthenticated() && isOwner(userId);
+      allow read  : if isOwner(userId);
+      allow delete: if isOwner(userId);
+      
+      allow create: if isOwner(userId) && request.resource.data.uid == userId
+          && request.resource.data.email is string && isValidEmail(request.resource.data.email)
+            && isValidTimestamp(request.resource.data.createdAt);
+
+      allow update: if isOwner(userId) && isValidTimestamp(request.resource.data.updatedAt)
+          // Prevent changing immutable fields //
+          && request.resource.data.uid == resource.data.uid 
+          	&& request.resource.data.createdAt == resource.data.createdAt;
+              && request.resource.data.email == resource.data.email;  // optional: prevent email change
     }
-    
-    
-    
-    // Meals - only authenticated users can read/write their own data
-    match /meals/{mealId} {
-      allow read, 
-      			write : if isAuthenticated() && request.auth.uid == resource.data.userId;
-      allow create: if isAuthenticated() && request.auth.uid == request.resource.data.userId;
-    }
-    
-    // Workouts - only authenticated users can read/write their own data
-    match /workouts/{workoutId} {
-      allow read, 
-      			write: if isAuthenticated() && request.auth.uid == resource.data.userId;
-      allow create: if isAuthenticated() && request.auth.uid == request.resource.data.userId;
-    }
-    
-    
-    
-    // Food Logs //
+
+    // ── FOOD LOGS ───────────────────────────────────────────────────────────────────────────── //
     match /food_logs/{logId} {
-      allow read	: if isAuthenticated() && resource.data.userId == request.auth.uid;
-      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid
-                    	&& request.resource.data.consumedAt is timestamp;
-      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
-      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow read  : if resource.data.userId == request.auth.uid;
+      allow delete: if resource.data.userId == request.auth.uid;
+
+      allow create: if isAuthenticated() && hasUserId(request.resource.data)
+                    && request.resource.data.consumedAt is timestamp
+                    && isValidTimestamp(request.resource.data.consumedAt);
+
+      allow update: if resource.data.userId == request.auth.uid
+                    && isValidTimestamp(request.resource.data.updatedAt ?? request.time);
+
     }
-    
-     // Exercise Logs //
+
+    // ====================== EXERCISE LOGS ======================
     match /exercise_logs/{logId} {
-      allow read	: if isAuthenticated() && resource.data.userId == request.auth.uid;
-      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
-      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
-      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow read, delete: if resource.data.userId == request.auth.uid;
+
+      allow create: if isAuthenticated() 
+                    && hasUserId(request.resource.data)
+                    && request.resource.data.performedAt is timestamp;
+
+      allow update: if resource.data.userId == request.auth.uid
+                    && isValidTimestamp(request.resource.data.updatedAt ?? request.time);
     }
-    
-    // Water Logs //
+
+    // ====================== WATER LOGS ======================
     match /water_logs/{logId} {
-      allow read	: if isAuthenticated() && resource.data.userId == request.auth.uid;
-      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
-      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
-      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow read, delete: if resource.data.userId == request.auth.uid;
+
+      allow create: if isAuthenticated() && hasUserId(request.resource.data);
+      allow update: if resource.data.userId == request.auth.uid
+                    && isValidTimestamp(request.resource.data.updatedAt ?? request.time);
     }
-    
-    // Food Database (public read, admin write) //
+
+    // ====================== MEALS & WORKOUTS ======================
+    match /meals/{mealId} {
+      allow read, delete: if resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated() && hasUserId(request.resource.data);
+      allow update: if resource.data.userId == request.auth.uid;
+    }
+
+    match /workouts/{workoutId} {
+      allow read, delete: if resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated() && hasUserId(request.resource.data);
+      allow update: if resource.data.userId == request.auth.uid;
+    }
+
+    // ====================== PUBLIC FOOD DATABASE ======================
     match /foods/{foodId} {
-      allow read	: if true; // Public database
-      allow create: if isAuthenticated(); // Users can add custom foods
-      allow update: if false; // Only admins (via Cloud Functions)
-      allow delete: if false; // Only admins
+      allow read: if true;                    // Public read for food search
+      allow create: if isAuthenticated();     // Users can suggest/add custom foods
+      allow update, delete: if false;         // Only via Cloud Functions + Admin SDK
     }
-    
-    // Test collection - allow all access for development //
-    match /test/{document=**} {
-      allow read, write: if true;
-    }
-    
-    // Default: Deny everything else //
+
+    // ====================== OTHER COLLECTIONS (Add as needed) ======================
+    // Example for nutrition plans, streaks, etc.
+    // match /nutrition_plans/{planId} { ... }
+
+    // ====================== DEFAULT DENY (Security First) ======================
     match /{document=**} {
       allow read, write: if false;
     }

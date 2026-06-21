@@ -237,7 +237,11 @@ export const FoodSearchScreen: React.FC<Props> = ({ navigation, route }) => {
           </View>
           <Text style={foodSearchStyles.emptyTitle}>No results found</Text>
           <Text style={foodSearchStyles.emptySub}>Try a different search, or add it manually.</Text>
-          <TouchableOpacity style={foodSearchStyles.emptyBtn} activeOpacity={0.8}>
+          <TouchableOpacity
+            style={foodSearchStyles.emptyBtn}
+            activeOpacity={0.8}
+            onPress={() => navigation.navigate('ManualFoodEntry', { mealType })}
+          >
             <Text style={foodSearchStyles.emptyBtnText}>+ Add Custom Food</Text>
           </TouchableOpacity>
         </View>

@@ -5,6 +5,10 @@
     "source.fixAll.eslint": "explicit"
   },
 
+  "workbench.editorAssociations": {
+    "*.md": "vscode.markdown.preview.editor"
+  },
+
   "eslint.format.enable": true, // lets ESLint handle formatting too
   "eslint.quiet": false, // show all errors/warnings
   "eslint.lintTask.enable": true,

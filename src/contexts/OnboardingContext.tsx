@@ -1,4 +1,4 @@
-import { doc, getDoc } from '@firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 import React from 'react';
 
 import { useAuth } from '@/contexts/AuthContext';

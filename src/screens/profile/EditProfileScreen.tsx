@@ -2,12 +2,12 @@ import { doc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import React, { useState } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text } from 'react-native';
 
-import { Button } from '@/components/common/Button';
+import { Button } from '@/components/ui/Button';
 import { NumberPicker } from '@/components/onboarding/NumberPicker';
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useAuth } from '@/contexts/AuthContext';
 import { CalorieCalculator } from '@/services/calculations/CalorieCalculator';
-import { db } from '@/services/firebase';
+import { db } from '@/lib/firebase';
 
 export const EditProfileScreen: React.FC = ({ navigation, route }: any) => {
   const { user } = useAuth();

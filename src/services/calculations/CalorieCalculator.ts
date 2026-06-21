@@ -1,6 +1,6 @@
 import { ACTIVITY_MULTIPLIERS, FAT_PERCENTAGE, GOAL_ADJUSTMENTS, PROTEIN_TARGETS, SAFE_RATES } from '@/constants/onboarding';
 import { ActivityLevelType, Gender, GoalType, OnboardingData } from '@/types/onboarding.types';
-import { logger } from '@/utils/logger';
+import { logger } from '@/lib/logger';
 
 /**
  * Calorie & Macro Calculation Engine

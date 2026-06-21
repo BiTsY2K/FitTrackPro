@@ -7,7 +7,7 @@ import { globalStyles } from '@/globalStyles';
 import type { ActivityOption } from '@/screens/onboarding/ActivityScreen';
 import { GenderOption } from '@/screens/onboarding/BioDataScreen';
 import type { GoalOption } from '@/screens/onboarding/GoalSelectionScreen';
-import { colors, rounded, spacing, typography } from '@/themes';
+import { colors, rounded, spacing, typography } from '@/theme';
 
 interface SelectionCardProps {
   option: GoalOption | ActivityOption | GenderOption;

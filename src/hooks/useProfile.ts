@@ -2,9 +2,9 @@ import { useQuery } from '@tanstack/react-query';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 
 import { useAuth } from '@/contexts/AuthContext';
-import { db } from '@/services/firebase';
+import { db } from '@/lib/firebase';
 import { UserProfile } from '@/types/users.types';
-import { logger } from '@/utils/logger';
+import { logger } from '@/lib/logger';
 
 const PROFILE_QUERY_KEY = 'userProfile';
 

@@ -4,12 +4,12 @@ import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { ActivityIndicator, Animated, FlatList, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { SectionLabel } from '@/components/common/SectionLabel';
+import { SectionLabel } from '@/components/ui/SectionLabel';
 import { COLORS } from '@/constants/theme';
 import { globalStyles } from '@/globalStyles';
 import { useFoodSearch } from '@/hooks/useFoodSearch';
 import { MainStackParamList } from '@/navigation/MainNavigation';
-import { colors, rounded, spacing, typography } from '@/themes';
+import { colors, rounded, spacing, typography } from '@/theme';
 import { FoodItem } from '@/types/food.types';
 
 // ── COMPONENT: TrustBadge ─────────────────────────────────────────────────────────────────────────────

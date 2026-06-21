@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { Animated, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
 
-import { colors, rounded, spacing, typography } from '@/themes';
+import { colors, rounded, spacing, typography } from '@/theme';
 
 interface ImperialDisplayProp {
   label: string;

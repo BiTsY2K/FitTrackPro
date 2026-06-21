@@ -10,7 +10,7 @@ import EmailVerificationScreen from '@/screens/auth/EmailVerificationScreen';
 import ForgotPasswordScreen from '@/screens/auth/ForgotPasswordScreen';
 import SignInScreen from '@/screens/auth/SignInScreen';
 import SignUpScreen from '@/screens/auth/SignUpScreen';
-import { colors, spacing, typography } from '@/themes';
+import { colors, spacing, typography } from '@/theme';
 
 type Props = {
   navigation: NativeStackNavigationProp<AuthStackParamList, keyof AuthStackParamList>;

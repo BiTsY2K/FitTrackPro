@@ -9,7 +9,7 @@ import { Alert, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } fr
 import { BorderRadius, Colors, Spacing, Typography } from '@/constants/theme';
 import { useAuth } from '@/contexts/AuthContext';
 import { BottomTabParamList, MainStackParamList } from '@/navigation/MainNavigation';
-import { db } from '@/services/firebase';
+import { db } from '@/lib/firebase';
 import { UserProfile } from '@/types/users.types';
 
 type Props = CompositeScreenProps<BottomTabScreenProps<BottomTabParamList, 'Profile'>, NativeStackScreenProps<MainStackParamList>>;

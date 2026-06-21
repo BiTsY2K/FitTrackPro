@@ -1,9 +1,9 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { SectionLabel } from '@/components/common/SectionLabel';
+import { SectionLabel } from '@/components/ui/SectionLabel';
 import { COLORS } from '@/constants/theme';
 import { globalStyles } from '@/globalStyles';
-import { colors, rounded, spacing, typography } from '@/themes';
+import { colors, rounded, spacing, typography } from '@/theme';
 
 export function ScienceCard({ bmr, tdee, target }: { bmr: number; tdee: number; target: number }) {
   const deficit = tdee - target;

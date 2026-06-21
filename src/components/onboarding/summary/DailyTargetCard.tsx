@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
 
-import { SectionLabel } from '@/components/common/SectionLabel';
-import { colors, rounded, spacing, typography } from '@/themes';
+import { SectionLabel } from '@/components/ui/SectionLabel';
+import { colors, rounded, spacing, typography } from '@/theme';
 import { CalculatedNutritionPlan } from '@/types/calorieCalculator.types';
 
 export function DailyTargetsCard({ plan }: { plan: CalculatedNutritionPlan }) {

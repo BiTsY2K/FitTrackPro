@@ -2,7 +2,7 @@ import * as Sentry from '@sentry/react-native';
 import React from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
 
-import { spacing, typography } from '@/themes';
+import { spacing, typography } from '@/theme';
 
 interface Props {
   children?: React.ReactNode;

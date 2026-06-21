@@ -1,9 +1,9 @@
-import { tokens } from '@/themes/tokens';
+import { tokens } from '@/theme/tokens';
 
-export type { Primitives } from '@/themes/primitives';
-export { primitives } from '@/themes/primitives';
-export type { ColorTokens, MotionTokens,RoundedTokens, ShadowTokens, SpacingTokens, Tokens } from '@/themes/tokens';
-export { colors, motion, rounded, shadow, spacing, tokens, typography, zIndex } from '@/themes/tokens';
+export type { Primitives } from '@/theme/primitives';
+export { primitives } from '@/theme/primitives';
+export type { ColorTokens, MotionTokens,RoundedTokens, ShadowTokens, SpacingTokens, Tokens } from '@/theme/tokens';
+export { colors, motion, rounded, shadow, spacing, tokens, typography, zIndex } from '@/theme/tokens';
 
 /**
  * The single object your components import.

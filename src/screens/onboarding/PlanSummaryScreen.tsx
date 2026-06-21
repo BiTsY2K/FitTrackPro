@@ -7,8 +7,8 @@ import { StatusBar, StyleSheet, Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import Button from '@/components/common/Button';
-import GradientText from '@/components/common/GradientText';
+import Button from '@/components/ui/Button';
+import GradientText from '@/components/ui/GradientText';
 import { ProgressBar } from '@/components/onboarding/ProgressBar';
 import { DailyTargetsCard } from '@/components/onboarding/summary/DailyTargetCard';
 import { ErrorView } from '@/components/onboarding/summary/ErrorView';
@@ -24,8 +24,8 @@ import { globalStyles } from '@/globalStyles';
 import { OnboardingStackParamList } from '@/navigation/OnboardingNavigation';
 import { CalorieCalculator } from '@/services/calculations/CalorieCalculator';
 import { ValidationService } from '@/services/calculations/ValidationService';
-import { db } from '@/services/firebase';
-import { colors, rounded, spacing, typography } from '@/themes';
+import { db } from '@/lib/firebase';
+import { colors, rounded, spacing, typography } from '@/theme';
 import { CalculatedNutritionPlan } from '@/types/calorieCalculator.types';
 import { OnboardingData } from '@/types/onboarding.types';
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
 
-import { colors, rounded, spacing, typography } from '@/themes';
+import { colors, rounded, spacing, typography } from '@/theme';
 
 interface ProgressBarProps {
   currentStep: number;

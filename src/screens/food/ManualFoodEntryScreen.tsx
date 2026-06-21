@@ -18,7 +18,7 @@ import { BorderRadius, Colors, Spacing, Typography } from '@/constants/theme';
 import { globalStyles } from '@/globalStyles';
 import { MainStackParamList } from '@/navigation/MainNavigation';
 import { FoodItem, MealType, NutritionInfo, ServingSize } from '@/types/food.types';
-import { logger } from '@/utils/logger';
+import { logger } from '@/lib/logger';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 

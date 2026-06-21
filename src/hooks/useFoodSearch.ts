@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 
 import { foodAPIService } from '@/services/food/FoodAPIService';
-import { logger } from '@/utils/logger';
+import { logger } from '@/lib/logger';
 
 const RECENT_SEARCHES_KEY = 'recent_food_searches';
 const MAX_RECENT_SEARCHES = 10;

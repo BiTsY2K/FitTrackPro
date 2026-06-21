@@ -5,13 +5,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-import Button from '@/components/common/Button';
-import GradientText from '@/components/common/GradientText';
-import { SelectionCard } from '@/components/common/SelectionCard';
+import Button from '@/components/ui/Button';
+import GradientText from '@/components/ui/GradientText';
+import { SelectionCard } from '@/components/ui/SelectionCard';
 import { ProgressBar } from '@/components/onboarding/ProgressBar';
 import { globalStyles } from '@/globalStyles';
 import { OnboardingStackParamList } from '@/navigation/OnboardingNavigation';
-import { colors, rounded, spacing, typography } from '@/themes';
+import { colors, rounded, spacing, typography } from '@/theme';
 import type { GoalType } from '@/types/onboarding.types';
 
 export type GoalOption = {

@@ -8,7 +8,7 @@ import { initialWindowMetrics, SafeAreaProvider } from 'react-native-safe-area-c
 
 import { AuthProvider } from '@/contexts/AuthContext';
 import RootNavigation from '@/navigation/RootNavigation';
-import { colors } from '@/themes';
+import { colors } from '@/theme';
 
 import { OnboardingProvider } from './contexts/OnboardingContext';
 

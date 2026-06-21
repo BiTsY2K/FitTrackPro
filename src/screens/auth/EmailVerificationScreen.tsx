@@ -6,8 +6,8 @@ Animated,
     View, } from 'react-native'; // prettier-ignore
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import Button from '@/components/common/Button';
-import OtpCodeInput from '@/components/common/OtpCodeInput';
+import Button from '@/components/ui/Button';
+import OtpCodeInput from '@/components/ui/OtpCodeInput';
 import { COLORS } from '@/constants/theme';
 import { useAuth } from '@/contexts/AuthContext';
 import { authService } from '@/services/auth/AuthService';

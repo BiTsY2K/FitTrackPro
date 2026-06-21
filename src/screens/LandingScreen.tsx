@@ -5,12 +5,12 @@ import { Animated, Dimensions, StyleSheet, Text, TouchableOpacity, View } from '
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { BrandLogo } from '@/components/common/BrandLogo';
-import Button from '@/components/common/Button';
-import { SectionLabel } from '@/components/common/SectionLabel';
+import { BrandLogo } from '@/components/ui/BrandLogo';
+import Button from '@/components/ui/Button';
+import { SectionLabel } from '@/components/ui/SectionLabel';
 import { globalStyles } from '@/globalStyles';
 import { RootStackParamList } from '@/navigation/RootNavigation';
-import { colors, rounded, spacing, typography } from '@/themes';
+import { colors, rounded, spacing, typography } from '@/theme';
 
 const { width } = Dimensions.get('window');
 

@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { foodLogService } from '@/services/food/FoodLogService';
 import { FoodItem, FoodLog, MealType } from '@/types/food.types';
 import { UserProfile } from '@/types/users.types';
-import { logger } from '@/utils/logger';
+import { logger } from '@/lib/logger';
 
 const DAILY_LOG_QUERY_KEY = 'dailyFoodLogs';
 

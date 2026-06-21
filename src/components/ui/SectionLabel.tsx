@@ -1,6 +1,6 @@
 import { StyleProp, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 
-import { colors, spacing, typography } from '@/themes';
+import { colors, spacing, typography } from '@/theme';
 
 interface SectionLabelProps {
   icon?: React.ReactNode;

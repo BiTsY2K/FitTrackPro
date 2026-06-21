@@ -2,10 +2,10 @@ import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import { FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
-import { Button } from '@/components/common/Button';
+import { Button } from '@/components/ui/Button';
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useAuth } from '@/contexts/AuthContext';
-import { db } from '@/services/firebase';
+import { db } from '@/lib/firebase';
 import { WeightEntry } from '@/types/weight.types';
 
 export const WeightHistoryScreen: React.FC = ({ navigation }: any) => {

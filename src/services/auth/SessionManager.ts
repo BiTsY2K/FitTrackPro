@@ -1,8 +1,8 @@
 import { AppState, AppStateStatus } from 'react-native';
 
 import { SESSION_CONFIG } from '@/constants/security';
-import { auth } from '@/services/firebase';
-import { logger } from '@/utils/logger';
+import { auth } from '@/lib/firebase';
+import { logger } from '@/lib/logger';
 import { SecureStorage } from '@/utils/security';
 
 class SessionManager {

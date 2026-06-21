@@ -6,13 +6,13 @@ import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { SectionLabel } from '@/components/common/SectionLabel';
+import { SectionLabel } from '@/components/ui/SectionLabel';
 import { COLORS } from '@/constants/theme';
 import { globalStyles } from '@/globalStyles';
 import { useFoodLog } from '@/hooks/useFoodLog';
 import { useProfile } from '@/hooks/useProfile';
 import { MainStackParamList } from '@/navigation/MainNavigation';
-import { colors, rounded, spacing, typography } from '@/themes';
+import { colors, rounded, spacing, typography } from '@/theme';
 
 import { MacroRingChart, MacroTrackerBar } from '../dashboard/DashboardScreen';
 import { TrustBadge } from './FoodSearchScreen';

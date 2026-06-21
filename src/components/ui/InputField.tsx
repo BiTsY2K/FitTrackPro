@@ -3,7 +3,7 @@ import { ReactNode, useState } from 'react';
 import { Platform, Pressable, TouchableWithoutFeedback } from 'react-native';
 import { StyleSheet, Text, TextInput, TextInputProps, View, ViewStyle } from 'react-native';
 
-import { colors, rounded, spacing, typography } from '@/themes';
+import { colors, rounded, spacing, typography } from '@/theme';
 
 interface InputFieldProps extends TextInputProps {
   inputRef: React.RefObject<TextInput | null>;

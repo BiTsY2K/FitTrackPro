@@ -2,8 +2,8 @@ import { Fragment, useEffect, useRef } from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 
-import { SectionLabel } from '@/components/common/SectionLabel';
-import { colors, rounded, spacing, typography } from '@/themes';
+import { SectionLabel } from '@/components/ui/SectionLabel';
+import { colors, rounded, spacing, typography } from '@/theme';
 
 interface MacroRingChartProps {
   calories: number;

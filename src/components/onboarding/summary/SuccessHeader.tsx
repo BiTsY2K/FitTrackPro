@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
 
 import { globalStyles } from '@/globalStyles';
-import { colors, rounded, spacing } from '@/themes';
+import { colors, rounded, spacing } from '@/theme';
 
 export function SuccessHeader({ children }: { children: React.ReactNode }) {
   const ringScale = useRef(new Animated.Value(0)).current;

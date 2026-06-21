@@ -1,10 +1,10 @@
 import { useEffect, useRef } from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
 
-import { SectionLabel } from '@/components/common/SectionLabel';
+import { SectionLabel } from '@/components/ui/SectionLabel';
 import { COLORS } from '@/constants/theme';
 import { globalStyles } from '@/globalStyles';
-import { colors, rounded, spacing, typography } from '@/themes';
+import { colors, rounded, spacing, typography } from '@/theme';
 
 export function TimelineCard({ weeks }: { weeks: number }) {
   const etaDate = new Date(Date.now() + weeks * 7 * 86400000);

@@ -6,13 +6,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Animated, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-import Button from '@/components/common/Button';
-import InputField from '@/components/common/InputField';
-import { Divider, SocialButton } from '@/components/common/SharedComponents';
+import Button from '@/components/ui/Button';
+import InputField from '@/components/ui/InputField';
+import { Divider, SocialButton } from '@/components/ui/SharedComponents';
 import { useAuth } from '@/contexts/AuthContext';
 import { globalStyles } from '@/globalStyles';
 import { AuthStackParamList } from '@/navigation/AuthNavigation';
-import { colors, rounded, spacing, typography } from '@/themes';
+import { colors, rounded, spacing, typography } from '@/theme';
 import { validateEmail } from '@/utils/security';
 
 // ── SignIn Sreen: Main Screen ─────────────────────────────────────────────────────────────────────────────

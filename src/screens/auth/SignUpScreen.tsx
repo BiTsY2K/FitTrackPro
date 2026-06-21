@@ -6,16 +6,16 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, Dimensions, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-import Button from '@/components/common/Button';
-import InputField from '@/components/common/InputField';
-import { SectionLabel } from '@/components/common/SectionLabel';
-import { Divider, SocialButton } from '@/components/common/SharedComponents';
+import Button from '@/components/ui/Button';
+import InputField from '@/components/ui/InputField';
+import { SectionLabel } from '@/components/ui/SectionLabel';
+import { Divider, SocialButton } from '@/components/ui/SharedComponents';
 import { COLORS } from '@/constants/theme';
 import { useAuth } from '@/contexts/AuthContext';
 import { globalStyles } from '@/globalStyles';
 import { AuthStackParamList } from '@/navigation/AuthNavigation';
 import { GOAL_OPTIONS } from '@/screens/onboarding/GoalSelectionScreen';
-import { colors, rounded, spacing, typography } from '@/themes';
+import { colors, rounded, spacing, typography } from '@/theme';
 import { GoalType } from '@/types/onboarding.types';
 import { validateEmail, validatePasswordStrength } from '@/utils/security';
 

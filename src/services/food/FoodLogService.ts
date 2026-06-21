@@ -1,9 +1,9 @@
 import { addDoc, collection, deleteDoc, doc, getDocs, orderBy, query, Timestamp, updateDoc, where } from 'firebase/firestore';
 
 import { FoodItem, FoodLog, MealType } from '@/types/food.types';
-import { logger } from '@/utils/logger';
+import { logger } from '@/lib/logger';
 
-import { db } from '../firebase';
+import { db } from '@/lib/firebase';
 
 /**
  * Recursively removes keys whose value is `undefined` from a plain object.

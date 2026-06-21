@@ -2,7 +2,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import React from 'react';
 
 import { useAuth } from '@/contexts/AuthContext';
-import { db } from '@/services/firebase';
+import { db } from '@/lib/firebase';
 
 interface OnboardingContextValue {
   hasCompletedOnboarding: boolean;

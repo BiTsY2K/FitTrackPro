@@ -2,8 +2,8 @@ import { User } from 'firebase/auth';
 import { onAuthStateChanged } from 'firebase/auth';
 import { create } from 'zustand';
 
-import { auth, initializeFirebase } from '@/services/firebase';
-import { logger } from '@/utils/logger';
+import { auth, initializeFirebase } from '@/lib/firebase';
+import { logger } from '@/lib/logger';
 
 interface AuthState {
   user: User | null;

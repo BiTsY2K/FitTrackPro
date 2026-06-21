@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
 
 import { LOADING_STEPS } from '@/constants/onboarding';
-import { colors, rounded, spacing, typography } from '@/themes';
+import { colors, rounded, spacing, typography } from '@/theme';
 
 export function LoadingView() {
   const [stepIdx, setStepIdx] = useState<number>(0);

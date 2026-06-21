@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { COLORS } from '@/constants/theme';
-import { typography } from '@/themes';
+import { typography } from '@/theme';
 
 export function ErrorView({ errors, onBack }: { errors: string[]; onBack: () => void }) {
   const shakeAnim = useRef(new Animated.Value(0)).current;

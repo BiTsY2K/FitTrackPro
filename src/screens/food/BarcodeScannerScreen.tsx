@@ -8,9 +8,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { COLORS } from '@/constants/theme';
 import { MainStackParamList } from '@/navigation/MainNavigation';
 import { foodAPIService } from '@/services/food/FoodAPIService';
-import { colors, rounded, spacing, typography } from '@/themes';
+import { colors, rounded, spacing, typography } from '@/theme';
 import { MealType } from '@/types/food.types';
-import { logger } from '@/utils/logger';
+import { logger } from '@/lib/logger';
 
 const SCAN_THROTTLE_MS = 2000; // prevent duplicate rapid scans
 

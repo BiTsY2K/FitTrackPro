@@ -6,7 +6,7 @@ import { Easing } from 'react-native';
 import { COLORS } from '@/constants/theme';
 import { globalStyles } from '@/globalStyles';
 
-import { SectionLabel } from '../common/SectionLabel';
+import { SectionLabel } from '../ui/SectionLabel';
 
 const ITEM_HEIGHT = 44;
 const ITEM_WIDTH = 1.5 * ITEM_HEIGHT;

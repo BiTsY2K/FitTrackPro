@@ -3,7 +3,7 @@ import { Text, TextStyle, View, ViewStyle } from 'react-native';
 import { StyleProp } from 'react-native';
 
 import { globalStyles } from '@/globalStyles';
-import { colors } from '@/themes';
+import { colors } from '@/theme';
 
 interface BrandLogoProps {
   containerStyle?: StyleProp<ViewStyle>;

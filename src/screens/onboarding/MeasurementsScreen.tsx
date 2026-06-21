@@ -5,9 +5,9 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Animated, StyleSheet, Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-import Button from '@/components/common/Button';
-import GradientText from '@/components/common/GradientText';
-import { SectionLabel } from '@/components/common/SectionLabel';
+import Button from '@/components/ui/Button';
+import GradientText from '@/components/ui/GradientText';
+import { SectionLabel } from '@/components/ui/SectionLabel';
 import { BMIIndicator } from '@/components/onboarding/measurement/BMIIndicator';
 import { ImperialDisplay } from '@/components/onboarding/measurement/ImperialDisplay';
 import { UnitToggle } from '@/components/onboarding/measurement/UnitToggle';
@@ -18,7 +18,7 @@ import { COLORS } from '@/constants/theme';
 import { globalStyles } from '@/globalStyles';
 import { OnboardingStackParamList } from '@/navigation/OnboardingNavigation';
 import { CalorieCalculator } from '@/services/calculations/CalorieCalculator';
-import { colors, rounded, spacing, typography } from '@/themes';
+import { colors, rounded, spacing, typography } from '@/theme';
 import { MetabolicInfo, PhysicalMeasurements_Cm_Kg } from '@/types/onboarding.types';
 
 import { PROGRESS_STEPS_LABELS } from './GoalSelectionScreen';

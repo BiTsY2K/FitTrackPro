@@ -2,8 +2,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useMemo, useRef } from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
 
-import { SectionLabel } from '@/components/common/SectionLabel';
-import { colors, rounded, spacing, typography } from '@/themes';
+import { SectionLabel } from '@/components/ui/SectionLabel';
+import { colors, rounded, spacing, typography } from '@/theme';
 
 const BMI_SCALE_LABELS = [
   { v: '10.0', label: 'Severely Underweight', color: colors.accent.purple },

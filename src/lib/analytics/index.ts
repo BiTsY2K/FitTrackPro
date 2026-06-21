@@ -1,7 +1,7 @@
 import Constants from 'expo-constants';
 import { logEvent as firebaseLogEvent, setUserId, setUserProperties } from 'firebase/analytics';
 
-import { analytics } from '@/services/firebase';
+import { analytics } from '@/lib/firebase';
 
 const APP_ENV = Constants.expoConfig?.extra?.appEnv || 'development';
 const ANALYTICS_ENABLED = APP_ENV === 'production';

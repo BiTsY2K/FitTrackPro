@@ -1,8 +1,8 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { SectionLabel } from '@/components/common/SectionLabel';
+import { SectionLabel } from '@/components/ui/SectionLabel';
 import { COLORS } from '@/constants/theme';
-import { colors, rounded, spacing, typography } from '@/themes';
+import { colors, rounded, spacing, typography } from '@/theme';
 
 interface ProfileChip {
   label: string;

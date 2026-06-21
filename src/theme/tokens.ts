@@ -1,4 +1,4 @@
-import { primitives } from '@/themes/primitives';
+import { primitives } from '@/theme/primitives';
 import { hexToRgba } from '@/utils/utility_functions';
 
 const { color, space, radius, fontSize, fontWeight, lineHeight, letterSpacing, duration, easing } = primitives;

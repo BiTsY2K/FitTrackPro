@@ -8,14 +8,14 @@ import { TouchableOpacity, View } from 'react-native';
 import { Animated, StyleSheet, TextInput } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-import Button from '@/components/common/Button';
-import InputField from '@/components/common/InputField';
-import OtpCodeInput from '@/components/common/OtpCodeInput';
-import SuccessAnimation from '@/components/common/SuccessAnimation';
+import Button from '@/components/ui/Button';
+import InputField from '@/components/ui/InputField';
+import OtpCodeInput from '@/components/ui/OtpCodeInput';
+import SuccessAnimation from '@/components/ui/SuccessAnimation';
 import { ProgressBar } from '@/components/onboarding/ProgressBar';
 import { globalStyles } from '@/globalStyles';
 import { AuthStackParamList } from '@/navigation/AuthNavigation';
-import { colors, rounded, spacing, typography } from '@/themes';
+import { colors, rounded, spacing, typography } from '@/theme';
 
 // ── Helper: mask email ────────────────────────────────────────────────────────
 const maskEmail = (email: string): string => {

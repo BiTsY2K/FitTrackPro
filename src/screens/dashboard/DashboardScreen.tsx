@@ -9,13 +9,13 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Circle } from 'react-native-svg';
 
-import { SectionLabel } from '@/components/common/SectionLabel';
+import { SectionLabel } from '@/components/ui/SectionLabel';
 import { globalStyles } from '@/globalStyles';
 import { DailyTotals, useFoodLog } from '@/hooks/useFoodLog';
 import { useProfile } from '@/hooks/useProfile';
 import { useWaterLog } from '@/hooks/useWaterLog';
 import { BottomTabParamList, MainStackParamList } from '@/navigation/MainNavigation';
-import { colors, rounded, spacing, typography } from '@/themes';
+import { colors, rounded, spacing, typography } from '@/theme';
 import { FoodLog, MealType } from '@/types/food.types';
 import { DailyMacroTargets } from '@/types/onboarding.types';
 

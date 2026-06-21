@@ -10,7 +10,7 @@ import { FoodSearchScreen } from '@/screens/food/FoodSearchScreen';
 import { ManualFoodEntryScreen } from '@/screens/food/ManualFoodEntryScreen';
 import { RecentFoodsScreen } from '@/screens/food/RecentFoodsScreen';
 import { ProfileScreen } from '@/screens/profile/ProfileScreen';
-import { colors } from '@/themes';
+import { colors } from '@/theme';
 import { FoodItem, MealType } from '@/types/food.types';
 import { UserProfile } from '@/types/users.types';
 

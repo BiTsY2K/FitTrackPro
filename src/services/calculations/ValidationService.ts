@@ -1,5 +1,5 @@
 import { OnboardingData } from '@/types/onboarding.types';
-import { logger } from '@/utils/logger';
+import { logger } from '@/lib/logger';
 
 /**
  * Validation Service

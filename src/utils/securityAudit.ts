@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as Sentry from '@sentry/react-native';
 
-import { logger } from './logger';
+import { logger } from '@/lib/logger';
 
 /**
  * Security Audit Logger

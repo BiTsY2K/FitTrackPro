@@ -5,15 +5,15 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-import Button from '@/components/common/Button';
-import GradientText from '@/components/common/GradientText';
-import { SectionLabel } from '@/components/common/SectionLabel';
-import { SelectionCard } from '@/components/common/SelectionCard';
+import Button from '@/components/ui/Button';
+import GradientText from '@/components/ui/GradientText';
+import { SectionLabel } from '@/components/ui/SectionLabel';
+import { SelectionCard } from '@/components/ui/SelectionCard';
 import { ProgressBar } from '@/components/onboarding/ProgressBar';
 import { COLORS } from '@/constants/theme';
 import { globalStyles } from '@/globalStyles';
 import { OnboardingStackParamList } from '@/navigation/OnboardingNavigation';
-import { colors, rounded, spacing, typography } from '@/themes';
+import { colors, rounded, spacing, typography } from '@/theme';
 import type { ActivityLevelType, PhysicalActivity } from '@/types/onboarding.types';
 
 import { PROGRESS_STEPS_LABELS } from './GoalSelectionScreen';

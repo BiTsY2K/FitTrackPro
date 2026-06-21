@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCallback, useEffect, useState } from 'react';
 
-import { logger } from '@/utils/logger';
+import { logger } from '@/lib/logger';
 
 /**
  * Daily water log — persisted to AsyncStorage with a per-day key.

@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { colors, rounded, spacing, typography } from '@/themes';
+import { colors, rounded, spacing, typography } from '@/theme';
 
 export function UnitToggle({ metric, onToggle }: { metric: boolean; onToggle: (v: boolean) => void }) {
   const slideAnim = useRef(new Animated.Value(metric ? 1 : 0)).current;

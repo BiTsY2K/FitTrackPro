@@ -2,9 +2,9 @@ import { useQuery } from '@tanstack/react-query';
 import { collection, getDocs, limit, orderBy, query, where } from 'firebase/firestore';
 
 import { useAuth } from '@/contexts/AuthContext';
-import { db } from '@/services/firebase';
+import { db } from '@/lib/firebase';
 import { FoodItem, FoodLog } from '@/types/food.types';
-import { logger } from '@/utils/logger';
+import { logger } from '@/lib/logger';
 
 const RECENT_FOODS_QUERY_KEY = 'recentFoods';
 const MAX_RECENT_FOODS = 20;

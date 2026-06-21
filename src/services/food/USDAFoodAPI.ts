@@ -4,7 +4,7 @@ import axios, { AxiosError, AxiosInstance } from 'axios';
 import Constants from 'expo-constants';
 
 import { APIResponse, FoodItem, NutritionInfo, ServingSize } from '@/types/food.types';
-import { logger } from '@/utils/logger';
+import { logger } from '@/lib/logger';
 
 class USDAFoodAPI {
   private client: AxiosInstance;

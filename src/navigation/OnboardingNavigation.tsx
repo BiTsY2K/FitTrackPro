@@ -12,7 +12,7 @@ import { BioDataScreen } from '@/screens/onboarding/BioDataScreen';
 import { GoalSelectionScreen } from '@/screens/onboarding/GoalSelectionScreen';
 import MeasurementsScreen from '@/screens/onboarding/MeasurementsScreen';
 import { PlanSummaryScreen } from '@/screens/onboarding/PlanSummaryScreen';
-import { colors, spacing, typography } from '@/themes';
+import { colors, spacing, typography } from '@/theme';
 import { OnboardingData } from '@/types/onboarding.types';
 
 type Props = {

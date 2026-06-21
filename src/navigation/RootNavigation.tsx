@@ -7,8 +7,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useOnboarding } from '@/contexts/OnboardingContext';
 import { globalStyles } from '@/globalStyles';
 import LandingScreen from '@/screens/LandingScreen';
-import { logScreenView } from '@/services/analytics';
-import { colors } from '@/themes';
+import { logScreenView } from '@/lib/analytics';
+import { colors } from '@/theme';
 
 import AuthNavigator, { AuthStackParamList } from './AuthNavigation';
 import { MainNavigator } from './MainNavigation';

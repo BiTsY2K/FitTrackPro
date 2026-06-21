@@ -1,7 +1,7 @@
 import { search as fuzzySearch } from 'fast-fuzzy';
 
 import { FoodItem, SearchResult } from '@/types/food.types';
-import { logger } from '@/utils/logger';
+import { logger } from '@/lib/logger';
 
 import { openFoodFactsAPI } from './OpenFoodFactsAPI';
 import { usdaAPI } from './USDAFoodAPI';

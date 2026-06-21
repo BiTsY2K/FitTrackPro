@@ -1,6 +1,6 @@
 import { StyleSheet, ViewStyle } from 'react-native';
 
-import { colors, rounded, spacing, typography } from './themes';
+import { colors, rounded, spacing, typography } from './theme';
 
 type SpacingKey = 'sm' | 'md' | 'lg';
 type MarginKey = `marg_t_${SpacingKey}` | `marg_b_${SpacingKey}`;

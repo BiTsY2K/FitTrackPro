@@ -4,7 +4,7 @@ import { Animated, Text } from 'react-native';
 
 import { COLORS } from '@/constants/theme';
 import { globalStyles } from '@/globalStyles';
-import { colors, rounded, spacing, typography } from '@/themes';
+import { colors, rounded, spacing, typography } from '@/theme';
 
 export function WeightDeltaCard({ currentKg, targetKg, metric }: { currentKg: number; targetKg: number; metric: boolean }) {
   const unit = metric ? 'kg' : 'lbs';

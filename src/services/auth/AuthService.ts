@@ -6,11 +6,11 @@ signInWithCredential, signInWithEmailAndPassword, signOut,   updatePassword, upd
 import { doc, getDoc, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore';
 
 import { AUTH_ERRORS, RATE_LIMIT_CONFIG } from '@/constants/security';
-import { AnalyticsEvent, logEvent, setAnalyticsUserId } from '@/services/analytics';
-import { auth, db } from '@/services/firebase';
+import { AnalyticsEvent, logEvent, setAnalyticsUserId } from '@/lib/analytics';
+import { auth, db } from '@/lib/firebase';
 import { GoalType } from '@/types/onboarding.types';
 import { UserProfile } from '@/types/users.types';
-import { logger } from '@/utils/logger';
+import { logger } from '@/lib/logger';
 import { sanitizeInput, SecureStorage, validateEmail, validatePasswordStrength } from '@/utils/security';
 
 /**

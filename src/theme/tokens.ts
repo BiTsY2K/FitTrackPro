@@ -1,180 +1,20 @@
-import { primitives } from '@/theme/primitives';
-import { hexToRgba } from '@/utils/utility_functions';
-
-const { color, space, radius, fontSize, fontWeight, lineHeight, letterSpacing, duration, easing } = primitives;
-
-// ─── Color Tokens ─────────────────────────────────────────────
-const colors = {
-  // Surfaces
-  surface: {
-    page: color.ink[950], // root background
-    base: color.ink[900], // default card/panel
-    raised: color.ink[800], // elevated card
-    overlay: color.ink[700], // modal, sheet
-
-    glass: hexToRgba(color.white, 0.06), // frosted glass
-    lightGlass: hexToRgba(color.white, 0.12), // light frosted glass
-    darkGlass: hexToRgba(color.black, 0.25), // dark frosted glass
-    disabled: color.gray[900],
-  },
-
-  // Brand
-  brand: {
-    DEFAULT: color.green[500],
-    dim: color.green[600],
-    subtle: 'rgba(0,255,135,0.10)',
-    glow: 'rgba(0,255,135,0.20)',
-    text: color.green[500],
-  },
-
-  // Content / Text
-  content: {
-    primary: color.ink[50],
-    secondary: color.ink[100],
-    tertiary: color.ink[200],
-    disabled: color.ink[300],
-    inverse: color.neutral[900],
-    onBrand: color.neutral[900], // text sitting on accent bg
-  },
-
-  // Borders
-  border: {
-    brand: color.green[500],
-    default: color.gray[800],
-    subtle: hexToRgba(color.white, 0.1),
-
-    strong: color.gray[800],
-    focus: color.blue[500],
-    error: color.red[500],
-  },
-
-  // Feedback states
-  feedback: {
-    success: color.green[500],  successSubtle: 'rgba(0,230,118,0.10)',
-    warning: color.orange[500], warningSubtle: 'rgba(245,158,11,0.10)',
-    error: color.red[500],      errorSubtle: 'rgba(255,76,106,0.10)',
-    info: color.blue[400],      infoSubtle: 'rgba(77,163,255,0.10)',
-  }, // prettier-ignore
-
-  // Accent palette — for charts, tags, avatars, badges //
-  accent: {
-    gray: color.gray[500],      grayDimmed: color.gray[700],      grayVivid: color.gray[300],
-    red: color.red[500],        redDimmed: color.gray[700],       redVivid: color.red[300],
-    
-    blue: color.blue[500],      blueDimmed: color.blue[700],      blueVivid: color.blue[300],
-    pink: color.pink[500],      pinkDimmed: color.pink[700],      pinkVivid: color.pink[300],
-    teal: color.teal[500],      tealDimmed: color.teal[700],      tealVivid: color.teal[300],
-    green: color.green[500],    greenDimmed: color.green[700],    greenVivid: color.green[300],  
-    
-    orange: color.orange[500],  orangeDimmed: color.orange[700],  orangeVivid: color.orange[300],
-    yellow: color.yellow[500],  yellowDimmed: color.yellow[700],  yellowVivid: color.yellow[300],
-    purple: color.purple[500],  purpleDimmed: color.purple[700],  purpleVivid: color.purple[300],
-  }, // prettier-ignore
-
-  // Glow palette — for shadows, focus states, and ambient highlights //
-  accentGlow: {
-    gray: hexToRgba(color.gray[500], 0.2),  graySoft: hexToRgba(color.gray[500], 0.12),   grayStrong: hexToRgba(color.gray[300], 0.4),
-    red: hexToRgba(color.red[500], 0.2),    redSoft: hexToRgba(color.red[500], 0.12),     redStrong: hexToRgba(color.red[300], 0.4),
-   
-    blue: hexToRgba(color.blue[500], 0.2),    blueSoft: hexToRgba(color.blue[500], 0.12),     blueStrong: hexToRgba(color.blue[300], 0.4),
-    pink: hexToRgba(color.pink[500], 0.2),    pinkSoft: hexToRgba(color.pink[500], 0.12),     pinkStrong: hexToRgba(color.pink[300], 0.4),
-    teal: hexToRgba(color.teal[500], 0.2),    tealSoft: hexToRgba(color.teal[500], 0.12),     tealStrong: hexToRgba(color.teal[300], 0.4),
-    green: hexToRgba(color.green[500], 0.2),  greenSoft: hexToRgba(color.green[500], 0.12),   greenStrong: hexToRgba(color.green[700], 0.4),
-   
-    orange: hexToRgba(color.orange[500], 0.2),    orangeSoft: hexToRgba(color.orange[500], 0.12),   orangeStrong: hexToRgba(color.orange[300], 0.4),
-    yellow: hexToRgba(color.yellow[500], 0.2),    yellowSoft: hexToRgba(color.yellow[500], 0.12),   yellowStrong: hexToRgba(color.yellow[300], 0.4),
-    purple: hexToRgba(color.purple[500], 0.2),    purpleSoft: hexToRgba(color.purple[500], 0.12),   purpleStrong: hexToRgba(color.purple[300], 0.4),
-  }, // prettier-ignore
-
-  // Third-party auth //
-  auth: { google: '#4285F4', apple: color.neutral[1000] },
+export const colors = {
+  brand: '#0B5132', // primary green
+  brandOn: '#FFFFFF', // text on brand (contrast ≥ 7:1)
+  bg: '#FFFFFF',
+  text: '#11181C', // on bg ≈ 16:1
+  textMuted: '#5B6770', // on bg ≈ 5.3:1 (AA)
+  danger: '#B3261E',
+  warning: '#9A6700',
+  success: '#1B7A3D',
+  border: '#E2E6E9',
 } as const;
 
-// ─── Typography Tokens ────────────────────────────────────────
-const typography = {
-  family: { sans: 'System', mono: 'System' },
-  size: fontSize,
-  weight: fontWeight,
-  height: lineHeight,
-  tighten: letterSpacing,
+export const spacing = { xs: 4, sm: 8, md: 16, lg: 24, xl: 32 } as const;
+export const radius = { sm: 8, md: 12, lg: 20, pill: 999 } as const;
+export const typography = {
+  h1: { fontSize: 28, fontWeight: '700' as const },
+  h2: { fontSize: 22, fontWeight: '700' as const },
+  body: { fontSize: 16, fontWeight: '400' as const },
+  caption: { fontSize: 13, fontWeight: '400' as const },
 } as const;
-
-// ─── Spacing Tokens ───────────────────────────────────────────
-// Named aliases on top of the numeric scale.
-// Use numeric scale for granular control, aliases for common slots.
-const spacing = {
-  ...space,
-  px: 1, none: space[0], xs1: space[1], xs: space[2], sm: space[3], md: space[4], lg: space[6], xl: space[8], xl2: space[12], xl3: space[16],
-  xl4: space[20], xl5: space[24], xl6: space[28], xl7: space[32], xl8: space[36], xl9: space[40], xl10: space[44], xl11: space[48], 
-  xl12: space[52], xl13: space[56], xl14: space[60], xl15: space[64], xl16: space[72], xl17: space[80], xl18: space[96],
-} as const; // prettier-ignore
-
-// ─── Shadow Tokens ────────────────────────────────────────────
-// React Native compatible. Tailwind uses box-shadow CSS separately.
-const shadow = {
-  none: {
-    shadowColor: color.neutral[1000],
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0,
-    shadowRadius: 0,
-    elevation: 0,
-  },
-  sm: {
-    shadowColor: color.neutral[1000],
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
-  },
-  md: {
-    shadowColor: color.neutral[1000],
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-    elevation: 3,
-  },
-  lg: {
-    shadowColor: color.neutral[1000],
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.12,
-    shadowRadius: 12,
-    elevation: 6,
-  },
-  xl: {
-    shadowColor: color.neutral[1000],
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.16,
-    shadowRadius: 20,
-    elevation: 10,
-  },
-  // Colored glow shadows for accent elements
-  brand: {
-    shadowColor: color.green[500],
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 6,
-  },
-  error: {
-    shadowColor: color.red[500],
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 12,
-    elevation: 6,
-  },
-} as const;
-
-const rounded = radius; // Border Radius Tokens
-const motion = { duration, easing } as const; // Motion Tokens
-const zIndex = { base: 0, raised: 10, dropdown: 20, sticky: 30, overlay: 40, modal: 50, toast: 60, tooltip: 70 } as const; // Z-Index Scale
-
-export const tokens = { colors, typography, spacing, rounded, shadow, motion, zIndex } as const; // Token Export
-export { colors, motion, rounded, shadow, spacing, typography, zIndex }; // Convenience named exports
-
-// ─── Types ─────────────────────────────────────────────
-export type Tokens = typeof tokens;
-export type ColorTokens = typeof colors;
-export type SpacingTokens = typeof spacing;
-export type RoundedTokens = typeof rounded;
-export type ShadowTokens = typeof shadow;
-export type MotionTokens = typeof motion;

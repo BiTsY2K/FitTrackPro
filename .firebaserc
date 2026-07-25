@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "fit-track-bitsdev-2f8d90b74554"
+    "default": "fit-track-bitsdev-2f8d90b74554",
+    "dev": "fit-track-bitsdev-2f8d90b74554",
+    "prod": "fit-track-bitsdev-2f8d90b74554"
   }
 }

@@ -15,9 +15,7 @@ const compat = new FlatCompat({
 });
 
 export default [
-  {
-    ignores: ['node_modules/**', 'dist/**'],
-  },
+  { ignores: ['dist/*', 'node_modules/*', 'functions/lib/*', '.expo/*'] },
 
   js.configs.recommended,
   ...tseslint.configs.recommended,
@@ -26,6 +24,10 @@ export default [
 
   {
     languageOptions: {
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: __dirname,
+      },
       globals: {
         jest: 'readonly',
         describe: 'readonly',
@@ -42,22 +44,63 @@ export default [
       'react-native': reactNativePlugin,
     },
 
+    files: ['**/*.{ts,tsx}'],
     rules: {
       'simple-import-sort/imports': 'warn',
       'simple-import-sort/exports': 'warn',
+      'no-console': ['error', { allow: ['warn', 'error'] }],
 
+      '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-require-imports': 'off',
 
       'react-native/no-unused-styles': 'warn',
-      'react-native/no-inline-styles': 'warn',
+      // 'react-native/no-inline-styles': 'warn',
 
       //  Expected severity of "off", 0, "warn", 1, "error", or 2.
       'react-hooks/exhaustive-deps': 'off',
 
-      'no-console': ['warn', { allow: ['log', 'warn', 'error'] }],
+      // Features must not import from sibling features directly.
+      'import/no-restricted-paths': [
+        'error',
+        {
+          zones: [
+            {
+              target: './src/features/auth',
+              from: './src/features',
+              except: ['./auth'],
+            },
+            {
+              target: './src/features/onboarding',
+              from: './src/features',
+              except: ['./onboarding'],
+            },
+            {
+              target: './src/features/food-logging',
+              from: './src/features',
+              except: ['./food-logging'],
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  // Cloud Functions is a separate package with its own tsconfig/node_modules.
+  // Point the import resolver at it so subpath exports (e.g. `firebase-functions/v2`) resolve.
+  {
+    files: ['functions/**/*.ts'],
+    settings: {
+      'import/resolver': {
+        typescript: {
+          project: path.join(__dirname, 'functions/tsconfig.json'),
+        },
+        node: {
+          extensions: ['.js', '.ts'],
+        },
+      },
     },
   },
 ];

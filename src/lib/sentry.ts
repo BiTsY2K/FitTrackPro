@@ -1,24 +1,24 @@
 import * as Sentry from '@sentry/react-native';
-import Constants from 'expo-constants';
 
-const SENTRY_DSN = Constants.expoConfig?.extra?.sentryDsn;
-const APP_ENV = Constants.expoConfig?.extra?.appEnv || 'development';
+import { env, isProd } from '@/config/env';
 
-export const initializeSentry = () => {
-  if (!SENTRY_DSN) {
-    console.warn('⚠️  Sentry DSN not found, error tracking disabled');
-    return;
+import { logger } from './logger';
+
+export const navigationIntegration = Sentry.reactNavigationIntegration({ enableTimeToInitialDisplay: true });
+
+export const initializeSentry = (): boolean => {
+  if (!env.SENTRY_DSN) {
+    logger.warn('[Sentry] Sentry DSN not found, error tracking disabled');
+    return false;
   }
 
   Sentry.init({
-    dsn: SENTRY_DSN,
-    environment: APP_ENV,
-    debug: APP_ENV === 'development',
-
-    // Performance Monitoring
-    tracesSampleRate: APP_ENV === 'production' ? 0.2 : 1.0,
-
+    dsn: env.SENTRY_DSN,
+    environment: env.APP_ENV,
+    debug: !isProd,
+    tracesSampleRate: isProd ? 0.2 : 1.0, // Performance Monitoring
     enableAutoPerformanceTracing: true,
+    integrations: [navigationIntegration],
 
     // Session Replay (Beta)
     replaysSessionSampleRate: 0.1,
@@ -26,33 +26,25 @@ export const initializeSentry = () => {
 
     // Filter out sensitive data
     beforeSend(event, hint) {
-      // Remove user email from events
-      if (event.user) delete event.user.email;
-
-      // Remove sensitive headers
-      if (event.request?.headers) {
-        delete event.request.headers['Authorization'];
-      }
+      if (event.user) delete event.user.email; // Remove user email from events
+      if (event.request?.headers) delete event.request.headers['Authorization']; // Remove sensitive headers
 
       const originalError = hint?.originalException;
       if (originalError instanceof Error) {
-        console.log('Original error message:', originalError.message);
+        logger.error(`Original error message: ${originalError.message}`);
       }
 
       return event;
     },
   });
 
-  console.log('✅ Sentry initialized');
+  logger.info('[Sentry] Sentry initialized');
+  return true;
 };
 
 // Helper to capture user context
 export const setSentryUser = (userId: string, email?: string) => {
-  Sentry.setUser({
-    id: userId,
-    // Do NOT send email in production for privacy
-    ...(APP_ENV !== 'production' && email ? { email } : {}),
-  });
+  Sentry.setUser({ id: userId, ...(!isProd && email ? { email } : {}) });
 };
 
 // Helper to clear user on logout

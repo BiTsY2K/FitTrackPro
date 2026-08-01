@@ -12,22 +12,26 @@ interface Props extends PressableProps {
 const bg: Record<Variant, string> = { primary: colors.brand, secondary: colors.border, danger: colors.danger };
 const fg: Record<Variant, string> = { primary: colors.brandOn, secondary: colors.text, danger: '#fff' };
 
-export function Button({ title, loading, variant = 'primary', disabled, ...rest }: Props) {
+export function Button({ title, loading, variant = 'primary', disabled, style, ...rest }: Props) {
   const isDisabled = disabled || loading;
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityState={{ disabled: !!isDisabled, busy: !!loading }}
       disabled={isDisabled}
-      style={({ pressed }) => ({
-        backgroundColor: bg[variant],
-        opacity: isDisabled ? 0.5 : pressed ? 0.85 : 1,
-        minHeight: 48, // ≥44pt touch target
-        borderRadius: radius.md,
-        paddingHorizontal: spacing.lg,
-        alignItems: 'center',
-        justifyContent: 'center',
-      })}
+      style={state => [
+        {
+          backgroundColor: bg[variant],
+          opacity: isDisabled ? 0.5 : state.pressed ? 0.85 : 1,
+          minHeight: 48, // ≥44pt touch target
+          borderRadius: radius.md,
+          paddingHorizontal: spacing.lg,
+          alignItems: 'center',
+          justifyContent: 'center',
+        },
+        // Caller overrides (e.g. StepShell's flex) merge on top instead of clobbering the base style.
+        typeof style === 'function' ? style(state) : style,
+      ]}
       {...rest}
     >
       {loading ? (

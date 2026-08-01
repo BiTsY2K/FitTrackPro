@@ -75,7 +75,7 @@ export default [
             {
               target: './src/features/onboarding',
               from: './src/features',
-              except: ['./onboarding'],
+              except: ['./onboarding', './auth', './profiles'],
             },
             {
               target: './src/features/food-logging',

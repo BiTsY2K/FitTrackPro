@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.healthCheckCallable = exports.healthCheck = void 0;
+exports.searchFood = exports.submitFood = exports.lookupBarcode = exports.recordAuthAttempt = exports.beforeSignIn = exports.healthCheckCallable = exports.healthCheck = void 0;
 const app_1 = require("firebase-admin/app");
 const v2_1 = require("firebase-functions/v2");
 const https_1 = require("firebase-functions/v2/https");
@@ -16,4 +16,12 @@ exports.healthCheckCallable = (0, https_1.onCall)({ enforceAppCheck: true }, () 
     status: 'ok',
     version: VERSION,
 }));
+var rateLimit_1 = require("./auth/rateLimit");
+Object.defineProperty(exports, "beforeSignIn", { enumerable: true, get: function () { return rateLimit_1.beforeSignIn; } });
+Object.defineProperty(exports, "recordAuthAttempt", { enumerable: true, get: function () { return rateLimit_1.recordAuthAttempt; } });
+var lookupBarcode_1 = require("./food/lookupBarcode");
+Object.defineProperty(exports, "lookupBarcode", { enumerable: true, get: function () { return lookupBarcode_1.lookupBarcode; } });
+Object.defineProperty(exports, "submitFood", { enumerable: true, get: function () { return lookupBarcode_1.submitFood; } });
+var searchFood_1 = require("./food/searchFood");
+Object.defineProperty(exports, "searchFood", { enumerable: true, get: function () { return searchFood_1.searchFood; } });
 //# sourceMappingURL=index.js.map

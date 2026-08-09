@@ -19,3 +19,5 @@ export const healthCheckCallable = onCall({ enforceAppCheck: true }, () => ({
 }));
 
 export { beforeSignIn, recordAuthAttempt } from './auth/rateLimit';
+export { lookupBarcode, submitFood } from './food/lookupBarcode';
+export { searchFood } from './food/searchFood';
